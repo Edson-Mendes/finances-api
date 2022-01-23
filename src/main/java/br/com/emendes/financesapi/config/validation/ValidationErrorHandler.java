@@ -35,21 +35,4 @@ public class ValidationErrorHandler {
     return listErrorDto;
   }
 
-  // @ResponseStatus(code = HttpStatus.BAD_REQUEST)
-  // @ExceptionHandler(DateTimeParseException.class)
-  // public List<FormErrorDto> handleDateError(DateTimeParseException exception){
-
-  //   List<FormErrorDto> listErrorDto = new ArrayList<>();
-  //   List<FieldError> fieldErrors = exception.
-
-  //   fieldErrors.forEach(e -> {
-  //     String message = messageSource.getMessage(e, LocaleContextHolder.getLocale());
-  //     FormErrorDto errorDto = new FormErrorDto(e.getField(), message);
-  //     listErrorDto.add(errorDto);
-  //   });
-
-  //   return listErrorDto;
-  // }
-
-
 }

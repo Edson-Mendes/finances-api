@@ -2,6 +2,8 @@ package br.com.emendes.financesapi.controller.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 import br.com.emendes.financesapi.model.Income;
 
@@ -32,5 +34,13 @@ public class IncomeDto {
 
  public BigDecimal getValue(){
    return value;
+ }
+
+ public static List<IncomeDto> convert(List<Income> incomes){
+   List<IncomeDto> incomesDto = new ArrayList<>();
+
+  incomes.forEach(income -> incomesDto.add(new IncomeDto(income)));
+
+   return incomesDto;
  }
 }
