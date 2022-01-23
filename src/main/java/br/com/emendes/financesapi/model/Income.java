@@ -18,6 +18,14 @@ public class Income {
   private BigDecimal value;
   private LocalDate date;
 
+  public Income(){}
+
+  public Income(String description, BigDecimal value, LocalDate date) {
+    this.description = description;
+    this.value = value;
+    this.date = date;
+  }
+
   public Long getId() {
     return id;
   }
