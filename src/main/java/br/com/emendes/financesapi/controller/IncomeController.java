@@ -1,9 +1,11 @@
 package br.com.emendes.financesapi.controller;
 
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import javax.transaction.Transactional;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,9 +14,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -31,7 +33,7 @@ public class IncomeController {
   IncomeRepository incomeRepository;
 
   @PostMapping
-  public ResponseEntity<IncomeDto> create(@RequestBody @Valid IncomeForm form, UriComponentsBuilder uriBuilder){
+  public ResponseEntity<IncomeDto> create(@Valid @RequestBody IncomeForm form, UriComponentsBuilder uriBuilder){
     Income income = form.convert(incomeRepository);
 
     incomeRepository.save(income);
@@ -59,4 +61,22 @@ public class IncomeController {
 
     return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
   }
+
+  @PutMapping("/{id}")
+  @Transactional
+  public ResponseEntity<IncomeDto> update(@PathVariable Long id, @Valid @RequestBody IncomeForm incomeForm){
+    Optional<Income> optional =  incomeRepository.findById(id);
+    if(optional.isPresent()){
+      Income income = optional.get();
+      // 
+      income.setDescription(incomeForm.getDescription());
+      income.setValue(incomeForm.getValue());
+      income.setDate(LocalDate.parse(incomeForm.getDate()));
+
+      return ResponseEntity.ok(new IncomeDto(income));
+    }
+
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+  }
+
 }
