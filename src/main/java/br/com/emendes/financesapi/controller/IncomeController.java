@@ -25,7 +25,7 @@ import br.com.emendes.financesapi.controller.dto.IncomeDto;
 import br.com.emendes.financesapi.controller.form.IncomeForm;
 import br.com.emendes.financesapi.model.Income;
 import br.com.emendes.financesapi.repository.IncomeRepository;
-
+// TODO: Refatorar e colocar alguns códigos/responsabilidades dentro de um service.
 @RestController
 @RequestMapping("/receitas")
 public class IncomeController {
@@ -39,7 +39,7 @@ public class IncomeController {
 
     incomeRepository.save(income);
 
-    URI uri = uriBuilder.path("/topicos/{id}").buildAndExpand(income.getId()).toUri();
+    URI uri = uriBuilder.path("/despesas/{id}").buildAndExpand(income.getId()).toUri();
     return ResponseEntity.created(uri).body(new IncomeDto(income));
   }
 
@@ -69,7 +69,7 @@ public class IncomeController {
     Optional<Income> optional =  incomeRepository.findById(id);
     if(optional.isPresent()){
       Income income = optional.get();
-      // TODO: Colocar essa lógica em um service
+      
       income.setDescription(incomeForm.getDescription());
       income.setValue(incomeForm.getValue());
       income.setDate(LocalDate.parse(incomeForm.getDate()));

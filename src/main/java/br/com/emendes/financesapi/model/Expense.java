@@ -18,6 +18,14 @@ public class Expense {
   private BigDecimal value;
   private LocalDate date;
 
+  public Expense(){}
+
+  public Expense(String description, BigDecimal value, LocalDate date){
+    this.description = description;
+    this.date = date;
+    this.value = value;
+  }
+
   public Long getId() {
     return id;
   }
