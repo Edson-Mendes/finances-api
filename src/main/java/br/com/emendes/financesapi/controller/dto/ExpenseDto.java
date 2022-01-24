@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import br.com.emendes.financesapi.model.Expense;
-import br.com.emendes.financesapi.model.Income;
 
 public class ExpenseDto {
   private Long id;
@@ -37,11 +36,11 @@ public class ExpenseDto {
    return value;
  }
 
- public static List<IncomeDto> convert(List<Income> incomes){
-   List<IncomeDto> incomesDto = new ArrayList<>();
+ public static List<ExpenseDto> convert(List<Expense> expenses){
+   List<ExpenseDto> expensesDto = new ArrayList<>();
 
-  incomes.forEach(income -> incomesDto.add(new IncomeDto(income)));
+   expenses.forEach(expense -> expensesDto.add(new ExpenseDto(expense)));
 
-   return incomesDto;
+   return expensesDto;
  }
 }

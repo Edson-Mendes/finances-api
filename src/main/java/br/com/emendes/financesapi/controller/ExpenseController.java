@@ -1,11 +1,13 @@
 package br.com.emendes.financesapi.controller;
 
 import java.net.URI;
+import java.util.List;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,14 +36,14 @@ public class ExpenseController {
     return ResponseEntity.created(uri).body(new ExpenseDto(expense));
   }
 
-  // @GetMapping
-  // public List<IncomeDto> readAll(){
-  //   List<Income> incomes = incomeRepository.findAll();
+  @GetMapping
+  public List<ExpenseDto> readAll(){
+    List<Expense> expenses = expenseRepository.findAll();
     
-  //   List<IncomeDto> listIncomeDto = IncomeDto.convert(incomes);
+    List<ExpenseDto> listIncomeDto = ExpenseDto.convert(expenses);
 
-  //   return listIncomeDto;
-  // }
+    return listIncomeDto;
+  }
 
   // @GetMapping("/{id}")
   // public ResponseEntity<IncomeDto> readById(@PathVariable Long id){
