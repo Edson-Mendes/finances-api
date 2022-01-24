@@ -66,6 +66,7 @@ public class IncomeController {
   @PutMapping("/{id}")
   @Transactional
   public ResponseEntity<IncomeDto> update(@PathVariable Long id, @Valid @RequestBody IncomeForm incomeForm){
+    // FIXME: É possível atualizar uma receita com mesma descrição em um mês e ano que já contém tal despesa.
     Optional<Income> optional =  incomeRepository.findById(id);
     if(optional.isPresent()){
       Income income = optional.get();

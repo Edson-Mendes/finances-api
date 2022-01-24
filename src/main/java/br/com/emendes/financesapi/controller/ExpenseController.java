@@ -1,9 +1,11 @@
 package br.com.emendes.financesapi.controller;
 
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import javax.transaction.Transactional;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -60,23 +63,23 @@ public class ExpenseController {
     return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
   }
 
-  // @PutMapping("/{id}")
-  // @Transactional
-  // public ResponseEntity<IncomeDto> update(@PathVariable Long id, @Valid
-  // @RequestBody IncomeForm incomeForm){
-  // Optional<Income> optional = incomeRepository.findById(id);
-  // if(optional.isPresent()){
-  // Income income = optional.get();
+  @PutMapping("/{id}")
+  @Transactional
+  public ResponseEntity<ExpenseDto> update(@PathVariable Long id, @Valid @RequestBody ExpenseForm expenseForm) {
+    // FIXME: É possível atualizar uma despesa com mesma descrição em um mês e ano que já contém tal despesa.
+    Optional<Expense> optional = expenseRepository.findById(id);
+    if (optional.isPresent()) {
+      Expense income = optional.get();
 
-  // income.setDescription(incomeForm.getDescription());
-  // income.setValue(incomeForm.getValue());
-  // income.setDate(LocalDate.parse(incomeForm.getDate()));
+      income.setDescription(expenseForm.getDescription());
+      income.setValue(expenseForm.getValue());
+      income.setDate(LocalDate.parse(expenseForm.getDate()));
 
-  // return ResponseEntity.ok(new IncomeDto(income));
-  // }
+      return ResponseEntity.ok(new ExpenseDto(income));
+    }
 
-  // return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-  // }
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+  }
 
   // @DeleteMapping("/{id}")
   // public ResponseEntity<?> delete(@PathVariable Long id){
