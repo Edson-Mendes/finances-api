@@ -48,17 +48,17 @@ public class ExpenseController {
   public List<ExpenseDto> readAll() {
     List<Expense> expenses = expenseRepository.findAll();
 
-    List<ExpenseDto> listIncomeDto = ExpenseDto.convert(expenses);
+    List<ExpenseDto> expensesDto = ExpenseDto.convert(expenses);
 
-    return listIncomeDto;
+    return expensesDto;
   }
 
   @GetMapping("/{id}")
   public ResponseEntity<ExpenseDto> readById(@PathVariable Long id) {
     Optional<Expense> optional = expenseRepository.findById(id);
     if (optional.isPresent()) {
-      ExpenseDto incomeDto = new ExpenseDto(optional.get());
-      return ResponseEntity.ok(incomeDto);
+      ExpenseDto expenseDto = new ExpenseDto(optional.get());
+      return ResponseEntity.ok(expenseDto);
     }
 
     return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -67,17 +67,15 @@ public class ExpenseController {
   @PutMapping("/{id}")
   @Transactional
   public ResponseEntity<ExpenseDto> update(@PathVariable Long id, @Valid @RequestBody ExpenseForm expenseForm) {
-    // FIXME: É possível atualizar uma despesa com mesma descrição em um mês e ano
-    // que já contém tal despesa.
     Optional<Expense> optional = expenseRepository.findById(id);
-    if (optional.isPresent()) {
-      Expense income = optional.get();
+    if (optional.isPresent() && !expenseForm.exist(expenseRepository, id)) {
+      Expense expense = optional.get();
 
-      income.setDescription(expenseForm.getDescription());
-      income.setValue(expenseForm.getValue());
-      income.setDate(LocalDate.parse(expenseForm.getDate()));
+      expense.setDescription(expenseForm.getDescription());
+      expense.setValue(expenseForm.getValue());
+      expense.setDate(LocalDate.parse(expenseForm.getDate()));
 
-      return ResponseEntity.ok(new ExpenseDto(income));
+      return ResponseEntity.ok(new ExpenseDto(expense));
     }
 
     return ResponseEntity.status(HttpStatus.NOT_FOUND).build();

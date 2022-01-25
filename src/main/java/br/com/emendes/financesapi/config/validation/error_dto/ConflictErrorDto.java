@@ -1,4 +1,4 @@
-package br.com.emendes.financesapi.config.validation;
+package br.com.emendes.financesapi.config.validation.error_dto;
 
 public class ConflictErrorDto {
   private Integer status;

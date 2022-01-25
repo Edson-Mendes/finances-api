@@ -53,6 +53,13 @@ public class ExpenseForm {
   }
 
   public Expense convert(ExpenseRepository expenseRepository){
+    exist(expenseRepository);
+    LocalDate date = LocalDate.parse(this.date);
+    Expense expense = new Expense(description, value, date);
+    return expense;
+  }
+
+  private boolean exist(ExpenseRepository expenseRepository) {
     LocalDate date = LocalDate.parse(this.date);
     Optional<Expense> optional = expenseRepository.findByDescriptionAndMonthAndYear(description, date.getMonthValue(), date.getYear());
     if(optional.isPresent()){
@@ -60,8 +67,30 @@ public class ExpenseForm {
       throw new ResponseStatusException(
 			          HttpStatus.CONFLICT, message, null);
     }
-    Expense expense = new Expense(description, value, date);
-    return expense;
+    return false;
+  }
+
+  /**
+   * Verifica se já existe uma despesa com a mesma descrição no mês e ano do objeto
+   * e com id diferente do objeto.
+   * @param incomeRepository
+   * @param id
+   * @return false, se não existir uma despesa com a mesma descrição em um mesmo mês e ano.
+   * @throws ResponseStatusException - se existir despesa.
+   */
+  public boolean exist(ExpenseRepository expenseRepository, Long id) {
+    LocalDate date = LocalDate.parse(this.date);
+    Optional<Expense> optional = expenseRepository.findByDescriptionAndMonthAndYearAndNotId(
+        description, 
+        date.getMonthValue(), 
+        date.getYear(),
+        id);
+    if(optional.isPresent()){
+      String message = "Descrição de despesa duplicada para "+date.getMonth().name().toLowerCase()+" "+date.getYear();
+      throw new ResponseStatusException(
+			          HttpStatus.CONFLICT, message, null);
+    }
+    return false;
   }
 
 }

@@ -53,6 +53,19 @@ public class IncomeForm {
   }
 
   public Income convert(IncomeRepository incomeRepository){
+    exist(incomeRepository);
+    LocalDate date = LocalDate.parse(this.date);
+    Income income = new Income(description, value, date);
+    return income;
+  }
+
+  /**
+   * Verifica se já existe uma receita com a mesma descrição no dado mês e ano.
+   * @param incomeRepository
+   * @return false, se não existir uma receita com a mesma descrição em um mesmo mês e ano.
+   * @throws ResponseStatusException - se existir receita.
+   */
+  private boolean exist(IncomeRepository incomeRepository) {
     LocalDate date = LocalDate.parse(this.date);
     Optional<Income> optional = incomeRepository.findByDescriptionAndMonthAndYear(description, date.getMonthValue(), date.getYear());
     if(optional.isPresent()){
@@ -60,8 +73,26 @@ public class IncomeForm {
       throw new ResponseStatusException(
 			          HttpStatus.CONFLICT, message, null);
     }
-    Income income = new Income(description, value, date);
-    return income;
+    return false;
+  }
+
+  /**
+   * Verifica se já existe uma receita com a mesma descrição no mês e ano do objeto
+   * e com id diferente do objeto.
+   * @param incomeRepository
+   * @param id
+   * @return false, se não existir uma receita com a mesma descrição em um mesmo mês e ano.
+   * @throws ResponseStatusException - se existir receita.
+   */
+  public boolean exist(IncomeRepository incomeRepository, Long id) {
+    LocalDate date = LocalDate.parse(this.date);
+    Optional<Income> optional = incomeRepository.findByDescriptionAndMonthAndYearAndNotId(description, date.getMonthValue(), date.getYear(), id);
+    if(optional.isPresent()){
+      String message = "Descrição de receita duplicada para "+date.getMonth().name().toLowerCase()+" "+date.getYear();
+      throw new ResponseStatusException(
+			          HttpStatus.CONFLICT, message, null);
+    }
+    return false;
   }
 
 }

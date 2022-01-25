@@ -1,4 +1,4 @@
-package br.com.emendes.financesapi.config.validation;
+package br.com.emendes.financesapi.config.validation.error_handler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +12,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import br.com.emendes.financesapi.config.validation.error_dto.FormErrorDto;
 
 @RestControllerAdvice
 public class ValidationErrorHandler {
