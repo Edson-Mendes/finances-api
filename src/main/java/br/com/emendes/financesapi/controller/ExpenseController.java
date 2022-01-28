@@ -71,9 +71,7 @@ public class ExpenseController {
     if (optional.isPresent() && !expenseForm.exist(expenseRepository, id)) {
       Expense expense = optional.get();
 
-      expense.setDescription(expenseForm.getDescription());
-      expense.setValue(expenseForm.getValue());
-      expense.setDate(LocalDate.parse(expenseForm.getDate()));
+      expense.setParams(expenseForm);
 
       return ResponseEntity.ok(new ExpenseDto(expense));
     }

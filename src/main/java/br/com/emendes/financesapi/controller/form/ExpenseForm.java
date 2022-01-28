@@ -13,6 +13,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import br.com.emendes.financesapi.config.validation.annotation.DateValidation;
 import br.com.emendes.financesapi.model.Expense;
+import br.com.emendes.financesapi.model.enumerator.Category;
 import br.com.emendes.financesapi.repository.ExpenseRepository;
 
 public class ExpenseForm {
@@ -28,12 +29,22 @@ public class ExpenseForm {
   @Positive
   private BigDecimal value;
 
+  private Category category;
+
   public String getDescription() {
     return description;
   }
 
   public void setDescription(String description) {
     this.description = description;
+  }
+
+  public Category getCategory() {
+    return category;
+  }
+  
+  public void setCategory(Category category) {
+    this.category = category;
   }
 
   public String getDate() {
@@ -55,7 +66,10 @@ public class ExpenseForm {
   public Expense convert(ExpenseRepository expenseRepository){
     exist(expenseRepository);
     LocalDate date = LocalDate.parse(this.date);
-    Expense expense = new Expense(description, value, date);
+    if(category == null){
+      category = Category.OUTRAS;
+    }
+    Expense expense = new Expense(description, value, date, category);
     return expense;
   }
 
