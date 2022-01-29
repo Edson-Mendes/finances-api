@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -44,9 +45,13 @@ public class ExpenseController {
   }
 
   @GetMapping
-  public List<ExpenseDto> readAll() {
-    List<Expense> expenses = expenseRepository.findAll();
-
+  public List<ExpenseDto> read(@RequestParam(required = false) String description) {
+    List<Expense> expenses;
+    if(description == null){
+      expenses = expenseRepository.findAll();
+    }else{
+      expenses = expenseRepository.findByDescription(description);
+    }
     List<ExpenseDto> expensesDto = ExpenseDto.convert(expenses);
 
     return expensesDto;
