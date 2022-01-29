@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -44,11 +45,14 @@ public class IncomeController {
   }
 
   @GetMapping
-  public List<IncomeDto> readAll(){
-    List<Income> incomes = incomeRepository.findAll();
-    
+  public List<IncomeDto> read(@RequestParam(required = false) String description){
+    List<Income> incomes;
+    if(description == null){
+      incomes = incomeRepository.findAll();
+    }else{
+      incomes = incomeRepository.findByDescription(description);
+    }
     List<IncomeDto> listIncomeDto = IncomeDto.convert(incomes);
-
     return listIncomeDto;
   }
 

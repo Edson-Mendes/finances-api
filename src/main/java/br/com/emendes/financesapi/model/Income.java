@@ -3,6 +3,7 @@ package br.com.emendes.financesapi.model;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -14,6 +15,7 @@ public class Income {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
+  @Column(columnDefinition = "VARCHAR_IGNORECASE(255)")
   private String description;
   private BigDecimal value;
   private LocalDate date;
