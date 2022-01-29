@@ -21,4 +21,7 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
 
   @Query("SELECT e FROM Expense e WHERE e.description LIKE %:description%")
   List<Expense> findByDescription(@Param("description") String description);
+
+  @Query("SELECT e FROM Expense e WHERE YEAR(e.date) = :year AND MONTH(e.date) = :month")
+  List<Expense> findByYearAndMonth(@Param("year") Integer year, @Param("month") Integer month);
 }

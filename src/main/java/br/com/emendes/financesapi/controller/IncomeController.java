@@ -67,6 +67,17 @@ public class IncomeController {
     return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
   }
 
+  // TODO: Fazer tratamento caso o path não contenha um número para ano e mês.
+  @GetMapping("/{year}/{month}")
+  public List<IncomeDto> readByYearAndMonth(@PathVariable Integer year, @PathVariable Integer month){
+    
+    List<Income> incomes = incomeRepository.findByYearAndMonth(year, month);
+
+    List<IncomeDto> incomesDto = IncomeDto.convert(incomes);
+
+    return incomesDto;
+  }
+
   @PutMapping("/{id}")
   @Transactional
   public ResponseEntity<IncomeDto> update(@PathVariable Long id, @Valid @RequestBody IncomeForm incomeForm){

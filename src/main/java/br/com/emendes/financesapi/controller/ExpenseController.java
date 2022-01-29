@@ -47,9 +47,9 @@ public class ExpenseController {
   @GetMapping
   public List<ExpenseDto> read(@RequestParam(required = false) String description) {
     List<Expense> expenses;
-    if(description == null){
+    if (description == null) {
       expenses = expenseRepository.findAll();
-    }else{
+    } else {
       expenses = expenseRepository.findByDescription(description);
     }
     List<ExpenseDto> expensesDto = ExpenseDto.convert(expenses);
@@ -66,6 +66,17 @@ public class ExpenseController {
     }
 
     return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+  }
+
+  // TODO: Fazer tratamento caso o path não contenha um número para ano e mês.
+  @GetMapping("/{year}/{month}")
+  public List<ExpenseDto> readByYearAndMonth(@PathVariable Integer year, @PathVariable Integer month) {
+
+    List<Expense> expenses = expenseRepository.findByYearAndMonth(year, month);
+
+    List<ExpenseDto> expensesDto = ExpenseDto.convert(expenses);
+
+    return expensesDto;
   }
 
   @PutMapping("/{id}")
