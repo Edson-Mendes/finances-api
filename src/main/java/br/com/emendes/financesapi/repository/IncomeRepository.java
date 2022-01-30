@@ -1,5 +1,6 @@
 package br.com.emendes.financesapi.repository;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,5 +28,8 @@ public interface IncomeRepository extends JpaRepository<Income, Long>{
 
   @Query("SELECT i FROM Income i WHERE YEAR(i.date) = :year AND MONTH(i.date) = :month")
   List<Income> findByYearAndMonth(@Param("year") Integer year, @Param("month") Integer month);
+
+  @Query("SELECT SUM(i.value) FROM Income i WHERE YEAR(i.date) = :year AND MONTH(i.date) = :month")
+  BigDecimal getTotalValueByMonthAndYear(@Param("year") Integer year, @Param("month") Integer month);
   
 }
