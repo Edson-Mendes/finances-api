@@ -35,7 +35,7 @@ public class IncomeController {
   }
 
   @GetMapping
-  public List<IncomeDto> read(@RequestParam(required = false) String description){
+  public ResponseEntity<List<IncomeDto>> read(@RequestParam(required = false) String description){
     if(description == null){
       return incomeService.readAll();
     }

@@ -1,5 +1,6 @@
 package br.com.emendes.financesapi.service;
 
+import java.math.BigDecimal;
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
@@ -13,6 +14,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import br.com.emendes.financesapi.controller.dto.ExpenseDto;
 import br.com.emendes.financesapi.controller.form.ExpenseForm;
 import br.com.emendes.financesapi.model.Expense;
+import br.com.emendes.financesapi.model.enumerator.Category;
 import br.com.emendes.financesapi.repository.ExpenseRepository;
 
 @Service
@@ -30,18 +32,21 @@ public class ExpenseService {
     return ResponseEntity.created(uri).body(new ExpenseDto(expense));
   }
 
-  public List<ExpenseDto> readAll() {
+  public ResponseEntity<List<ExpenseDto>> readAll() {
     List<Expense> expenses = expenseRepository.findAll();
     List<ExpenseDto> expensesDto = ExpenseDto.convert(expenses);
 
-    return expensesDto;
+    return ResponseEntity.ok(expensesDto);
   }
 
-  public List<ExpenseDto> readByDescription(String description) {
+  public ResponseEntity<List<ExpenseDto>> readByDescription(String description) {
     List<Expense> expenses = expenseRepository.findByDescription(description);
-    List<ExpenseDto> expensesDto = ExpenseDto.convert(expenses);
+    if(expenses.isEmpty() || expenses == null){
+      return ResponseEntity.notFound().build();
+    }
 
-    return expensesDto;
+    List<ExpenseDto> expensesDto = ExpenseDto.convert(expenses);
+    return ResponseEntity.ok(expensesDto);
   }
 
   public ResponseEntity<ExpenseDto> readById(Long id) {
@@ -56,12 +61,14 @@ public class ExpenseService {
 
   // TODO: Quando não encontrar receitas para o ano e mês passados, retornar 200 e
   // lista vazia ou bad request?
-  public List<ExpenseDto> readByYearAndMonth(Integer year, Integer month) {
+  public ResponseEntity<List<ExpenseDto>>  readByYearAndMonth(Integer year, Integer month) {
     List<Expense> expenses = expenseRepository.findByYearAndMonth(year, month);
 
+    if(expenses.isEmpty() || expenses == null){
+      return ResponseEntity.notFound().build();
+    }
     List<ExpenseDto> expensesDto = ExpenseDto.convert(expenses);
-
-    return expensesDto;
+    return ResponseEntity.ok(expensesDto);
   }
 
   public ResponseEntity<ExpenseDto> update(Long id, ExpenseForm expenseForm) {
@@ -85,6 +92,14 @@ public class ExpenseService {
     }
 
     return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+  }
+
+  public BigDecimal getTotalValueByMonthAndYear(Integer year, Integer month) {
+    return expenseRepository.getTotalValueByMonthAndYear(year, month).orElse(BigDecimal.ZERO);
+  }
+
+  public BigDecimal getTotalByCategoryInYearAndMonth(Category category, Integer year, Integer month) {
+    return expenseRepository.getTotalByCategoryInYearAndMonth(category, year, month).orElse(BigDecimal.ZERO);
   }
 
 }

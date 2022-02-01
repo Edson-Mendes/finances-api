@@ -28,8 +28,8 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
   List<Expense> findByYearAndMonth(@Param("year") Integer year, @Param("month") Integer month);
 
   @Query("SELECT SUM(e.value) FROM Expense e WHERE YEAR(e.date) = :year AND MONTH(e.date) = :month")
-  BigDecimal getTotalValueByMonthAndYear(@Param("year") Integer year, @Param("month") Integer month);
+  Optional<BigDecimal> getTotalValueByMonthAndYear(@Param("year") Integer year, @Param("month") Integer month);
 
   @Query("SELECT SUM(value) FROM Expense e WHERE YEAR(e.date) = :year AND MONTH (e.date) = :month AND e.category = :category")
-  BigDecimal getTotalByCategoryInYearAndMonth(@Param("category") Category category, @Param("year") Integer year, @Param("month") Integer month);
+  Optional<BigDecimal> getTotalByCategoryInYearAndMonth(@Param("category") Category category, @Param("year") Integer year, @Param("month") Integer month);
 }

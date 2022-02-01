@@ -35,7 +35,7 @@ public class ExpenseController {
   }
 
   @GetMapping
-  public List<ExpenseDto> read(@RequestParam(required = false) String description) {
+  public ResponseEntity<List<ExpenseDto>> read(@RequestParam(required = false) String description) {
     if (description == null) {
       return expenseService.readAll();
     } else {
@@ -50,7 +50,7 @@ public class ExpenseController {
 
   // TODO: Fazer tratamento caso o path não contenha um número para ano e mês.
   @GetMapping("/{year}/{month}")
-  public List<ExpenseDto> readByYearAndMonth(@PathVariable Integer year, @PathVariable Integer month) {
+  public ResponseEntity<List<ExpenseDto>> readByYearAndMonth(@PathVariable Integer year, @PathVariable Integer month) {
     return expenseService.readByYearAndMonth(year, month);
   }
 

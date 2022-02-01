@@ -1,5 +1,6 @@
 package br.com.emendes.financesapi.service;
 
+import java.math.BigDecimal;
 import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
@@ -31,17 +32,20 @@ public class IncomeService {
     return ResponseEntity.created(uri).body(new IncomeDto(income));
   }
 
-  public List<IncomeDto> readAll() {
+  public ResponseEntity<List<IncomeDto>> readAll() {
     List<Income> incomes = incomeRepository.findAll();
 
     List<IncomeDto> incomesDto = IncomeDto.convert(incomes);
-    return incomesDto;
+    return ResponseEntity.ok(incomesDto);
   }
 
-  public List<IncomeDto> readByDescription(String description) {
+  public ResponseEntity<List<IncomeDto>> readByDescription(String description) {
     List<Income> incomes = incomeRepository.findByDescription(description);
-    List<IncomeDto> listIncomeDto = IncomeDto.convert(incomes);
-    return listIncomeDto;
+    if(incomes.isEmpty() || incomes == null){
+      return ResponseEntity.notFound().build();
+    }
+    List<IncomeDto> incomesDto = IncomeDto.convert(incomes);
+    return ResponseEntity.ok(incomesDto);
   }
 
   public ResponseEntity<IncomeDto> readById(Long id) {
@@ -55,7 +59,7 @@ public class IncomeService {
   }
 
   // TODO: Quando não encontrar receitas para o ano e mês passados, retornar 200 e
-  // lista vazia ou bad request?
+  // lista vazia ou not found?
   public ResponseEntity<List<IncomeDto>> readByYearAndMonth(Integer year, Integer month) {
     List<Income> incomes = incomeRepository.findByYearAndMonth(year, month);
     List<IncomeDto> incomesDto = IncomeDto.convert(incomes);
@@ -85,6 +89,10 @@ public class IncomeService {
     }
 
     return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+  }
+
+  public BigDecimal getTotalValueByMonthAndYear(Integer year, Integer month) {
+    return incomeRepository.getTotalValueByMonthAndYear(year, month).orElse(BigDecimal.ZERO);
   }
 
 }
