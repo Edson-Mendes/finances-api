@@ -62,6 +62,9 @@ public class IncomeService {
   // lista vazia ou not found?
   public ResponseEntity<List<IncomeDto>> readByYearAndMonth(Integer year, Integer month) {
     List<Income> incomes = incomeRepository.findByYearAndMonth(year, month);
+    if(incomes.isEmpty()){
+      return ResponseEntity.notFound().build();
+    }
     List<IncomeDto> incomesDto = IncomeDto.convert(incomes);
     return ResponseEntity.ok(incomesDto);
   }

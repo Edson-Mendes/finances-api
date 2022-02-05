@@ -130,6 +130,16 @@ public class ExpenseControllerTests {
   }
 
   @Test
+  public void deveriaDevolver200AoBuscarPorDescricaoExistente() throws Exception{
+    getDespesa(new URI("/despesas?description=net"), 200);
+  }
+
+  @Test
+  public void deveriaDevolver404AoBuscarPorDescricaoInexistente() throws Exception{
+    getDespesa(new URI("/despesas?description=nettttt"), 404);
+  }
+
+  @Test
   public void deveriaDevolver200AoAtualizarDespesaCorretamente() throws Exception {
     int id = 1;
     String description = "Combustivel";
@@ -157,7 +167,6 @@ public class ExpenseControllerTests {
 
   @Test
   public void deveriaDevolver400AoAtualizarDespesaSemAlgumParametroObrigatorio() throws Exception {
-    int id = 1;
     String description = "Combustivel";
     BigDecimal value = BigDecimal.valueOf(341.87);
     String date = "2022-01-28";
