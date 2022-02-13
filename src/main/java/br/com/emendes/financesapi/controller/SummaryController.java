@@ -1,6 +1,7 @@
 package br.com.emendes.financesapi.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,8 +17,7 @@ public class SummaryController {
   private SummaryService summaryService;
 
   @GetMapping("/{year}/{month}")
-  public SummaryDto monthSummary(@PathVariable Integer year, @PathVariable Integer month){
-    
+  public ResponseEntity<SummaryDto> monthSummary(@PathVariable Integer year, @PathVariable Integer month){ 
     return summaryService.monthSummary(year, month);
   }
 

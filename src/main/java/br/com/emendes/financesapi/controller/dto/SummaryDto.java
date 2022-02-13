@@ -1,23 +1,24 @@
 package br.com.emendes.financesapi.controller.dto;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
-
-import br.com.emendes.financesapi.model.enumerator.Category;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SummaryDto {
   private BigDecimal incomeTotalValue = BigDecimal.ZERO;
   private BigDecimal expenseTotalValue = BigDecimal.ZERO;
   private BigDecimal finalBalance = BigDecimal.ZERO;
-  private HashMap<Category, BigDecimal> totalByCategory = new HashMap<>();
+  private List<ValueByCategory> valuesByCategory = new ArrayList<>();
 
-  public SummaryDto() {}
+  public SummaryDto() {
+  }
 
-  public SummaryDto(BigDecimal incomeTotalValue, BigDecimal expenseTotalValue, HashMap<Category, BigDecimal> totalByCategory) {
+  public SummaryDto(BigDecimal incomeTotalValue, BigDecimal expenseTotalValue,
+      List<ValueByCategory> valuesByCategory) {
     this.incomeTotalValue = incomeTotalValue;
     this.expenseTotalValue = expenseTotalValue;
     this.finalBalance = incomeTotalValue.subtract(expenseTotalValue);
-    this.totalByCategory = totalByCategory;
+    this.valuesByCategory = valuesByCategory;
   }
 
   public BigDecimal getIncomeTotalValue() {
@@ -32,8 +33,52 @@ public class SummaryDto {
     return expenseTotalValue;
   }
 
-  public HashMap<Category, BigDecimal> getValuesByCategory(){
-    return totalByCategory;
+  public List<ValueByCategory> getValuesByCategory() {
+    return valuesByCategory;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null || getClass() != obj.getClass())
+      return false;
+    SummaryDto other = (SummaryDto) obj;
+    boolean listValuesByCategoryIsEqual = false;
+    for (int i = 0; i < valuesByCategory.size(); i++) {
+      listValuesByCategoryIsEqual = other.getValuesByCategory().contains(valuesByCategory.get(i));
+    }
+    return listValuesByCategoryIsEqual && 
+        incomeTotalValue.equals(other.getIncomeTotalValue()) &&
+        expenseTotalValue.equals(other.getExpenseTotalValue()) &&
+        finalBalance.equals(other.getFinalBalance());
+  }
+
+  @Override
+  public int hashCode() {
+    int result = 17;
+    if (incomeTotalValue != null) {
+      result = result * 31 + incomeTotalValue.hashCode();
+    }
+    if (expenseTotalValue != null) {
+      result = result * 31 + expenseTotalValue.hashCode();
+    }
+    if (finalBalance != null) {
+      result = result * 31 + finalBalance.hashCode();
+    }
+    for(int i = 0; i< valuesByCategory.size(); i++){
+      result = result * 31 + valuesByCategory.get(i).hashCode();
+    }
+    return result;
+  }
+
+  @Override
+  public String toString() {
+    return "SummaryDto{incomeTotalValue=" +
+        incomeTotalValue + ", expenseTotalValue=" +
+        expenseTotalValue + ", finalBalance=" +
+        finalBalance + ", valuesByCategory=["+
+        valuesByCategory.toString()+"]"+"}";
   }
 
 }

@@ -24,8 +24,7 @@ public class Expense {
   private String description;
   private BigDecimal value;
   private LocalDate date;
-
-  // TODO: Criar uma tabela de categorias ou apenas enumera-las na aplicação?
+  
   @Enumerated(EnumType.STRING)
   private Category category;
 

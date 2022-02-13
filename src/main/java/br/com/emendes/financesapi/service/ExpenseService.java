@@ -60,7 +60,7 @@ public class ExpenseService {
   }
 
   // TODO: Quando não encontrar receitas para o ano e mês passados, retornar 200 e
-  // lista vazia ou bad request?
+  // lista vazia ou not found?
   public ResponseEntity<List<ExpenseDto>>  readByYearAndMonth(Integer year, Integer month) {
     List<Expense> expenses = expenseRepository.findByYearAndMonth(year, month);
 
@@ -95,7 +95,10 @@ public class ExpenseService {
   }
 
   public BigDecimal getTotalValueByMonthAndYear(Integer year, Integer month) {
-    return expenseRepository.getTotalValueByMonthAndYear(year, month).orElse(BigDecimal.ZERO);
+    if(expenseRepository.getTotalValueByMonthAndYear(year, month).isPresent()){
+      return expenseRepository.getTotalValueByMonthAndYear(year, month).get();
+    }
+    throw new RuntimeException("Total value not found for year: "+year+" e month: "+month);
   }
 
   public BigDecimal getTotalByCategoryInYearAndMonth(Category category, Integer year, Integer month) {

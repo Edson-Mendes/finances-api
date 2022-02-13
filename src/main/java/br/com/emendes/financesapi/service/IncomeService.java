@@ -95,7 +95,10 @@ public class IncomeService {
   }
 
   public BigDecimal getTotalValueByMonthAndYear(Integer year, Integer month) {
-    return incomeRepository.getTotalValueByMonthAndYear(year, month).orElse(BigDecimal.ZERO);
+    if(incomeRepository.getTotalValueByMonthAndYear(year, month).isPresent()){
+      return incomeRepository.getTotalValueByMonthAndYear(year, month).get();
+    }
+    throw new RuntimeException("Total value not found for year: "+year+" e month: "+month);
   }
 
 }
