@@ -73,7 +73,7 @@ public class SummaryControllerTests {
     int month = 2;
     MvcResult result = mock.get("/resumo/" + year + "/" + month, 200);
     String content = result.getResponse().getContentAsString();
-    SummaryDto summaryResult = SummaryDtoFromJsonNode(new ObjectMapper().readTree(content));
+    SummaryDto summaryResponse = SummaryDtoFromJsonNode(new ObjectMapper().readTree(content));
 
     List<ValueByCategory> valuesByCategory = new ArrayList<>();
     // FIXME: Refatorar as adicões abaixo.
@@ -88,7 +88,7 @@ public class SummaryControllerTests {
 
     SummaryDto summaryExpected = new SummaryDto(new BigDecimal("4000.0"), new BigDecimal("1950.0"), valuesByCategory);
 
-    Assertions.assertEquals(summaryExpected, summaryResult);
+    Assertions.assertEquals(summaryExpected, summaryResponse);
   }
 
   @Test
@@ -99,7 +99,6 @@ public class SummaryControllerTests {
   private SummaryDto SummaryDtoFromJsonNode(JsonNode content) throws Exception {
     BigDecimal incomeTotalValue = content.get("incomeTotalValue").decimalValue();
     BigDecimal expenseTotalValue = content.get("expenseTotalValue").decimalValue();
-    // BigDecimal finalBalance = content.get("finalBalance").decimalValue();
 
     List<String> categories = content.get("valuesByCategory").findValuesAsText("category");
     List<String> values = content.get("valuesByCategory").findValuesAsText("value");

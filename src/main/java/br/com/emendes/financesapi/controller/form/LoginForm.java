@@ -1,5 +1,6 @@
 package br.com.emendes.financesapi.controller.form;
 
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -7,6 +8,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 public class LoginForm {
 
   @NotBlank
+  @Email(message = "deve ser um e-mail bem formado")
   private String email;
   
   @NotBlank

@@ -49,7 +49,7 @@ public class IncomeController {
 
   // TODO: Fazer tratamento caso o path não contenha um número para ano e mês.
   @GetMapping("/{year}/{month}")
-  public ResponseEntity<List<IncomeDto>> readByYearAndMonth(@PathVariable Integer year, @PathVariable Integer month){
+  public ResponseEntity<?> readByYearAndMonth(@PathVariable Integer year, @PathVariable Integer month){
     return incomeService.readByYearAndMonth(year, month);
   }
 

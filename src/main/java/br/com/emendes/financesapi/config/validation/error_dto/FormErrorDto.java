@@ -18,4 +18,9 @@ public class FormErrorDto {
     return error;
   }
 
+  @Override
+  public String toString() {
+    return "[FormErrorDto: field="+field+", error="+error+"]";
+  }
+
 }

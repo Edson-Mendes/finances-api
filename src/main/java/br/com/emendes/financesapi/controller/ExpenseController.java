@@ -50,7 +50,7 @@ public class ExpenseController {
 
   // TODO: Fazer tratamento caso o path não contenha um número para ano e mês.
   @GetMapping("/{year}/{month}")
-  public ResponseEntity<List<ExpenseDto>> readByYearAndMonth(@PathVariable Integer year, @PathVariable Integer month) {
+  public ResponseEntity<?> readByYearAndMonth(@PathVariable Integer year, @PathVariable Integer month) {
     return expenseService.readByYearAndMonth(year, month);
   }
 

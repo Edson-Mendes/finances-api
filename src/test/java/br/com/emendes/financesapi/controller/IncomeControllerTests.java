@@ -3,12 +3,17 @@ package br.com.emendes.financesapi.controller;
 import java.math.BigDecimal;
 import java.util.Map;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.web.servlet.MvcResult;
 
+import br.com.emendes.financesapi.config.validation.error_dto.FormErrorDto;
 import br.com.emendes.financesapi.util.CustomMockMvc;
 
 @SpringBootTest
@@ -37,7 +42,7 @@ public class IncomeControllerTests {
     BigDecimal value = BigDecimal.valueOf(2885.00);
     String date = "2022-01-22";
     
-    mock.post("/receitas", Map.of("value", value, "date", date), 400);
+    FormErrorDto error = formErrorDtoFromMvcResult(mock.post("/receitas", Map.of("value", value, "date", date), 400));
     mock.post("/receitas", Map.of("description", description, "date", date), 400);
     mock.post("/receitas", Map.of("description", description, "value", value), 400);
     mock.post("/receitas", Map.of("value", value), 400);
@@ -163,5 +168,15 @@ public class IncomeControllerTests {
     mock.delete("/receitas/"+id, 404);
   }
 
+  private FormErrorDto formErrorDtoFromMvcResult(MvcResult result) throws Exception {
+    JsonNode content = new ObjectMapper().readTree(result.getResponse().getContentAsString());
+    JsonNode errorJsonNode = content.elements().next();
+    String field = errorJsonNode.get("field").asText();
+    String error = errorJsonNode.get("error").asText();
+
+    FormErrorDto formErrorDto = new FormErrorDto(field, error);
+
+    return formErrorDto;
+  }
 
 }

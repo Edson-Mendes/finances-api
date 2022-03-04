@@ -1,8 +1,8 @@
 INSERT INTO user(name, email, password) VALUES ('Lorem ipsum', 'lorem@email.com', '$2a$10$VZD0YfOeyiGs9W/B62mrqeXUL.WonN.cIBVfNLdzHF.9nBEp9/vEe');
 
-INSERT INTO profile(id, name) VALUES(1, 'ROLE_USER');
+INSERT INTO role(id, name) VALUES(1, 'ROLE_USER');
 
-INSERT INTO user_profiles(user_id, profiles_id) VALUES(1, 1);
+INSERT INTO user_roles(user_id, roles_id) VALUES(1, 1);
 
 INSERT INTO expense(description, value, date, category) VALUES ('Internet', 100.00, '2022-01-05', 'MORADIA');
 INSERT INTO expense(description, value, date, category) VALUES ('Água', 50.00, '2022-01-08', 'MORADIA');

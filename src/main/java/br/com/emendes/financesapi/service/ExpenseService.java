@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import br.com.emendes.financesapi.config.validation.error_dto.ErrorDto;
 import br.com.emendes.financesapi.controller.dto.ExpenseDto;
 import br.com.emendes.financesapi.controller.form.ExpenseForm;
 import br.com.emendes.financesapi.model.Expense;
@@ -41,7 +42,7 @@ public class ExpenseService {
 
   public ResponseEntity<List<ExpenseDto>> readByDescription(String description) {
     List<Expense> expenses = expenseRepository.findByDescription(description);
-    if(expenses.isEmpty() || expenses == null){
+    if (expenses.isEmpty() || expenses == null) {
       return ResponseEntity.notFound().build();
     }
 
@@ -59,13 +60,17 @@ public class ExpenseService {
     return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
   }
 
-  // TODO: Quando não encontrar receitas para o ano e mês passados, retornar 200 e
-  // lista vazia ou not found?
-  public ResponseEntity<List<ExpenseDto>>  readByYearAndMonth(Integer year, Integer month) {
+
+  public ResponseEntity<?> readByYearAndMonth(Integer year, Integer month) {
     List<Expense> expenses = expenseRepository.findByYearAndMonth(year, month);
 
-    if(expenses.isEmpty() || expenses == null){
-      return ResponseEntity.notFound().build();
+    if (expenses.isEmpty() || expenses == null) {
+      String message = "Não há despesas para o ano " + year + " e mês " + month;
+      ErrorDto errorDto = new ErrorDto("Not Found", message);
+      return ResponseEntity
+          .status(HttpStatus.NOT_FOUND)
+          .header("Content-Type", "application/json;charset=UTF-8")
+          .body(errorDto);
     }
     List<ExpenseDto> expensesDto = ExpenseDto.convert(expenses);
     return ResponseEntity.ok(expensesDto);
@@ -95,10 +100,10 @@ public class ExpenseService {
   }
 
   public BigDecimal getTotalValueByMonthAndYear(Integer year, Integer month) {
-    if(expenseRepository.getTotalValueByMonthAndYear(year, month).isPresent()){
+    if (expenseRepository.getTotalValueByMonthAndYear(year, month).isPresent()) {
       return expenseRepository.getTotalValueByMonthAndYear(year, month).get();
     }
-    throw new RuntimeException("Total value not found for year: "+year+" e month: "+month);
+    throw new RuntimeException("Total value not found for year: " + year + " e month: " + month);
   }
 
   public BigDecimal getTotalByCategoryInYearAndMonth(Category category, Integer year, Integer month) {

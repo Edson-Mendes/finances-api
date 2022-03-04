@@ -1,18 +1,12 @@
 package br.com.emendes.financesapi.config.validation.error_dto;
 
-public class ConflictErrorDto {
-  private Integer status;
+public class ErrorDto {
   private String error;
   private String message;
 
-  public ConflictErrorDto(Integer status, String error, String message) {
-    this.status = status;
+  public ErrorDto(String error, String message) {
     this.error = error;
     this.message = message;
-  }
-
-  public Integer getStatus() {
-    return status;
   }
 
   public String getError() {
@@ -21,6 +15,11 @@ public class ConflictErrorDto {
 
   public String getMessage() {
     return message;
+  }
+
+  @Override
+  public String toString() {
+    return "[ErrorDto: error="+error+", message="+message+"]";
   }
 
 }

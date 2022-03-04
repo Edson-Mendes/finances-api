@@ -22,7 +22,8 @@ public class CustomMockMvc {
     return mockMvc
     .perform(MockMvcRequestBuilders
     .get(uri)
-    .contentType(MediaType.APPLICATION_JSON))
+    .contentType(MediaType.APPLICATION_JSON)
+    .characterEncoding("utf-8"))
     .andExpect(MockMvcResultMatchers.status().is(status))
     .andReturn();
   }
@@ -33,7 +34,9 @@ public class CustomMockMvc {
         .perform(MockMvcRequestBuilders
           .post(uri)
           .content(body)
-          .contentType(MediaType.APPLICATION_JSON))
+          .contentType(MediaType.APPLICATION_JSON)
+          .characterEncoding("UTF-8"))
+          
         .andExpect(MockMvcResultMatchers.status().is(status))
         .andReturn();
   }

@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.emendes.financesapi.controller.dto.SummaryDto;
 import br.com.emendes.financesapi.service.SummaryService;
 @RestController
 @RequestMapping("/resumo")
@@ -17,10 +16,8 @@ public class SummaryController {
   private SummaryService summaryService;
 
   @GetMapping("/{year}/{month}")
-  public ResponseEntity<SummaryDto> monthSummary(@PathVariable Integer year, @PathVariable Integer month){ 
+  public ResponseEntity<?> monthSummary(@PathVariable Integer year, @PathVariable Integer month){ 
     return summaryService.monthSummary(year, month);
   }
-
-  
 
 }

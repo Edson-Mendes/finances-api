@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import br.com.emendes.financesapi.config.validation.error_dto.ErrorDto;
 import br.com.emendes.financesapi.controller.dto.IncomeDto;
 import br.com.emendes.financesapi.controller.form.IncomeForm;
 import br.com.emendes.financesapi.model.Income;
@@ -60,10 +61,15 @@ public class IncomeService {
 
   // TODO: Quando não encontrar receitas para o ano e mês passados, retornar 200 e
   // lista vazia ou not found?
-  public ResponseEntity<List<IncomeDto>> readByYearAndMonth(Integer year, Integer month) {
+  public ResponseEntity<?> readByYearAndMonth(Integer year, Integer month) {
     List<Income> incomes = incomeRepository.findByYearAndMonth(year, month);
     if(incomes.isEmpty()){
-      return ResponseEntity.notFound().build();
+      String message = "Não há receitas para o ano " + year + " e mês " + month;
+      ErrorDto errorDto = new ErrorDto("Not Found", message);
+      return ResponseEntity
+          .status(HttpStatus.NOT_FOUND)
+          .header("Content-Type", "application/json;charset=UTF-8")
+          .body(errorDto);
     }
     List<IncomeDto> incomesDto = IncomeDto.convert(incomes);
     return ResponseEntity.ok(incomesDto);

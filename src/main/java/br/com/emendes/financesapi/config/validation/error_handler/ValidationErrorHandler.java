@@ -29,6 +29,7 @@ public class ValidationErrorHandler {
     List<FieldError> fieldErrors = exception.getBindingResult().getFieldErrors();
 
     fieldErrors.forEach(e -> {
+      // TODO: Entender LocaleContextHolder
       String message = messageSource.getMessage(e, LocaleContextHolder.getLocale());
       FormErrorDto errorDto = new FormErrorDto(e.getField(), message);
       listErrorDto.add(errorDto);
