@@ -30,9 +30,9 @@ public class SigninTest {
 
   @BeforeAll
   public void addRoles() throws Exception {
-    mock.post("/role", Map.of("name", "ROLE_USER"), 201);
+    mock.post("/role", Map.of("name", "ROLE_USER"), "", 201);
     mock.post("/auth/signup",
-        Map.of("name", "ipsum", "email", "ipsum@email.com", "password", "123123", "confirm", "123123"), 201);
+        Map.of("name", "ipsum", "email", "ipsum@email.com", "password", "123123", "confirm", "123123"), "", 201);
   }
 
   @Test
@@ -41,9 +41,9 @@ public class SigninTest {
     String password = "123123";
     Map<String, Object> params = Map.of("email", email, "password", password);
 
-    MvcResult result = mock.post("/auth/signin", params, 200);
+    MvcResult result = mock.post("/auth/signin", params, "", 200);
 
-    TokenDto tokenResponse = DtoFromMvcResult.tokenDtoFromMvcResult(result);
+    TokenDto tokenResponse = DtoFromMvcResult.tokenDto(result);
 
     Assertions.assertEquals("Bearer", tokenResponse.getType());
   }
@@ -54,9 +54,9 @@ public class SigninTest {
     String password = "123";
     Map<String, Object> params = Map.of("email", email, "password", password);
 
-    MvcResult result = mock.post("/auth/signin", params, 400);
+    MvcResult result = mock.post("/auth/signin", params, "", 400);
 
-    ErrorDto errorResponse = DtoFromMvcResult.errorDtoFromMvcResult(result);
+    ErrorDto errorResponse = DtoFromMvcResult.errorDto(result);
 
     Assertions.assertEquals("Bad credentials", errorResponse.getError());
     Assertions.assertEquals("Email ou password inválidos", errorResponse.getMessage());
@@ -69,9 +69,9 @@ public class SigninTest {
     String password = "123123";
     Map<String, Object> params = Map.of("email", email, "password", password);
 
-    MvcResult result = mock.post("/auth/signin", params, 400);
+    MvcResult result = mock.post("/auth/signin", params, "", 400);
 
-    ErrorDto errorResponse = DtoFromMvcResult.errorDtoFromMvcResult(result);
+    ErrorDto errorResponse = DtoFromMvcResult.errorDto(result);
 
     Assertions.assertEquals("Bad credentials", errorResponse.getError());
     Assertions.assertEquals("Email ou password inválidos", errorResponse.getMessage());
@@ -84,9 +84,9 @@ public class SigninTest {
     String password = "123123";
     Map<String, Object> params = Map.of("email", email, "password", password);
 
-    MvcResult result = mock.post("/auth/signin", params, 400);
+    MvcResult result = mock.post("/auth/signin", params, "", 400);
 
-    FormErrorDto formErrorResponse = DtoFromMvcResult.formErrorDtoFromMvcResult(result);
+    FormErrorDto formErrorResponse = DtoFromMvcResult.formErrorDto(result);
 
     Assertions.assertEquals("email", formErrorResponse.getField());
     Assertions.assertEquals("deve ser um e-mail bem formado", formErrorResponse.getError());

@@ -30,7 +30,7 @@ public class SignupTest {
 
   @BeforeAll
   public void addRoles() throws Exception {
-    mock.post("/role", Map.of("name", "ROLE_USER"), 201);
+    mock.post("/role", Map.of("name", "ROLE_USER"), "", 201);
   }
 
   @Test
@@ -41,8 +41,8 @@ public class SignupTest {
     String confirm = "12345678";
 
     MvcResult result = mock.post("/auth/signup",
-        Map.of("name", name, "email", email, "password", password, "confirm", confirm), 201);
-    UserDto userDtoResponse = DtoFromMvcResult.userDtoFromMvcResult(result);
+        Map.of("name", name, "email", email, "password", password, "confirm", confirm), "", 201);
+    UserDto userDtoResponse = DtoFromMvcResult.userDto(result);
 
     UserDto userDtoExpected = new UserDto(1l, name, email);
     Assertions.assertEquals(userDtoExpected, userDtoResponse);
@@ -55,7 +55,7 @@ public class SignupTest {
     String password = "111111";
     String confirm = "111111";
 
-    mock.post("/auth/signup", Map.of("name", name, "email", email, "password", password, "confirm", confirm), 409);
+    mock.post("/auth/signup", Map.of("name", name, "email", email, "password", password, "confirm", confirm), "", 409);
   }
 
   @Test
@@ -65,8 +65,9 @@ public class SignupTest {
     String password = "111111";
     String confirm = "111111";
 
-    MvcResult result = mock.post("/auth/signup", Map.of("name", name, "email", email, "password", password, "confirm", confirm), 400);
-    FormErrorDto formErrorDto = DtoFromMvcResult.formErrorDtoFromMvcResult(result);
+    MvcResult result = mock.post("/auth/signup",
+        Map.of("name", name, "email", email, "password", password, "confirm", confirm), "", 400);
+    FormErrorDto formErrorDto = DtoFromMvcResult.formErrorDto(result);
 
     Assertions.assertEquals("name", formErrorDto.getField());
     Assertions.assertEquals("must not be blank", formErrorDto.getError());
@@ -80,8 +81,9 @@ public class SignupTest {
     String password = "111111";
     String confirm = "111111";
 
-    MvcResult result = mock.post("/auth/signup", Map.of("name", name, "email", email, "password", password, "confirm", confirm), 400);
-    FormErrorDto formErrorDto = DtoFromMvcResult.formErrorDtoFromMvcResult(result);
+    MvcResult result = mock.post("/auth/signup",
+        Map.of("name", name, "email", email, "password", password, "confirm", confirm), "", 400);
+    FormErrorDto formErrorDto = DtoFromMvcResult.formErrorDto(result);
 
     Assertions.assertEquals("email", formErrorDto.getField());
     Assertions.assertEquals("must be a well-formed email address", formErrorDto.getError());
@@ -94,8 +96,9 @@ public class SignupTest {
     String password = "";
     String confirm = "111111";
 
-    MvcResult result = mock.post("/auth/signup", Map.of("name", name, "email", email, "password", password, "confirm", confirm), 400);
-    FormErrorDto formErrorDto = DtoFromMvcResult.formErrorDtoFromMvcResult(result);
+    MvcResult result = mock.post("/auth/signup",
+        Map.of("name", name, "email", email, "password", password, "confirm", confirm), "", 400);
+    FormErrorDto formErrorDto = DtoFromMvcResult.formErrorDto(result);
 
     Assertions.assertEquals("password", formErrorDto.getField());
     Assertions.assertEquals("must not be blank", formErrorDto.getError());
@@ -108,8 +111,9 @@ public class SignupTest {
     String password = "111111";
     String confirm = "";
 
-    MvcResult result = mock.post("/auth/signup", Map.of("name", name, "email", email, "password", password, "confirm", confirm), 400);
-    FormErrorDto formErrorDto = DtoFromMvcResult.formErrorDtoFromMvcResult(result);
+    MvcResult result = mock.post("/auth/signup",
+        Map.of("name", name, "email", email, "password", password, "confirm", confirm), "", 400);
+    FormErrorDto formErrorDto = DtoFromMvcResult.formErrorDto(result);
 
     Assertions.assertEquals("confirm", formErrorDto.getField());
     Assertions.assertEquals("must not be blank", formErrorDto.getError());
@@ -122,11 +126,9 @@ public class SignupTest {
     String password = "111111";
     String confirm = "11111";
 
-    MvcResult result = mock.post("/auth/signup", Map.of("name", name, "email", email, "password", password, "confirm", confirm), 400);
-    System.out.println("--------------------------------------------------");
-    System.out.println(result.getResponse().getContentAsString());
-    System.out.println("--------------------------------------------------");
-    ErrorDto errorDto = DtoFromMvcResult.errorDtoFromMvcResult(result);
+    MvcResult result = mock.post("/auth/signup",
+        Map.of("name", name, "email", email, "password", password, "confirm", confirm), "", 400);
+    ErrorDto errorDto = DtoFromMvcResult.errorDto(result);
 
     Assertions.assertEquals("Bad Request", errorDto.getError());
     Assertions.assertEquals("As senhas não correspondem!", errorDto.getMessage());

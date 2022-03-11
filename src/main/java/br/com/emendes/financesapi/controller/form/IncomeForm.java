@@ -52,8 +52,8 @@ public class IncomeForm {
     this.value = value;
   }
 
-  public Income convert(IncomeRepository incomeRepository){
-    exist(incomeRepository);
+  public Income convert(IncomeRepository incomeRepository, Long userId){
+    exist(incomeRepository, userId);
     LocalDate date = LocalDate.parse(this.date);
     Income income = new Income(description, value, date);
     return income;
@@ -65,9 +65,9 @@ public class IncomeForm {
    * @return false, se não existir uma receita com a mesma descrição em um mesmo mês e ano.
    * @throws ResponseStatusException - se existir receita.
    */
-  private boolean exist(IncomeRepository incomeRepository) {
+  public boolean exist(IncomeRepository incomeRepository, Long userId) {
     LocalDate date = LocalDate.parse(this.date);
-    Optional<Income> optional = incomeRepository.findByDescriptionAndMonthAndYear(description, date.getMonthValue(), date.getYear());
+    Optional<Income> optional = incomeRepository.findByDescriptionAndMonthAndYear(description, date.getMonthValue(), date.getYear(), userId);
     if(optional.isPresent()){
       String message = "Uma receita com essa descrição já existe em "+date.getMonth().name().toLowerCase()+" "+date.getYear();
       throw new ResponseStatusException(
@@ -84,9 +84,9 @@ public class IncomeForm {
    * @return false, se não existir uma receita com a mesma descrição em um mesmo mês e ano.
    * @throws ResponseStatusException - se existir receita.
    */
-  public boolean exist(IncomeRepository incomeRepository, Long id) {
+  public boolean exist(IncomeRepository incomeRepository, Long incomeId, Long userId) {
     LocalDate date = LocalDate.parse(this.date);
-    Optional<Income> optional = incomeRepository.findByDescriptionAndMonthAndYearAndNotId(description, date.getMonthValue(), date.getYear(), id);
+    Optional<Income> optional = incomeRepository.findByDescriptionAndMonthAndYearAndNotId(description, date.getMonthValue(), date.getYear(), incomeId);
     if(optional.isPresent()){
       String message = "Descrição de receita duplicada para "+date.getMonth().name().toLowerCase()+" "+date.getYear();
       throw new ResponseStatusException(

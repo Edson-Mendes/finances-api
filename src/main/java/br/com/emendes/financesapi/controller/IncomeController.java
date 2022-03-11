@@ -2,6 +2,7 @@ package br.com.emendes.financesapi.controller;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 
@@ -18,49 +19,60 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import br.com.emendes.financesapi.config.security.TokenService;
 import br.com.emendes.financesapi.controller.dto.IncomeDto;
 import br.com.emendes.financesapi.controller.form.IncomeForm;
 import br.com.emendes.financesapi.service.IncomeService;
 
+// TODO: Refatorar as repetições de código.
 @RestController
 @RequestMapping("/receitas")
 public class IncomeController {
-  
+
   @Autowired
   private IncomeService incomeService;
 
+  @Autowired
+  TokenService tokenService;
+
   @PostMapping
-  public ResponseEntity<IncomeDto> create(@Valid @RequestBody IncomeForm form, UriComponentsBuilder uriBuilder){
-    return incomeService.create(form, uriBuilder);
+  public ResponseEntity<IncomeDto> create(@Valid @RequestBody IncomeForm form, UriComponentsBuilder uriBuilder,
+      HttpServletRequest request) {
+    String token = tokenService.recoverToken(request);
+    Long userId = tokenService.getIdUser(token);
+    return incomeService.create(form, uriBuilder, userId);
   }
 
   @GetMapping
-  public ResponseEntity<List<IncomeDto>> read(@RequestParam(required = false) String description){
-    if(description == null){
-      return incomeService.readAll();
+  public ResponseEntity<List<IncomeDto>> read(@RequestParam(required = false) String description,
+      HttpServletRequest request) {
+    String token = tokenService.recoverToken(request);
+    Long userId = tokenService.getIdUser(token);
+    if (description == null) {
+      return incomeService.readAllByUser(userId);
     }
-    return incomeService.readByDescription(description);
+    return incomeService.readByDescriptionAndUser(description, userId);
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<IncomeDto> readById(@PathVariable Long id){
+  public ResponseEntity<IncomeDto> readById(@PathVariable Long id) {
     return incomeService.readById(id);
   }
 
   // TODO: Fazer tratamento caso o path não contenha um número para ano e mês.
   @GetMapping("/{year}/{month}")
-  public ResponseEntity<?> readByYearAndMonth(@PathVariable Integer year, @PathVariable Integer month){
+  public ResponseEntity<?> readByYearAndMonth(@PathVariable Integer year, @PathVariable Integer month) {
     return incomeService.readByYearAndMonth(year, month);
   }
 
   @PutMapping("/{id}")
   @Transactional
-  public ResponseEntity<IncomeDto> update(@PathVariable Long id, @Valid @RequestBody IncomeForm incomeForm){
+  public ResponseEntity<IncomeDto> update(@PathVariable Long id, @Valid @RequestBody IncomeForm incomeForm) {
     return incomeService.update(id, incomeForm);
   }
 
   @DeleteMapping("/{id}")
-  public ResponseEntity<?> delete(@PathVariable Long id){
+  public ResponseEntity<?> delete(@PathVariable Long id) {
     return incomeService.delete(id);
   }
 

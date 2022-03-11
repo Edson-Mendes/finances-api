@@ -1,63 +1,111 @@
 package br.com.emendes.financesapi.controller;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MvcResult;
 
-import br.com.emendes.financesapi.config.validation.error_dto.FormErrorDto;
+import br.com.emendes.financesapi.controller.dto.IncomeDto;
+import br.com.emendes.financesapi.controller.dto.TokenDto;
 import br.com.emendes.financesapi.util.CustomMockMvc;
+import br.com.emendes.financesapi.util.DtoFromMvcResult;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@TestInstance(Lifecycle.PER_CLASS)
 @ActiveProfiles("test")
 public class IncomeControllerTests {
 
   @Autowired
   private CustomMockMvc mock;
 
+  private String tokenLorem;
+
+  private String tokenIpsum;
+
+  @BeforeAll
+  public void addRoles() throws Exception {
+    mock.post("/role", Map.of("name", "ROLE_USER"), "", 201);
+  }
+
+  @BeforeAll
+  public void addUsuarioLorem() throws Exception {
+    String name = "Lorem";
+    String email = "lorem@email.com";
+    String password = "111111";
+    String confirm = "111111";
+
+    Map<String, Object> paramsSignup = Map.of("name", name, "email", email, "password", password, "confirm", confirm);
+    Map<String, Object> paramsSignin = Map.of("email", email, "password", password);
+
+    mock.post("/auth/signup", paramsSignup, "", 201);
+    MvcResult result = mock.post("/auth/signin", paramsSignin, "", 200);
+
+    tokenLorem = tokenFromTokenDto(DtoFromMvcResult.tokenDto(result));
+  }
+
+  @BeforeAll
+  public void addUsuarioIpsum() throws Exception {
+    String name = "Ipsum";
+    String email = "ipsum@email.com";
+    String password = "222222";
+    String confirm = "222222";
+
+    Map<String, Object> paramsSignup = Map.of("name", name, "email", email, "password", password, "confirm", confirm);
+    Map<String, Object> paramsSignin = Map.of("email", email, "password", password);
+
+    mock.post("/auth/signup", paramsSignup, "", 201);
+    MvcResult result = mock.post("/auth/signin", paramsSignin, "", 200);
+
+    tokenIpsum = tokenFromTokenDto(DtoFromMvcResult.tokenDto(result));
+  }
+
   @Test
   public void deveriaDevolver201AoCriarReceita() throws Exception {
     String description = "Salário";
     BigDecimal value = new BigDecimal(2500.00);
     String date = "2022-01-05";
-    
+
     Map<String, Object> params = Map.of("description", description, "value", value, "date", date);
 
-    mock.post("/receitas", params, 201);
+    mock.post("/receitas", params, tokenLorem, 201);
   }
-  
+
   @Test
-  public void deveriaDevolver400AoCriarSemAlgumParametroObrigatorio() throws Exception{
+  public void deveriaDevolver400AoCriarSemAlgumParametroObrigatorio() throws Exception {
 
     String description = "Venda do PS5";
     BigDecimal value = BigDecimal.valueOf(2885.00);
     String date = "2022-01-22";
-    
-    FormErrorDto error = formErrorDtoFromMvcResult(mock.post("/receitas", Map.of("value", value, "date", date), 400));
-    mock.post("/receitas", Map.of("description", description, "date", date), 400);
-    mock.post("/receitas", Map.of("description", description, "value", value), 400);
-    mock.post("/receitas", Map.of("value", value), 400);
-    mock.post("/receitas", Map.of("description", description), 400);
-    mock.post("/receitas", Map.of("date", date), 400);
-    mock.post("/receitas", Map.of(), 400);
+
+    mock.post("/receitas", Map.of("value", value, "date", date), tokenLorem, 400);
+    mock.post("/receitas", Map.of("description", description, "date", date), tokenLorem, 400);
+    mock.post("/receitas", Map.of("description", description, "value", value), tokenLorem, 400);
+    mock.post("/receitas", Map.of("value", value), tokenLorem, 400);
+    mock.post("/receitas", Map.of("description", description), tokenLorem, 400);
+    mock.post("/receitas", Map.of("date", date), tokenLorem, 400);
+    mock.post("/receitas", Map.of(), tokenLorem, 400);
   }
 
   @Test
   public void deveriaDevolver200AoBuscarTodasAsReceitas() throws Exception {
-    mock.get("/receitas", 200);
+    mock.get("/receitas", tokenLorem, 200);
   }
 
   @Test
-  public void deveriaDevolver409AoCadastrarDescricaoDuplicadaEmMesmoMesEAno() throws Exception{
+  public void deveriaDevolver409AoCadastrarDescricaoDuplicadaEmMesmoMesEAno() throws Exception {
 
     String description = "Lotofácil";
     BigDecimal value = BigDecimal.valueOf(500.00);
@@ -65,56 +113,56 @@ public class IncomeControllerTests {
 
     Map<String, Object> params = Map.of("description", description, "value", value, "date", date);
 
-    mock.post("/receitas", params, 201);
-    mock.post("/receitas", params, 409);
+    mock.post("/receitas", params, tokenLorem, 201);
+    mock.post("/receitas", params, tokenLorem, 409);
 
   }
 
   @Test
-  public void deveriaDevolver201AoCadastrarDescricaoEmMesDiferentes() throws Exception{
+  public void deveriaDevolver201AoCadastrarDescricaoEmMesDiferentes() throws Exception {
 
     String description = "Trabalho por fora";
     BigDecimal value = BigDecimal.valueOf(300.00);
     String date = "2022-01-18";
 
     Map<String, Object> params1 = Map.of("description", description, "value", value, "date", date);
-    
+
     String newDate = "2022-02-18";
     Map<String, Object> params2 = Map.of("description", description, "value", value, "date", newDate);
-    
-    mock.post("/receitas", params1, 201);
-    mock.post("/receitas", params2, 201);
+
+    mock.post("/receitas", params1, tokenLorem, 201);
+    mock.post("/receitas", params2, tokenLorem, 201);
 
   }
 
   @Test
   public void deveriaDevolver200AoBuscarPorIdExistente() throws Exception {
-    mock.get("/receitas/1", 200);
+    mock.get("/receitas/1", tokenLorem, 200);
   }
 
   @Test
   public void deveriaDevolver200AoBuscarPorAnoEMesExistentes() throws Exception {
-    mock.get("/receitas/2022/01", 200);
+    mock.get("/receitas/2022/01", tokenLorem, 200);
   }
 
   @Test
   public void deveriaDevolver404AoBuscarPorAnoEMesInexistentes() throws Exception {
-    mock.get("/receitas/2022/03", 404);
+    mock.get("/receitas/2022/03", tokenLorem, 404);
   }
 
   @Test
   public void deveriaDevolver404AoBuscarPorIdInexistentes() throws Exception {
-    mock.get("/receitas/999", 404);
+    mock.get("/receitas/999", tokenLorem, 404);
   }
 
   @Test
-  public void deveriaDevolver200AoBuscarPorDescricaoExistente() throws Exception{
-    mock.get("/receitas?description=sal", 200);
+  public void deveriaDevolver200AoBuscarPorDescricaoExistente() throws Exception {
+    mock.get("/receitas?description=sal", tokenLorem, 200);
   }
 
   @Test
-  public void deveriaDevolver404AoBuscarPorDescricaoInexistente() throws Exception{
-    mock.get("/receitas?description=salllllll", 404);
+  public void deveriaDevolver404AoBuscarPorDescricaoInexistente() throws Exception {
+    mock.get("/receitas?description=salllllll", tokenLorem, 404);
   }
 
   @Test
@@ -126,7 +174,7 @@ public class IncomeControllerTests {
 
     Map<String, Object> params = Map.of("description", description, "value", value, "date", date);
 
-    mock.put("/receitas/"+id, params, 200);
+    mock.put("/receitas/" + id, params, tokenLorem, 200);
   }
 
   @Test
@@ -138,7 +186,7 @@ public class IncomeControllerTests {
 
     Map<String, Object> params = Map.of("description", description, "value", value, "date", date);
 
-    mock.put("/receitas/"+id, params, 404);
+    mock.put("/receitas/" + id, params, tokenLorem, 404);
   }
 
   @Test
@@ -146,37 +194,72 @@ public class IncomeControllerTests {
     String description = "Venda do PS5";
     BigDecimal value = BigDecimal.valueOf(2885.00);
     String date = "2022-01-22";
-    
-    mock.put("/receitas/1", Map.of("value", value, "date", date), 400);
-    mock.put("/receitas/1", Map.of("description", description, "date", date), 400);
-    mock.put("/receitas/1", Map.of("description", description, "value", value), 400);
-    mock.put("/receitas/1", Map.of("value", value), 400);
-    mock.put("/receitas/1", Map.of("description", description), 400);
-    mock.put("/receitas/1", Map.of("date", date), 400);
-    mock.put("/receitas/1", Map.of(), 400);
+
+    mock.put("/receitas/1", Map.of("value", value, "date", date), tokenLorem, 400);
+    mock.put("/receitas/1", Map.of("description", description, "date", date), tokenLorem, 400);
+    mock.put("/receitas/1", Map.of("description", description, "value", value), tokenLorem, 400);
+    mock.put("/receitas/1", Map.of("value", value), tokenLorem, 400);
+    mock.put("/receitas/1", Map.of("description", description), tokenLorem, 400);
+    mock.put("/receitas/1", Map.of("date", date), tokenLorem, 400);
+    mock.put("/receitas/1", Map.of(), tokenLorem, 400);
   }
 
   @Test
   public void deveriaDevolver200AoDeletarUmaReceitaComIdExistente() throws Exception {
     int id = 2;
-    mock.delete("/receitas/"+id, 200);
+    mock.delete("/receitas/" + id, tokenLorem, 200);
   }
-  
+
   @Test
   public void deveriaDevolver404AoDeletarUmaReceitaComIdInexistente() throws Exception {
     int id = 1000;
-    mock.delete("/receitas/"+id, 404);
+    mock.delete("/receitas/" + id, tokenLorem, 404);
   }
 
-  private FormErrorDto formErrorDtoFromMvcResult(MvcResult result) throws Exception {
-    JsonNode content = new ObjectMapper().readTree(result.getResponse().getContentAsString());
-    JsonNode errorJsonNode = content.elements().next();
-    String field = errorJsonNode.get("field").asText();
-    String error = errorJsonNode.get("error").asText();
+  @Test
+  public void deveriaDevolverSomenteAsReceitasDeIpsum() throws Exception {
+    // TODO: Refatorar este teste!
+    String description1 = "Salário";
+    BigDecimal value1 = new BigDecimal("2500.0");
+    String date1 = "2022-01-08";
 
-    FormErrorDto formErrorDto = new FormErrorDto(field, error);
+    String description2 = "Venda do PC";
+    BigDecimal value2 = new BigDecimal("1200.0");
+    String date2 = "2022-01-22";
 
-    return formErrorDto;
+    Map<String, Object> params1 = Map.of("description", description1, "value", value1, "date", date1);
+    Map<String, Object> params2 = Map.of("description", description2, "value", value2, "date", date2);
+
+    mock.post("/receitas", params1, tokenIpsum, 201);
+    mock.post("/receitas", params2, tokenIpsum, 201);
+
+    MvcResult result = mock.get("/receitas", tokenIpsum, 200);
+    List<IncomeDto> listIncomeDto = DtoFromMvcResult.listIncomeDto(result);
+
+    List<IncomeDto> listExpected = new ArrayList<>();
+
+    IncomeDto incomeDto1 = new IncomeDto();
+    incomeDto1.setId(5l);
+    incomeDto1.setDescription(description1);
+    incomeDto1.setDate(LocalDate.parse(date1));
+    incomeDto1.setValue(value1);
+    
+    IncomeDto incomeDto2 = new IncomeDto();
+    incomeDto2.setId(6l);
+    incomeDto2.setDescription(description2);
+    incomeDto2.setDate(LocalDate.parse(date2));
+    incomeDto2.setValue(value2);
+
+    listExpected.add(incomeDto1);
+    listExpected.add(incomeDto2);
+
+    Assertions.assertEquals(listExpected.size(), listIncomeDto.size());
+    
+    Assertions.assertEquals(listExpected, listIncomeDto);
+  }
+
+  private String tokenFromTokenDto(TokenDto tokenDto){
+    return tokenDto.getType()+" "+tokenDto.getToken();
   }
 
 }

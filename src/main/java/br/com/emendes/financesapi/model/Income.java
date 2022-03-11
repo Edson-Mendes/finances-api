@@ -8,6 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
 @Entity
 public class Income {
@@ -20,12 +21,23 @@ public class Income {
   private BigDecimal value;
   private LocalDate date;
 
+  @ManyToOne
+  private User user;
+
   public Income(){}
 
   public Income(String description, BigDecimal value, LocalDate date) {
     this.description = description;
     this.value = value;
     this.date = date;
+  }
+
+  public User getUser() {
+    return user;
+  }
+
+  public void setUser(User user) {
+    this.user = user;
   }
 
   public Long getId() {

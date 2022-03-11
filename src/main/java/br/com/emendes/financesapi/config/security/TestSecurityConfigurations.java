@@ -21,8 +21,8 @@ import br.com.emendes.financesapi.repository.UserRepository;
 
 @EnableWebSecurity
 @Configuration
-@Profile("dev")
-public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
+@Profile("test")
+public class TestSecurityConfigurations extends WebSecurityConfigurerAdapter {
 
   @Autowired
   private AuthenticationService authenticationService;

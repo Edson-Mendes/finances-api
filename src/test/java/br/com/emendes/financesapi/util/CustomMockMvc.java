@@ -5,6 +5,7 @@ import java.util.Map;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.MockMvc;
@@ -18,46 +19,48 @@ public class CustomMockMvc {
   @Autowired
   private MockMvc mockMvc;
 
-  public MvcResult get(String uri, int status) throws Exception{
+  public MvcResult get(String uri, String token, int status) throws Exception{
     return mockMvc
     .perform(MockMvcRequestBuilders
     .get(uri)
     .contentType(MediaType.APPLICATION_JSON)
-    .characterEncoding("utf-8"))
+    .header(HttpHeaders.AUTHORIZATION, token))
     .andExpect(MockMvcResultMatchers.status().is(status))
     .andReturn();
   }
 
-  public MvcResult post(String uri, Map<String, Object> params, int status) throws Exception {
+  public MvcResult post(String uri, Map<String, Object> params, String token, int status) throws Exception {
     String body = new ObjectMapper().writeValueAsString(params);
+    
     return mockMvc
         .perform(MockMvcRequestBuilders
           .post(uri)
           .content(body)
           .contentType(MediaType.APPLICATION_JSON)
-          .characterEncoding("UTF-8"))
-          
+          .header(HttpHeaders.AUTHORIZATION, token))
         .andExpect(MockMvcResultMatchers.status().is(status))
         .andReturn();
   }
 
-  public MvcResult put(String uri, Map<String, Object> params, int status) throws Exception {
+  public MvcResult put(String uri, Map<String, Object> params, String token, int status) throws Exception {
     String body = new ObjectMapper().writeValueAsString(params);
 
     return mockMvc
         .perform(MockMvcRequestBuilders
             .put(uri)
             .content(body)
-            .contentType(MediaType.APPLICATION_JSON))
+            .contentType(MediaType.APPLICATION_JSON)
+            .header(HttpHeaders.AUTHORIZATION, token))
         .andExpect(MockMvcResultMatchers.status().is(status))
         .andReturn();
   }
 
-  public MvcResult delete(String uri, int status) throws Exception {
+  public MvcResult delete(String uri, String token, int status) throws Exception {
     return mockMvc
         .perform(MockMvcRequestBuilders
             .delete(uri)
-            .contentType(MediaType.APPLICATION_JSON))
+            .contentType(MediaType.APPLICATION_JSON)
+            .header(HttpHeaders.AUTHORIZATION, token))
         .andExpect(MockMvcResultMatchers.status().is(status))
         .andReturn();
   }

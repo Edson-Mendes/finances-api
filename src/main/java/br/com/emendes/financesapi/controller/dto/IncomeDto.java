@@ -13,34 +13,92 @@ public class IncomeDto {
   private LocalDate date;
   private BigDecimal value;
 
-  public IncomeDto(Income income){
+  public IncomeDto(){}
+
+  public IncomeDto(Income income) {
     this.id = income.getId();
     this.description = income.getDescription();
     this.date = income.getDate();
     this.value = income.getValue();
   }
 
- public Long getId(){
-   return id;
- }
+  public Long getId() {
+    return id;
+  }
 
- public String getDescription(){
-   return description;
- }
+  public String getDescription() {
+    return description;
+  }
 
- public LocalDate getDate(){
-   return date;
- }
+  public LocalDate getDate() {
+    return date;
+  }
 
- public BigDecimal getValue(){
-   return value;
- }
+  public BigDecimal getValue() {
+    return value;
+  }
 
- public static List<IncomeDto> convert(List<Income> incomes){
-   List<IncomeDto> incomesDto = new ArrayList<>();
+  public void setId(Long id) {
+    this.id = id;
+  }
 
-  incomes.forEach(income -> incomesDto.add(new IncomeDto(income)));
+  public void setDescription(String description) {
+    this.description = description;
+  }
 
-   return incomesDto;
- }
+  public void setDate(LocalDate date) {
+    this.date = date;
+  }
+
+  public void setValue(BigDecimal value) {
+    this.value = value;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+
+    if (obj == null || obj.getClass() != getClass()) {
+      return false;
+    }
+    IncomeDto other = (IncomeDto) obj;
+
+    return this.id.equals(other.getId()) && this.description.equals(other.getDescription())
+        && this.date.equals(other.getDate()) && this.value.equals(other.getValue());
+  }
+
+  @Override
+  public int hashCode() {
+    int result = 17;
+
+    if(id != null){
+      result = result * 31 + id.hashCode();
+    }
+    if(description != null){
+      result = result * 31 + description.hashCode();
+    }
+    if(date != null){
+      result = result * 31 + date.hashCode();
+    }
+    if(value != null){
+      result = result * 31 + value.hashCode();
+    }
+
+    return result;
+  }
+
+  public static List<IncomeDto> convert(List<Income> incomes) {
+    List<IncomeDto> incomesDto = new ArrayList<>();
+
+    incomes.forEach(income -> incomesDto.add(new IncomeDto(income)));
+
+    return incomesDto;
+  }
+
+  @Override
+  public String toString() {
+    return "IncomeDto:{id:"+id+", description:"+description+", date: "+date+", value: "+value+"}";
+  }
 }
