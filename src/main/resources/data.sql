@@ -23,3 +23,10 @@ INSERT INTO income(description, value, date, user_id) VALUES ('Trabalho por fora
 INSERT INTO income(description, value, date, user_id) VALUES ('Salário' , 2600.00, '2022-02-05', 1);
 INSERT INTO income(description, value, date, user_id) VALUES ('Venda dos halteres' , 350.00, '2022-02-23', 1);
 
+INSERT INTO income(description, value, date, user_id) VALUES ('Salário', 4200.00, '2022-01-08', 2);
+INSERT INTO income(description, value, date, user_id) VALUES ('Venda do Ipod', 350.00, '2022-01-21', 2);
+
+INSERT INTO income(description, value, date, user_id) VALUES ('Salário', 4400.00, '2022-02-08', 2);
+
+INSERT INTO income(description, value, date, user_id) VALUES ('Salário', 4050.00, '2022-03-08', 2);
+

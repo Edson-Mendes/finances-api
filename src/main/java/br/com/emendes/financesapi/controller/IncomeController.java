@@ -55,14 +55,19 @@ public class IncomeController {
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<IncomeDto> readById(@PathVariable Long id) {
-    return incomeService.readById(id);
+  public ResponseEntity<IncomeDto> readById(@PathVariable Long id, HttpServletRequest request) {
+    String token = tokenService.recoverToken(request);
+    Long userId = tokenService.getIdUser(token);
+    return incomeService.readByIdAndUser(id, userId);
   }
 
   // TODO: Fazer tratamento caso o path não contenha um número para ano e mês.
   @GetMapping("/{year}/{month}")
-  public ResponseEntity<?> readByYearAndMonth(@PathVariable Integer year, @PathVariable Integer month) {
-    return incomeService.readByYearAndMonth(year, month);
+  public ResponseEntity<?> readByYearAndMonth(@PathVariable Integer year, @PathVariable Integer month,
+      HttpServletRequest request) {
+    String token = tokenService.recoverToken(request);
+    Long userId = tokenService.getIdUser(token);
+    return incomeService.readByYearAndMonthAndUser(year, month, userId);
   }
 
   @PutMapping("/{id}")

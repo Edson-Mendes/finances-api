@@ -64,11 +64,12 @@ public class IncomeService {
         .body(incomesDto);
   }
 
-  public ResponseEntity<IncomeDto> readById(Long id) {
-    Optional<Income> optional = incomeRepository.findById(id);
+  public ResponseEntity<IncomeDto> readByIdAndUser(Long incomeId, Long userId) {
+    Optional<Income> optional = incomeRepository.findByIdAndUserId(incomeId, userId);
     if (optional.isPresent()) {
       IncomeDto incomeDto = new IncomeDto(optional.get());
-      return ResponseEntity.ok(incomeDto);
+      return ResponseEntity.status(HttpStatus.OK).header("Content-Type", "application/json;charset=UTF-8")
+      .body(incomeDto);
     }
 
     return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -76,8 +77,8 @@ public class IncomeService {
 
   // TODO: Quando não encontrar receitas para o ano e mês passados, retornar 200 e
   // lista vazia ou not found?
-  public ResponseEntity<?> readByYearAndMonth(Integer year, Integer month) {
-    List<Income> incomes = incomeRepository.findByYearAndMonth(year, month);
+  public ResponseEntity<?> readByYearAndMonthAndUser(Integer year, Integer month, Long userId) {
+    List<Income> incomes = incomeRepository.findByYearAndMonthAndUserId(year, month, userId);
     if (incomes.isEmpty()) {
       String message = "Não há receitas para o ano " + year + " e mês " + month;
       ErrorDto errorDto = new ErrorDto("Not Found", message);
