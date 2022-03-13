@@ -18,12 +18,12 @@ public interface IncomeRepository extends JpaRepository<Income, Long> {
   List<Income> findByUserId(@Param("userId") Long userid);
 
   @Query("SELECT i FROM Income i WHERE i.description = :description AND MONTH(i.date) = :month AND YEAR(i.date) = :year AND i.user.id = :userId")
-  Optional<Income> findByDescriptionAndMonthAndYear(@Param("description") String description,
+  Optional<Income> findByDescriptionAndMonthAndYearAndUserId(@Param("description") String description,
       @Param("month") Integer month, @Param("year") Integer year, @Param("userId") Long userId);
 
-  @Query("SELECT i FROM Income i WHERE i.description = :description AND MONTH(i.date) = :month AND YEAR(i.date) = :year AND i.id != :id")
-  Optional<Income> findByDescriptionAndMonthAndYearAndNotId(@Param("description") String description,
-      @Param("month") Integer month, @Param("year") Integer year, @Param("id") Long id);
+  @Query("SELECT i FROM Income i WHERE i.description = :description AND MONTH(i.date) = :month AND YEAR(i.date) = :year AND i.user.id = :userId AND i.id != :id")
+  Optional<Income> findByDescriptionAndMonthAndYearAndUserIdAndNotId(@Param("description") String description,
+      @Param("month") Integer month, @Param("year") Integer year, @Param("userId") Long userId, @Param("id") Long id);
 
   @Query("SELECT i FROM Income i WHERE i.description LIKE %:description% AND i.user.id = :userId")
   List<Income> findByDescriptionAndUserId(@Param("description") String description, @Param("userId") Long userid);

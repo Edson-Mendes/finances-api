@@ -16,10 +16,10 @@ import br.com.emendes.financesapi.model.Income;
 import br.com.emendes.financesapi.repository.IncomeRepository;
 
 public class IncomeForm {
-  
+
   @NotBlank
   private String description;
-  
+
   @NotNull
   @DateValidation
   private String date;
@@ -52,7 +52,7 @@ public class IncomeForm {
     this.value = value;
   }
 
-  public Income convert(IncomeRepository incomeRepository, Long userId){
+  public Income convert(IncomeRepository incomeRepository, Long userId) {
     exist(incomeRepository, userId);
     LocalDate date = LocalDate.parse(this.date);
     Income income = new Income(description, value, date);
@@ -61,36 +61,45 @@ public class IncomeForm {
 
   /**
    * Verifica se já existe uma receita com a mesma descrição no dado mês e ano.
+   * 
    * @param incomeRepository
-   * @return false, se não existir uma receita com a mesma descrição em um mesmo mês e ano.
+   * @return false, se não existir uma receita com a mesma descrição em um mesmo
+   *         mês e ano.
    * @throws ResponseStatusException - se existir receita.
    */
   public boolean exist(IncomeRepository incomeRepository, Long userId) {
     LocalDate date = LocalDate.parse(this.date);
-    Optional<Income> optional = incomeRepository.findByDescriptionAndMonthAndYear(description, date.getMonthValue(), date.getYear(), userId);
-    if(optional.isPresent()){
-      String message = "Uma receita com essa descrição já existe em "+date.getMonth().name().toLowerCase()+" "+date.getYear();
+    Optional<Income> optional = incomeRepository.findByDescriptionAndMonthAndYearAndUserId(description, date.getMonthValue(),
+        date.getYear(), userId);
+    if (optional.isPresent()) {
+      String message = "Uma receita com essa descrição já existe em " + date.getMonth().name().toLowerCase() + " "
+          + date.getYear();
       throw new ResponseStatusException(
-			          HttpStatus.CONFLICT, message, null);
+          HttpStatus.CONFLICT, message, null);
     }
     return false;
   }
 
   /**
-   * Verifica se já existe uma receita com a mesma descrição no mês e ano do objeto
+   * Verifica se já existe uma receita com a mesma descrição no mês e ano do
+   * objeto
    * e com id diferente do objeto.
+   * 
    * @param incomeRepository
    * @param id
-   * @return false, se não existir uma receita com a mesma descrição em um mesmo mês e ano.
+   * @return false, se não existir uma receita com a mesma descrição em um mesmo
+   *         mês e ano.
    * @throws ResponseStatusException - se existir receita.
    */
   public boolean exist(IncomeRepository incomeRepository, Long incomeId, Long userId) {
     LocalDate date = LocalDate.parse(this.date);
-    Optional<Income> optional = incomeRepository.findByDescriptionAndMonthAndYearAndNotId(description, date.getMonthValue(), date.getYear(), incomeId);
-    if(optional.isPresent()){
-      String message = "Descrição de receita duplicada para "+date.getMonth().name().toLowerCase()+" "+date.getYear();
+    Optional<Income> optional = incomeRepository.findByDescriptionAndMonthAndYearAndUserIdAndNotId(description,
+        date.getMonthValue(), date.getYear(), userId, incomeId);
+    if (optional.isPresent()) {
+      String message = "Descrição de receita duplicada para " + date.getMonth().name().toLowerCase() + " "
+          + date.getYear();
       throw new ResponseStatusException(
-			          HttpStatus.CONFLICT, message, null);
+          HttpStatus.CONFLICT, message, null);
     }
     return false;
   }

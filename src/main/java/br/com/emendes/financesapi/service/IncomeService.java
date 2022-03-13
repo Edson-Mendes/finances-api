@@ -20,6 +20,7 @@ import br.com.emendes.financesapi.model.User;
 import br.com.emendes.financesapi.repository.IncomeRepository;
 import br.com.emendes.financesapi.repository.UserRepository;
 
+// TODO Repensar esses retornos em exclamação (?)
 @Service
 public class IncomeService {
 
@@ -40,43 +41,43 @@ public class IncomeService {
     return ResponseEntity.created(uri).body(new IncomeDto(income));
   }
 
-  public ResponseEntity<List<IncomeDto>> readAllByUser(Long userid) {
+  public ResponseEntity<?> readAllByUser(Long userid) {
     List<Income> incomes = incomeRepository.findByUserId(userid);
     if (incomes.isEmpty() || incomes == null) {
-      // TODO: Adicionar menssagem indicando que não foi encontrado nenhuma receita
       // para esse usuário
-      return ResponseEntity.notFound().build();
+      return ResponseEntity.status(HttpStatus.NOT_FOUND)
+          .body(new ErrorDto("Not Found", "O usuário não possui receitas"));
     }
     List<IncomeDto> incomesDto = IncomeDto.convert(incomes);
     return ResponseEntity.status(HttpStatus.OK).header("Content-Type", "application/json;charset=UTF-8")
         .body(incomesDto);
   }
 
-  public ResponseEntity<List<IncomeDto>> readByDescriptionAndUser(String description, Long userid) {
+  public ResponseEntity<?> readByDescriptionAndUser(String description, Long userid) {
     List<Income> incomes = incomeRepository.findByDescriptionAndUserId(description, userid);
     if (incomes.isEmpty() || incomes == null) {
-      // TODO: Adicionar menssagem indicando que não foi encontrado nenhuma receita
+
       // para esse usuário
-      return ResponseEntity.notFound().build();
+      return ResponseEntity.status(HttpStatus.NOT_FOUND)
+          .body(new ErrorDto("Not Found", "O usuário não possui receitas com descrição similar a " + description));
     }
     List<IncomeDto> incomesDto = IncomeDto.convert(incomes);
     return ResponseEntity.status(HttpStatus.OK).header("Content-Type", "application/json;charset=UTF-8")
         .body(incomesDto);
   }
 
-  public ResponseEntity<IncomeDto> readByIdAndUser(Long incomeId, Long userId) {
+  public ResponseEntity<?> readByIdAndUser(Long incomeId, Long userId) {
     Optional<Income> optional = incomeRepository.findByIdAndUserId(incomeId, userId);
     if (optional.isPresent()) {
       IncomeDto incomeDto = new IncomeDto(optional.get());
       return ResponseEntity.status(HttpStatus.OK).header("Content-Type", "application/json;charset=UTF-8")
-      .body(incomeDto);
+          .body(incomeDto);
     }
 
-    return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    return ResponseEntity.status(HttpStatus.NOT_FOUND)
+        .body(new ErrorDto("Not Found", "Nenhuma receita com esse id para esse usuário"));
   }
 
-  // TODO: Quando não encontrar receitas para o ano e mês passados, retornar 200 e
-  // lista vazia ou not found?
   public ResponseEntity<?> readByYearAndMonthAndUser(Integer year, Integer month, Long userId) {
     List<Income> incomes = incomeRepository.findByYearAndMonthAndUserId(year, month, userId);
     if (incomes.isEmpty()) {
@@ -91,19 +92,21 @@ public class IncomeService {
     return ResponseEntity.ok(incomesDto);
   }
 
-  public ResponseEntity<IncomeDto> update(Long id, IncomeForm incomeForm) {
-    Optional<Income> optional = incomeRepository.findById(id);
-    if (optional.isPresent() && !incomeForm.exist(incomeRepository, id)) {
+  public ResponseEntity<?> update(Long id, IncomeForm incomeForm, Long userId) {
+    Optional<Income> optional = incomeRepository.findByIdAndUserId(id, userId);
+    if (optional.isPresent() && !incomeForm.exist(incomeRepository, id, userId)) {
       Income income = optional.get();
 
       income.setDescription(incomeForm.getDescription());
       income.setValue(incomeForm.getValue());
       income.setDate(LocalDate.parse(incomeForm.getDate()));
 
-      return ResponseEntity.ok(new IncomeDto(income));
+      return ResponseEntity.status(HttpStatus.OK).header("Content-Type", "application/json;charset=UTF-8")
+          .body(new IncomeDto(income));
     }
-    // TODO: Retornar uma errorDto dizendo porque deu not found.
-    return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+
+    return ResponseEntity.status(HttpStatus.NOT_FOUND)
+        .body(new ErrorDto("Not Found", "Nenhuma receita com esse id para esse usuário"));
   }
 
   public ResponseEntity<?> delete(Long id) {
