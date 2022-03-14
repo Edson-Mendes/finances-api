@@ -308,6 +308,18 @@ public class ExpenseControllerTests {
     Assertions.assertEquals("Nenhuma despesa com esse id para esse usuário", errorDto.getMessage());
   }
 
+  @Test
+  public void deveriaDevolver404AoTentarDeletarDespesaDeOutroUsuario() throws Exception {
+    Long id = 1l;
+
+    MvcResult result = mock.delete("/despesas/"+id, tokenIpsum, 404);
+
+    ErrorDto errorDto = DtoFromMvcResult.errorDto(result);
+
+    Assertions.assertEquals("Not Found", errorDto.getError());
+    Assertions.assertEquals("Nenhuma despesa com esse id para esse usuário", errorDto.getMessage());
+  }
+
   private String tokenFromTokenDto(TokenDto tokenDto) {
     return tokenDto.getType() + " " + tokenDto.getToken();
   }

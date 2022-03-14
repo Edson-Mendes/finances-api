@@ -78,8 +78,10 @@ public class ExpenseController {
   }
 
   @DeleteMapping("/{id}")
-  public ResponseEntity<?> delete(@PathVariable Long id) {
-    return expenseService.delete(id);
+  public ResponseEntity<?> delete(@PathVariable Long id, HttpServletRequest request) {
+    String token = tokenService.recoverToken(request);
+    Long userId = tokenService.getIdUser(token);
+    return expenseService.delete(id, userId);
   }
 
 }

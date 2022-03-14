@@ -117,14 +117,16 @@ public class ExpenseService {
         .body(new ErrorDto("Not Found", "Nenhuma despesa com esse id para esse usuário"));
   }
 
-  public ResponseEntity<?> delete(Long id) {
-    Optional<Expense> optional = expenseRepository.findById(id);
+  public ResponseEntity<?> delete(Long id, Long userId) {
+    Optional<Expense> optional = expenseRepository.findByIdAndUserId(id, userId);
     if (optional.isPresent()) {
       expenseRepository.deleteById(id);
       return ResponseEntity.ok().build();
     }
 
-    return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    return ResponseEntity.status(HttpStatus.NOT_FOUND)
+        .header("Content-Type", "application/json;charset=UTF-8")
+        .body(new ErrorDto("Not Found", "Nenhuma despesa com esse id para esse usuário"));
   }
 
   public BigDecimal getTotalValueByMonthAndYear(Integer year, Integer month) {
