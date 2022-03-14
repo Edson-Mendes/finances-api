@@ -13,9 +13,11 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import br.com.emendes.financesapi.config.validation.error_dto.ErrorDto;
 import br.com.emendes.financesapi.config.validation.error_dto.FormErrorDto;
+import br.com.emendes.financesapi.controller.dto.ExpenseDto;
 import br.com.emendes.financesapi.controller.dto.IncomeDto;
 import br.com.emendes.financesapi.controller.dto.TokenDto;
 import br.com.emendes.financesapi.controller.dto.UserDto;
+import br.com.emendes.financesapi.model.enumerator.Category;
 
 public abstract class DtoFromMvcResult {
 
@@ -89,6 +91,38 @@ public abstract class DtoFromMvcResult {
     incomeDto.setValue(value);
 
     return incomeDto;
+  }
+
+  public static List<ExpenseDto> listExpenseDto(MvcResult result) throws Exception {
+    JsonNode content = new ObjectMapper().readTree(result.getResponse().getContentAsString());
+
+    Iterator<JsonNode> elements = content.elements();
+    List<ExpenseDto> expensesDto = new ArrayList<>();
+    
+    while (elements.hasNext()) {
+      JsonNode expenseJson = elements.next();
+
+      expensesDto.add(expenseDto(expenseJson));
+    }
+
+    return expensesDto;
+  }
+
+  public static ExpenseDto expenseDto(JsonNode expenseJson) {
+    Long id = expenseJson.get("id").asLong();
+    String description = expenseJson.get("description").asText();
+    LocalDate date = LocalDate.parse(expenseJson.get("date").asText());
+    BigDecimal value = expenseJson.get("value").decimalValue();
+    Category category = Category.valueOf(expenseJson.get("category").asText());
+
+    ExpenseDto expenseDto = new ExpenseDto();
+    expenseDto.setId(id);
+    expenseDto.setDescription(description);
+    expenseDto.setDate(date);
+    expenseDto.setValue(value);
+    expenseDto.setCategory(category);
+
+    return expenseDto;
   }
 
 }

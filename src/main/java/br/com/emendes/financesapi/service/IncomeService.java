@@ -30,7 +30,7 @@ public class IncomeService {
   @Autowired
   private UserRepository userRepository;
 
-  public ResponseEntity<IncomeDto> create(IncomeForm form, UriComponentsBuilder uriBuilder, Long userId) {
+  public ResponseEntity<IncomeDto> create(IncomeForm form, Long userId, UriComponentsBuilder uriBuilder) {
     User user = userRepository.findById(userId).get();
     Income income = form.convert(incomeRepository, userId);
     income.setUser(user);
@@ -46,10 +46,12 @@ public class IncomeService {
     if (incomes.isEmpty() || incomes == null) {
       // para esse usuário
       return ResponseEntity.status(HttpStatus.NOT_FOUND)
+          .header("Content-Type", "application/json;charset=UTF-8")
           .body(new ErrorDto("Not Found", "O usuário não possui receitas"));
     }
     List<IncomeDto> incomesDto = IncomeDto.convert(incomes);
-    return ResponseEntity.status(HttpStatus.OK).header("Content-Type", "application/json;charset=UTF-8")
+    return ResponseEntity.status(HttpStatus.OK)
+        .header("Content-Type", "application/json;charset=UTF-8")
         .body(incomesDto);
   }
 
@@ -57,12 +59,13 @@ public class IncomeService {
     List<Income> incomes = incomeRepository.findByDescriptionAndUserId(description, userid);
     if (incomes.isEmpty() || incomes == null) {
 
-      // para esse usuário
       return ResponseEntity.status(HttpStatus.NOT_FOUND)
+          .header("Content-Type", "application/json;charset=UTF-8")
           .body(new ErrorDto("Not Found", "O usuário não possui receitas com descrição similar a " + description));
     }
     List<IncomeDto> incomesDto = IncomeDto.convert(incomes);
-    return ResponseEntity.status(HttpStatus.OK).header("Content-Type", "application/json;charset=UTF-8")
+    return ResponseEntity.status(HttpStatus.OK)
+        .header("Content-Type", "application/json;charset=UTF-8")
         .body(incomesDto);
   }
 

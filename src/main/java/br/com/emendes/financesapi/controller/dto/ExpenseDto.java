@@ -16,6 +16,9 @@ public class ExpenseDto {
   private BigDecimal value;
   private Category category;
 
+  public ExpenseDto() {
+  }
+
   public ExpenseDto(Expense expense) {
     this.id = expense.getId();
     this.description = expense.getDescription();
@@ -28,20 +31,40 @@ public class ExpenseDto {
     return category;
   }
 
+  public void setCategory(Category category) {
+    this.category = category;
+  }
+
   public Long getId() {
     return id;
+  }
+
+  public void setId(Long id) {
+    this.id = id;
   }
 
   public String getDescription() {
     return description;
   }
 
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
   public LocalDate getDate() {
     return date;
   }
 
+  public void setDate(LocalDate date) {
+    this.date = date;
+  }
+
   public BigDecimal getValue() {
     return value;
+  }
+
+  public void setValue(BigDecimal value) {
+    this.value = value;
   }
 
   public static List<ExpenseDto> convert(List<Expense> expenses) {
@@ -50,5 +73,56 @@ public class ExpenseDto {
     expenses.forEach(expense -> expensesDto.add(new ExpenseDto(expense)));
 
     return expensesDto;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null || obj.getClass() != getClass()) {
+      return false;
+    }
+
+    ExpenseDto other = (ExpenseDto) obj;
+
+    return this.id.equals(other.getId())
+        && this.description.equals(other.getDescription())
+        && this.date.equals(other.getDate())
+        && this.value.equals(other.getValue())
+        && this.category.equals(other.getCategory());
+  }
+
+  @Override
+  public int hashCode() {
+    int result = 17;
+
+    if (id != null) {
+      result = result * 31 + id.hashCode();
+    }
+    if (description != null) {
+      result = result * 31 + description.hashCode();
+    }
+    if (date != null) {
+      result = result * 31 + date.hashCode();
+    }
+    if (value != null) {
+      result = result * 31 + value.hashCode();
+    }
+    if(category != null){
+      result = result * 31 + category.hashCode();
+    }
+
+    return result;
+  }
+
+  @Override
+  public String toString() {
+    return "ExpenseDto:{id:" + id + 
+        ", description:" + description + 
+        ", date: " + date + 
+        ", value: " + value + 
+        ", category: " + category.name() +
+        "}";
   }
 }

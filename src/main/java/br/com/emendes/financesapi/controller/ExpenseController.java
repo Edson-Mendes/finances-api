@@ -1,7 +1,6 @@
 package br.com.emendes.financesapi.controller;
 
-import java.util.List;
-
+import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 
@@ -18,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import br.com.emendes.financesapi.config.security.TokenService;
 import br.com.emendes.financesapi.controller.dto.ExpenseDto;
 import br.com.emendes.financesapi.controller.form.ExpenseForm;
 import br.com.emendes.financesapi.service.ExpenseService;
@@ -27,19 +27,28 @@ import br.com.emendes.financesapi.service.ExpenseService;
 public class ExpenseController {
 
   @Autowired
-  ExpenseService expenseService;
+  private ExpenseService expenseService;
+
+  @Autowired
+  private TokenService tokenService;
 
   @PostMapping
-  public ResponseEntity<ExpenseDto> create(@Valid @RequestBody ExpenseForm form, UriComponentsBuilder uriBuilder) {
-    return expenseService.create(form, uriBuilder);
+  public ResponseEntity<ExpenseDto> create(@Valid @RequestBody ExpenseForm form, UriComponentsBuilder uriBuilder,
+      HttpServletRequest request) {
+    String token = tokenService.recoverToken(request);
+    Long userId = tokenService.getIdUser(token);
+    return expenseService.create(form, userId, uriBuilder);
   }
 
   @GetMapping
-  public ResponseEntity<List<ExpenseDto>> read(@RequestParam(required = false) String description) {
+  public ResponseEntity<?> read(@RequestParam(required = false) String description,
+      HttpServletRequest request) {
+    String token = tokenService.recoverToken(request);
+    Long userId = tokenService.getIdUser(token);
     if (description == null) {
-      return expenseService.readAll();
+      return expenseService.readAllByUser(userId);
     } else {
-      return expenseService.readByDescription(description);
+      return expenseService.readByDescriptionAndUser(description, userId);
     }
   }
 
@@ -56,8 +65,11 @@ public class ExpenseController {
 
   @PutMapping("/{id}")
   @Transactional
-  public ResponseEntity<ExpenseDto> update(@PathVariable Long id, @Valid @RequestBody ExpenseForm expenseForm) {
-    return expenseService.update(id, expenseForm);
+  public ResponseEntity<ExpenseDto> update(@PathVariable Long id, @Valid @RequestBody ExpenseForm expenseForm,
+      HttpServletRequest request) {
+    String token = tokenService.recoverToken(request);
+    Long userId = tokenService.getIdUser(token);
+    return expenseService.update(id, expenseForm, userId);
   }
 
   @DeleteMapping("/{id}")

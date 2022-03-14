@@ -17,10 +17,10 @@ import br.com.emendes.financesapi.model.enumerator.Category;
 import br.com.emendes.financesapi.repository.ExpenseRepository;
 
 public class ExpenseForm {
-  
+
   @NotBlank
   private String description;
-  
+
   @NotNull
   @DateValidation
   private String date;
@@ -42,7 +42,7 @@ public class ExpenseForm {
   public Category getCategory() {
     return category;
   }
-  
+
   public void setCategory(Category category) {
     this.category = category;
   }
@@ -63,46 +63,56 @@ public class ExpenseForm {
     this.value = value;
   }
 
-  public Expense convert(ExpenseRepository expenseRepository){
-    exist(expenseRepository);
+  public Expense convert(ExpenseRepository expenseRepository, Long userId) {
+    exist(expenseRepository, userId);
     LocalDate date = LocalDate.parse(this.date);
-    if(category == null){
+    if (category == null) {
       category = Category.OUTRAS;
     }
     Expense expense = new Expense(description, value, date, category);
     return expense;
   }
 
-  private boolean exist(ExpenseRepository expenseRepository) {
+  private boolean exist(ExpenseRepository expenseRepository, Long userId) {
     LocalDate date = LocalDate.parse(this.date);
-    Optional<Expense> optional = expenseRepository.findByDescriptionAndMonthAndYear(description, date.getMonthValue(), date.getYear());
-    if(optional.isPresent()){
-      String message = "Uma despesa com essa descrição já existe em "+date.getMonth().name().toLowerCase()+" "+date.getYear();
+    Optional<Expense> optional = expenseRepository.findByDescriptionAndMonthAndYearAndUserId(
+        description,
+        date.getMonthValue(),
+        date.getYear(),
+        userId);
+    if (optional.isPresent()) {
+      String message = "Uma despesa com essa descrição já existe em " + date.getMonth().name().toLowerCase() + " "
+          + date.getYear();
       throw new ResponseStatusException(
-			          HttpStatus.CONFLICT, message, null);
+          HttpStatus.CONFLICT, message, null);
     }
     return false;
   }
 
   /**
-   * Verifica se já existe uma despesa com a mesma descrição no mês e ano do objeto
+   * Verifica se já existe uma despesa com a mesma descrição no mês e ano do
+   * objeto
    * e com id diferente do objeto.
+   * 
    * @param incomeRepository
    * @param id
-   * @return false, se não existir uma despesa com a mesma descrição em um mesmo mês e ano.
+   * @return false, se não existir uma despesa com a mesma descrição em um mesmo
+   *         mês e ano.
    * @throws ResponseStatusException - se existir despesa.
    */
-  public boolean exist(ExpenseRepository expenseRepository, Long id) {
+  public boolean exist(ExpenseRepository expenseRepository, Long id, Long userId) {
     LocalDate date = LocalDate.parse(this.date);
-    Optional<Expense> optional = expenseRepository.findByDescriptionAndMonthAndYearAndNotId(
-        description, 
-        date.getMonthValue(), 
+    Optional<Expense> optional = expenseRepository.findByDescriptionAndMonthAndYearAndUserIdAndNotId(
+        description,
+        date.getMonthValue(),
         date.getYear(),
+        userId,
         id);
-    if(optional.isPresent()){
-      String message = "Descrição de despesa duplicada para "+date.getMonth().name().toLowerCase()+" "+date.getYear();
+    if (optional.isPresent()) {
+      String message = "Descrição de despesa duplicada para " + date.getMonth().name().toLowerCase() + " "
+          + date.getYear();
       throw new ResponseStatusException(
-			          HttpStatus.CONFLICT, message, null);
+          HttpStatus.CONFLICT, message, null);
     }
     return false;
   }

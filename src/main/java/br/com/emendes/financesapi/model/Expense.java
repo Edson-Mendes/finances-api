@@ -10,6 +10,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
 import br.com.emendes.financesapi.controller.form.ExpenseForm;
 import br.com.emendes.financesapi.model.enumerator.Category;
@@ -27,6 +28,9 @@ public class Expense {
   
   @Enumerated(EnumType.STRING)
   private Category category;
+
+  @ManyToOne
+  private User user;
 
   public Expense() {
   }
@@ -85,5 +89,13 @@ public class Expense {
 
   public void setCategory(Category category) {
     this.category = category;
+  }
+
+  public User getUser() {
+    return user;
+  }
+
+  public void setUser(User user) {
+    this.user = user;
   }
 }

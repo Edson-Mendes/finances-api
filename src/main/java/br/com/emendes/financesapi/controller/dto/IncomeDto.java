@@ -13,7 +13,8 @@ public class IncomeDto {
   private LocalDate date;
   private BigDecimal value;
 
-  public IncomeDto(){}
+  public IncomeDto() {
+  }
 
   public IncomeDto(Income income) {
     this.id = income.getId();
@@ -65,24 +66,26 @@ public class IncomeDto {
     }
     IncomeDto other = (IncomeDto) obj;
 
-    return this.id.equals(other.getId()) && this.description.equals(other.getDescription())
-        && this.date.equals(other.getDate()) && this.value.equals(other.getValue());
+    return this.id.equals(other.getId())
+        && this.description.equals(other.getDescription())
+        && this.date.equals(other.getDate())
+        && this.value.equals(other.getValue());
   }
 
   @Override
   public int hashCode() {
     int result = 17;
 
-    if(id != null){
+    if (id != null) {
       result = result * 31 + id.hashCode();
     }
-    if(description != null){
+    if (description != null) {
       result = result * 31 + description.hashCode();
     }
-    if(date != null){
+    if (date != null) {
       result = result * 31 + date.hashCode();
     }
-    if(value != null){
+    if (value != null) {
       result = result * 31 + value.hashCode();
     }
 
@@ -99,6 +102,10 @@ public class IncomeDto {
 
   @Override
   public String toString() {
-    return "IncomeDto:{id:"+id+", description:"+description+", date: "+date+", value: "+value+"}";
+    return "IncomeDto:{id:" + id +
+        ", description:" + description +
+        ", date: " + date +
+        ", value: " + value +
+        "}";
   }
 }

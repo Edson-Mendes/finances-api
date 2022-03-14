@@ -15,17 +15,24 @@ import br.com.emendes.financesapi.config.validation.error_dto.ErrorDto;
 import br.com.emendes.financesapi.controller.dto.ExpenseDto;
 import br.com.emendes.financesapi.controller.form.ExpenseForm;
 import br.com.emendes.financesapi.model.Expense;
+import br.com.emendes.financesapi.model.User;
 import br.com.emendes.financesapi.model.enumerator.Category;
 import br.com.emendes.financesapi.repository.ExpenseRepository;
+import br.com.emendes.financesapi.repository.UserRepository;
 
 @Service
 public class ExpenseService {
 
   @Autowired
-  ExpenseRepository expenseRepository;
+  private ExpenseRepository expenseRepository;
 
-  public ResponseEntity<ExpenseDto> create(ExpenseForm form, UriComponentsBuilder uriBuilder) {
-    Expense expense = form.convert(expenseRepository);
+  @Autowired
+  private UserRepository userRepository;
+
+  public ResponseEntity<ExpenseDto> create(ExpenseForm form, Long userId, UriComponentsBuilder uriBuilder) {
+    User user = userRepository.findById(userId).get();
+    Expense expense = form.convert(expenseRepository, userId);
+    expense.setUser(user);
 
     expenseRepository.save(expense);
 
@@ -33,21 +40,33 @@ public class ExpenseService {
     return ResponseEntity.created(uri).body(new ExpenseDto(expense));
   }
 
-  public ResponseEntity<List<ExpenseDto>> readAll() {
-    List<Expense> expenses = expenseRepository.findAll();
+  public ResponseEntity<?> readAllByUser(Long userId) {
+    List<Expense> expenses = expenseRepository.findByUserId(userId);
+    if (expenses.isEmpty()) {
+      return ResponseEntity.status(HttpStatus.NOT_FOUND)
+          .header("Content-Type", "application/json;charset=UTF-8")
+          .body(new ErrorDto("Not Found", "O usuário não possui despesas"));
+    }
     List<ExpenseDto> expensesDto = ExpenseDto.convert(expenses);
 
-    return ResponseEntity.ok(expensesDto);
+    return ResponseEntity.status(HttpStatus.OK)
+        .header("Content-Type", "application/json;charset=UTF-8")
+        .body(expensesDto);
   }
 
-  public ResponseEntity<List<ExpenseDto>> readByDescription(String description) {
-    List<Expense> expenses = expenseRepository.findByDescription(description);
+  public ResponseEntity<?> readByDescriptionAndUser(String description, Long userId) {
+    List<Expense> expenses = expenseRepository.findByDescriptionAndUserId(description, userId);
     if (expenses.isEmpty() || expenses == null) {
-      return ResponseEntity.notFound().build();
+      return ResponseEntity.status(HttpStatus.NOT_FOUND)
+          .header("Content-Type", "application/json;charset=UTF-8")
+          .body(new ErrorDto("Not Found", "O usuário não possui despesas com descrição similar a " + description));
+
     }
 
     List<ExpenseDto> expensesDto = ExpenseDto.convert(expenses);
-    return ResponseEntity.ok(expensesDto);
+    return ResponseEntity.status(HttpStatus.OK)
+        .header("Content-Type", "application/json;charset=UTF-8")
+        .body(expensesDto);
   }
 
   public ResponseEntity<ExpenseDto> readById(Long id) {
@@ -59,7 +78,6 @@ public class ExpenseService {
 
     return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
   }
-
 
   public ResponseEntity<?> readByYearAndMonth(Integer year, Integer month) {
     List<Expense> expenses = expenseRepository.findByYearAndMonth(year, month);
@@ -76,9 +94,9 @@ public class ExpenseService {
     return ResponseEntity.ok(expensesDto);
   }
 
-  public ResponseEntity<ExpenseDto> update(Long id, ExpenseForm expenseForm) {
+  public ResponseEntity<ExpenseDto> update(Long id, ExpenseForm expenseForm, Long userId) {
     Optional<Expense> optional = expenseRepository.findById(id);
-    if (optional.isPresent() && !expenseForm.exist(expenseRepository, id)) {
+    if (optional.isPresent() && !expenseForm.exist(expenseRepository, id, userId)) {
       Expense expense = optional.get();
 
       expense.setParams(expenseForm);

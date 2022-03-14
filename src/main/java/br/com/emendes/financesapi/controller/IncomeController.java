@@ -39,7 +39,7 @@ public class IncomeController {
       HttpServletRequest request) {
     String token = tokenService.recoverToken(request);
     Long userId = tokenService.getIdUser(token);
-    return incomeService.create(form, uriBuilder, userId);
+    return incomeService.create(form, userId, uriBuilder);
   }
 
   @GetMapping
