@@ -69,18 +69,22 @@ public class ExpenseService {
         .body(expensesDto);
   }
 
-  public ResponseEntity<ExpenseDto> readById(Long id) {
-    Optional<Expense> optional = expenseRepository.findById(id);
+  public ResponseEntity<?> readByIdAndUser(Long id, Long userId) {
+    Optional<Expense> optional = expenseRepository.findByIdAndUserId(id, userId);
     if (optional.isPresent()) {
       ExpenseDto expenseDto = new ExpenseDto(optional.get());
-      return ResponseEntity.ok(expenseDto);
+      return ResponseEntity.status(HttpStatus.OK)
+          .header("Content-Type", "application/json;charset=UTF-8")
+          .body(expenseDto);
     }
 
-    return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    return ResponseEntity.status(HttpStatus.NOT_FOUND)
+        .header("Content-Type", "application/json;charset=UTF-8")
+        .body(new ErrorDto("Not Found", "Nenhuma despesa com esse id para esse usuário"));
   }
 
-  public ResponseEntity<?> readByYearAndMonth(Integer year, Integer month) {
-    List<Expense> expenses = expenseRepository.findByYearAndMonth(year, month);
+  public ResponseEntity<?> readByYearAndMonthAndUser(Integer year, Integer month, Long userId) {
+    List<Expense> expenses = expenseRepository.findByYearAndMonthAndUserId(year, month, userId);
 
     if (expenses.isEmpty() || expenses == null) {
       String message = "Não há despesas para o ano " + year + " e mês " + month;
@@ -91,20 +95,26 @@ public class ExpenseService {
           .body(errorDto);
     }
     List<ExpenseDto> expensesDto = ExpenseDto.convert(expenses);
-    return ResponseEntity.ok(expensesDto);
+    return ResponseEntity.status(HttpStatus.OK)
+        .header("Content-Type", "application/json;charset=UTF-8")
+        .body(expensesDto);
   }
 
-  public ResponseEntity<ExpenseDto> update(Long id, ExpenseForm expenseForm, Long userId) {
-    Optional<Expense> optional = expenseRepository.findById(id);
+  public ResponseEntity<?> update(Long id, ExpenseForm expenseForm, Long userId) {
+    Optional<Expense> optional = expenseRepository.findByIdAndUserId(id, userId);
     if (optional.isPresent() && !expenseForm.exist(expenseRepository, id, userId)) {
       Expense expense = optional.get();
 
       expense.setParams(expenseForm);
 
-      return ResponseEntity.ok(new ExpenseDto(expense));
+      return ResponseEntity.status(HttpStatus.OK)
+          .header("Content-Type", "application/json;charset=UTF-8")
+          .body(new ExpenseDto(expense));
     }
 
-    return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    return ResponseEntity.status(HttpStatus.NOT_FOUND)
+        .header("Content-Type", "application/json;charset=UTF-8")
+        .body(new ErrorDto("Not Found", "Nenhuma despesa com esse id para esse usuário"));
   }
 
   public ResponseEntity<?> delete(Long id) {

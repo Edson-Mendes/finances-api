@@ -53,19 +53,24 @@ public class ExpenseController {
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<ExpenseDto> readById(@PathVariable Long id) {
-    return expenseService.readById(id);
+  public ResponseEntity<?> readById(@PathVariable Long id, HttpServletRequest request) {
+    String token = tokenService.recoverToken(request);
+    Long userId = tokenService.getIdUser(token);
+    return expenseService.readByIdAndUser(id, userId);
   }
 
   // TODO: Fazer tratamento caso o path não contenha um número para ano e mês.
   @GetMapping("/{year}/{month}")
-  public ResponseEntity<?> readByYearAndMonth(@PathVariable Integer year, @PathVariable Integer month) {
-    return expenseService.readByYearAndMonth(year, month);
+  public ResponseEntity<?> readByYearAndMonth(@PathVariable Integer year, @PathVariable Integer month,
+      HttpServletRequest request) {
+    String token = tokenService.recoverToken(request);
+    Long userId = tokenService.getIdUser(token);
+    return expenseService.readByYearAndMonthAndUser(year, month, userId);
   }
 
   @PutMapping("/{id}")
   @Transactional
-  public ResponseEntity<ExpenseDto> update(@PathVariable Long id, @Valid @RequestBody ExpenseForm expenseForm,
+  public ResponseEntity<?> update(@PathVariable Long id, @Valid @RequestBody ExpenseForm expenseForm,
       HttpServletRequest request) {
     String token = tokenService.recoverToken(request);
     Long userId = tokenService.getIdUser(token);

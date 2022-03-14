@@ -74,6 +74,7 @@ public class ExpenseForm {
   }
 
   private boolean exist(ExpenseRepository expenseRepository, Long userId) {
+    // TODO: Mudar nome deste método para ficar mais claro
     LocalDate date = LocalDate.parse(this.date);
     Optional<Expense> optional = expenseRepository.findByDescriptionAndMonthAndYearAndUserId(
         description,
@@ -101,6 +102,7 @@ public class ExpenseForm {
    * @throws ResponseStatusException - se existir despesa.
    */
   public boolean exist(ExpenseRepository expenseRepository, Long id, Long userId) {
+    // TODO: Mudar nome deste método para ficar mais claro
     LocalDate date = LocalDate.parse(this.date);
     Optional<Expense> optional = expenseRepository.findByDescriptionAndMonthAndYearAndUserIdAndNotId(
         description,

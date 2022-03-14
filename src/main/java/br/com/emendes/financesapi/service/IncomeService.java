@@ -73,11 +73,13 @@ public class IncomeService {
     Optional<Income> optional = incomeRepository.findByIdAndUserId(incomeId, userId);
     if (optional.isPresent()) {
       IncomeDto incomeDto = new IncomeDto(optional.get());
-      return ResponseEntity.status(HttpStatus.OK).header("Content-Type", "application/json;charset=UTF-8")
+      return ResponseEntity.status(HttpStatus.OK)
+          .header("Content-Type", "application/json;charset=UTF-8")
           .body(incomeDto);
     }
 
     return ResponseEntity.status(HttpStatus.NOT_FOUND)
+        .header("Content-Type", "application/json;charset=UTF-8")
         .body(new ErrorDto("Not Found", "Nenhuma receita com esse id para esse usuário"));
   }
 
@@ -92,7 +94,9 @@ public class IncomeService {
           .body(errorDto);
     }
     List<IncomeDto> incomesDto = IncomeDto.convert(incomes);
-    return ResponseEntity.ok(incomesDto);
+    return ResponseEntity.status(HttpStatus.OK)
+          .header("Content-Type", "application/json;charset=UTF-8")
+          .body(incomesDto);
   }
 
   public ResponseEntity<?> update(Long id, IncomeForm incomeForm, Long userId) {

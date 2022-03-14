@@ -17,6 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MvcResult;
 
+import br.com.emendes.financesapi.config.validation.error_dto.ErrorDto;
 import br.com.emendes.financesapi.controller.dto.ExpenseDto;
 import br.com.emendes.financesapi.controller.dto.TokenDto;
 import br.com.emendes.financesapi.model.enumerator.Category;
@@ -243,7 +244,7 @@ public class ExpenseControllerTests {
   }
 
   @Test
-  public void deveriaDevolverSomenteAsReceitasDeIpsum() throws Exception {
+  public void deveriaDevolverSomenteAsDespesasDeIpsum() throws Exception {
     // TODO: Refatorar este teste!
     String description1 = "Aluguel";
     BigDecimal value1 = new BigDecimal("1000.0");
@@ -287,6 +288,24 @@ public class ExpenseControllerTests {
     Assertions.assertEquals(listExpected.size(), listExpenseDto.size());
 
     Assertions.assertEquals(listExpected, listExpenseDto);
+  }
+
+  @Test
+  public void deveriaDevolver404AoTentarAtualizarDespesaDeOutroUsuario() throws Exception {
+    int id = 1;
+    String description = "Spotify";
+    BigDecimal value = BigDecimal.valueOf(20.00);
+    String date = "2022-01-08";
+    String category = "LAZER";
+
+    Map<String, Object> params = Map.of("description", description, "value", value, "date", date, "category", category);
+
+    MvcResult result = mock.put("/despesas/" + id, params, tokenIpsum, 404);
+
+    ErrorDto errorDto = DtoFromMvcResult.errorDto(result);
+
+    Assertions.assertEquals("Not Found", errorDto.getError());
+    Assertions.assertEquals("Nenhuma despesa com esse id para esse usuário", errorDto.getMessage());
   }
 
   private String tokenFromTokenDto(TokenDto tokenDto) {

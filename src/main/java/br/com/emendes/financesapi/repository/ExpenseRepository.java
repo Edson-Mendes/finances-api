@@ -27,12 +27,15 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
   @Query("SELECT e FROM Expense e WHERE e.description LIKE %:description% AND e.user.id = :userId")
   List<Expense> findByDescriptionAndUserId(@Param("description") String description, @Param("userId") Long userId);
 
-  @Query("SELECT e FROM Expense e WHERE YEAR(e.date) = :year AND MONTH(e.date) = :month")
-  List<Expense> findByYearAndMonth(@Param("year") Integer year, @Param("month") Integer month);
+  @Query("SELECT e FROM Expense e WHERE YEAR(e.date) = :year AND MONTH(e.date) = :month AND e.user.id = :userId")
+  List<Expense> findByYearAndMonthAndUserId(@Param("year") Integer year, @Param("month") Integer month, @Param("userId") long userId);
 
   @Query("SELECT SUM(e.value) FROM Expense e WHERE YEAR(e.date) = :year AND MONTH(e.date) = :month")
   Optional<BigDecimal> getTotalValueByMonthAndYear(@Param("year") Integer year, @Param("month") Integer month);
 
   @Query("SELECT SUM(value) FROM Expense e WHERE YEAR(e.date) = :year AND MONTH (e.date) = :month AND e.category = :category")
   Optional<BigDecimal> getTotalByCategoryInYearAndMonth(@Param("category") Category category, @Param("year") Integer year, @Param("month") Integer month);
+
+  Optional<Expense> findByIdAndUserId(Long id, Long userId);
+
 }
