@@ -17,6 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MvcResult;
 
+import br.com.emendes.financesapi.config.validation.error_dto.ErrorDto;
 import br.com.emendes.financesapi.controller.dto.IncomeDto;
 import br.com.emendes.financesapi.controller.dto.TokenDto;
 import br.com.emendes.financesapi.util.CustomMockMvc;
@@ -256,6 +257,35 @@ public class IncomeControllerTests {
     Assertions.assertEquals(listExpected.size(), listIncomeDto.size());
     
     Assertions.assertEquals(listExpected, listIncomeDto);
+  }
+
+  @Test
+  public void deveriaDevolver404AoTentarAtualizarReceitaDeOutroUsuario() throws Exception {
+    int id = 1;
+    String description = "Salário 1";
+    BigDecimal value = BigDecimal.valueOf(2500.00);
+    String date = "2022-01-08";
+
+    Map<String, Object> params = Map.of("description", description, "value", value, "date", date);
+
+    MvcResult result = mock.put("/receitas/" + id, params, tokenIpsum, 404);
+
+    ErrorDto errorDto = DtoFromMvcResult.errorDto(result);
+
+    Assertions.assertEquals("Not Found", errorDto.getError());
+    Assertions.assertEquals("Nenhuma receita com esse id para esse usuário", errorDto.getMessage());
+  }
+
+  @Test
+  public void deveriaDevolver404AoTentarDeletarReceitaDeOutroUsuario() throws Exception {
+    Long id = 1l;
+
+    MvcResult result = mock.delete("/receitas/"+id, tokenIpsum, 404);
+
+    ErrorDto errorDto = DtoFromMvcResult.errorDto(result);
+
+    Assertions.assertEquals("Not Found", errorDto.getError());
+    Assertions.assertEquals("Nenhuma receita com esse id para esse usuário", errorDto.getMessage());
   }
 
   private String tokenFromTokenDto(TokenDto tokenDto){

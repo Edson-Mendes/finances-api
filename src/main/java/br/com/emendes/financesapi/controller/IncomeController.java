@@ -79,8 +79,10 @@ public class IncomeController {
   }
 
   @DeleteMapping("/{id}")
-  public ResponseEntity<?> delete(@PathVariable Long id) {
-    return incomeService.delete(id);
+  public ResponseEntity<?> delete(@PathVariable Long id, HttpServletRequest request) {
+    String token = tokenService.recoverToken(request);
+    Long userId = tokenService.getIdUser(token);
+    return incomeService.delete(id, userId);
   }
 
 }
