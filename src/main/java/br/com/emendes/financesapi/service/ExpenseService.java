@@ -129,15 +129,12 @@ public class ExpenseService {
         .body(new ErrorDto("Not Found", "Nenhuma despesa com esse id para esse usuário"));
   }
 
-  public BigDecimal getTotalValueByMonthAndYear(Integer year, Integer month) {
-    if (expenseRepository.getTotalValueByMonthAndYear(year, month).isPresent()) {
-      return expenseRepository.getTotalValueByMonthAndYear(year, month).get();
-    }
-    throw new RuntimeException("Total value not found for year: " + year + " e month: " + month);
+  public Optional<BigDecimal> getTotalValueByMonthAndYearAndUserId(Integer year, Integer month, Long userId) {
+    return expenseRepository.getTotalValueByMonthAndYearAndUserId(year, month, userId);
   }
 
-  public BigDecimal getTotalByCategoryInYearAndMonth(Category category, Integer year, Integer month) {
-    return expenseRepository.getTotalByCategoryInYearAndMonth(category, year, month).orElse(BigDecimal.ZERO);
+  public BigDecimal getTotalByCategoryOnYearAndMonth(Category category, Integer year, Integer month, Long userId) {
+    return expenseRepository.getTotalByCategoryOnYearAndMonth(category, year, month, userId).orElse(BigDecimal.ZERO);
   }
 
 }

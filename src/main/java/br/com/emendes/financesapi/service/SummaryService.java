@@ -3,6 +3,7 @@ package br.com.emendes.financesapi.service;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,14 +24,20 @@ public class SummaryService {
   @Autowired
   private IncomeService incomeService;
 
-  public ResponseEntity<?> monthSummary(Integer year, Integer month) {
-
+  public ResponseEntity<?> monthSummary(Integer year, Integer month, Long userId) {
     try {
-      BigDecimal incomeTotalValue = incomeService.getTotalValueByMonthAndYear(year, month);
-      BigDecimal expenseTotalValue = expenseService.getTotalValueByMonthAndYear(year, month);
-      SummaryDto summaryDto = new SummaryDto(incomeTotalValue, expenseTotalValue, getTotalByCategory(year, month));
+      Optional<BigDecimal> incomeTotalValue = incomeService.getTotalValueByMonthAndYearAndUserId(year, month, userId);
+      Optional<BigDecimal> expenseTotalValue = expenseService.getTotalValueByMonthAndYearAndUserId(year, month, userId);
+      if(incomeTotalValue.isPresent() || expenseTotalValue.isPresent()){
+        // FIXME: Não há necessidade de chamar getTotalBycategory se expenseTotalvalue não existir!
+        SummaryDto summaryDto = new SummaryDto(
+            incomeTotalValue.orElse(BigDecimal.ZERO), 
+            expenseTotalValue.orElse(BigDecimal.ZERO), 
+            getTotalByCategory(year, month, userId));
+        return ResponseEntity.ok(summaryDto);
+      }
+      throw new Exception();
 
-      return ResponseEntity.ok(summaryDto);
     } catch (Exception e) {
       String message = "Não há receitas e despesas para o ano " + year + " e mês " + month;
       ErrorDto errorDto = new ErrorDto("Not Found", message);
@@ -42,10 +49,10 @@ public class SummaryService {
 
   }
 
-  private List<ValueByCategory> getTotalByCategory(Integer year, Integer month) {
+  private List<ValueByCategory> getTotalByCategory(Integer year, Integer month, Long userId) {
     List<ValueByCategory> totalByCategory = new ArrayList<>();
     for (Category category : Category.values()) {
-      BigDecimal total = expenseService.getTotalByCategoryInYearAndMonth(category, year, month);
+      BigDecimal total = expenseService.getTotalByCategoryOnYearAndMonth(category, year, month, userId);
       totalByCategory.add(new ValueByCategory(category, total));
     }
     return totalByCategory;

@@ -129,11 +129,8 @@ public class IncomeService {
         .body(new ErrorDto("Not Found", "Nenhuma receita com esse id para esse usuário"));
   }
 
-  public BigDecimal getTotalValueByMonthAndYear(Integer year, Integer month) {
-    if (incomeRepository.getTotalValueByMonthAndYear(year, month).isPresent()) {
-      return incomeRepository.getTotalValueByMonthAndYear(year, month).get();
-    }
-    throw new RuntimeException("Total value not found for year: " + year + " e month: " + month);
+  public Optional<BigDecimal> getTotalValueByMonthAndYearAndUserId(Integer year, Integer month, Long userId) {
+    return incomeRepository.getTotalValueByMonthAndYearAndUserId(year, month, userId);
   }
 
 }

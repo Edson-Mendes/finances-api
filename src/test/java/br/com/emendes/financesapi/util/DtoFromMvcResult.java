@@ -15,8 +15,10 @@ import br.com.emendes.financesapi.config.validation.error_dto.ErrorDto;
 import br.com.emendes.financesapi.config.validation.error_dto.FormErrorDto;
 import br.com.emendes.financesapi.controller.dto.ExpenseDto;
 import br.com.emendes.financesapi.controller.dto.IncomeDto;
+import br.com.emendes.financesapi.controller.dto.SummaryDto;
 import br.com.emendes.financesapi.controller.dto.TokenDto;
 import br.com.emendes.financesapi.controller.dto.UserDto;
+import br.com.emendes.financesapi.controller.dto.ValueByCategory;
 import br.com.emendes.financesapi.model.enumerator.Category;
 
 public abstract class DtoFromMvcResult {
@@ -123,6 +125,23 @@ public abstract class DtoFromMvcResult {
     expenseDto.setCategory(category);
 
     return expenseDto;
+  }
+
+  public static SummaryDto summaryDtoFromJsonNode(MvcResult result) throws Exception {
+    JsonNode content = new ObjectMapper().readTree(result.getResponse().getContentAsString());
+    BigDecimal incomeTotalValue = content.get("incomeTotalValue").decimalValue();
+    BigDecimal expenseTotalValue = content.get("expenseTotalValue").decimalValue();
+
+    List<String> categories = content.get("valuesByCategory").findValuesAsText("category");
+    List<String> values = content.get("valuesByCategory").findValuesAsText("value");
+    List<ValueByCategory> valuesByCategory = new ArrayList<>();
+    for (int i = 0; i < categories.size(); i++) {
+      ValueByCategory valueByCategory = new ValueByCategory(Category.valueOf(categories.get(i)),
+          new BigDecimal(values.get(i)));
+      valuesByCategory.add(valueByCategory);
+    }
+
+    return new SummaryDto(incomeTotalValue, expenseTotalValue, valuesByCategory);
   }
 
 }
