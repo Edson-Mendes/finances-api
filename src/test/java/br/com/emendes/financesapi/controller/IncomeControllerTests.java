@@ -8,9 +8,12 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,13 +22,13 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import br.com.emendes.financesapi.config.validation.error_dto.ErrorDto;
 import br.com.emendes.financesapi.controller.dto.IncomeDto;
-import br.com.emendes.financesapi.controller.dto.TokenDto;
 import br.com.emendes.financesapi.util.CustomMockMvc;
 import br.com.emendes.financesapi.util.DtoFromMvcResult;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @TestInstance(Lifecycle.PER_CLASS)
+@TestMethodOrder(OrderAnnotation.class)
 @ActiveProfiles("test")
 public class IncomeControllerTests {
 
@@ -43,8 +46,8 @@ public class IncomeControllerTests {
 
   @BeforeAll
   public void addUsuarioLorem() throws Exception {
-    String name = "Lorem";
-    String email = "lorem@email.com";
+    String name = "Lorem Sit";
+    String email = "lorem.s@email.com";
     String password = "111111";
     String confirm = "111111";
 
@@ -54,13 +57,13 @@ public class IncomeControllerTests {
     mock.post("/auth/signup", paramsSignup, "", 201);
     MvcResult result = mock.post("/auth/signin", paramsSignin, "", 200);
 
-    tokenLorem = tokenFromTokenDto(DtoFromMvcResult.tokenDto(result));
+    tokenLorem = DtoFromMvcResult.tokenDto(result).getTypeWithToken();
   }
 
   @BeforeAll
   public void addUsuarioIpsum() throws Exception {
-    String name = "Ipsum";
-    String email = "ipsum@email.com";
+    String name = "Ipsum Sit";
+    String email = "ipsum.s@email.com";
     String password = "222222";
     String confirm = "222222";
 
@@ -70,10 +73,11 @@ public class IncomeControllerTests {
     mock.post("/auth/signup", paramsSignup, "", 201);
     MvcResult result = mock.post("/auth/signin", paramsSignin, "", 200);
 
-    tokenIpsum = tokenFromTokenDto(DtoFromMvcResult.tokenDto(result));
+    tokenIpsum = DtoFromMvcResult.tokenDto(result).getTypeWithToken();
   }
 
   @Test
+  @Order(1)
   public void deveriaDevolver201AoCriarReceita() throws Exception {
     String description = "Salário";
     BigDecimal value = new BigDecimal(2500.00);
@@ -85,6 +89,7 @@ public class IncomeControllerTests {
   }
 
   @Test
+  @Order(2)
   public void deveriaDevolver400AoCriarSemAlgumParametroObrigatorio() throws Exception {
 
     String description = "Venda do PS5";
@@ -101,11 +106,13 @@ public class IncomeControllerTests {
   }
 
   @Test
+  @Order(3)
   public void deveriaDevolver200AoBuscarTodasAsReceitas() throws Exception {
     mock.get("/receitas", tokenLorem, 200);
   }
 
   @Test
+  @Order(4)
   public void deveriaDevolver409AoCadastrarDescricaoDuplicadaEmMesmoMesEAno() throws Exception {
 
     String description = "Lotofácil";
@@ -120,6 +127,7 @@ public class IncomeControllerTests {
   }
 
   @Test
+  @Order(5)
   public void deveriaDevolver201AoCadastrarDescricaoEmMesDiferentes() throws Exception {
 
     String description = "Trabalho por fora";
@@ -137,38 +145,54 @@ public class IncomeControllerTests {
   }
 
   @Test
+  @Order(6)
   public void deveriaDevolver200AoBuscarPorIdExistente() throws Exception {
-    mock.get("/receitas/1", tokenLorem, 200);
+    MvcResult result = mock.get("/receitas", tokenLorem, 200);
+    List<IncomeDto> listIncomeDto = DtoFromMvcResult.listIncomeDto(result);
+
+    Long id = listIncomeDto.get(0).getId();
+
+    mock.get("/receitas/" + id, tokenLorem, 200);
   }
 
   @Test
+  @Order(7)
   public void deveriaDevolver200AoBuscarPorAnoEMesExistentes() throws Exception {
     mock.get("/receitas/2022/01", tokenLorem, 200);
   }
 
   @Test
+  @Order(8)
   public void deveriaDevolver404AoBuscarPorAnoEMesInexistentes() throws Exception {
     mock.get("/receitas/2022/03", tokenLorem, 404);
   }
 
   @Test
+  @Order(9)
   public void deveriaDevolver404AoBuscarPorIdInexistentes() throws Exception {
     mock.get("/receitas/999", tokenLorem, 404);
   }
 
   @Test
+  @Order(10)
   public void deveriaDevolver200AoBuscarPorDescricaoExistente() throws Exception {
     mock.get("/receitas?description=sal", tokenLorem, 200);
   }
 
   @Test
+  @Order(11)
   public void deveriaDevolver404AoBuscarPorDescricaoInexistente() throws Exception {
     mock.get("/receitas?description=salllllll", tokenLorem, 404);
   }
 
   @Test
+  @Order(12)
   public void deveriaDevolver200AoAtualizarReceitaCorretamente() throws Exception {
-    int id = 1;
+    MvcResult result = mock.get("/receitas", tokenLorem, 200);
+    List<IncomeDto> listIncomeDto = DtoFromMvcResult.listIncomeDto(result);
+
+    Long id = listIncomeDto.get(0).getId();
+
     String description = "Salário 1";
     BigDecimal value = BigDecimal.valueOf(2500.00);
     String date = "2022-01-08";
@@ -179,6 +203,7 @@ public class IncomeControllerTests {
   }
 
   @Test
+  @Order(13)
   public void deveriaDevolver404AoAtualizarReceitaComIdInexistente() throws Exception {
     int id = 1000;
     String description = "Salário 1";
@@ -191,6 +216,7 @@ public class IncomeControllerTests {
   }
 
   @Test
+  @Order(14)
   public void deveriaDevolver400AoAtualizarReceitaSemAlgumParametroObrigatorio() throws Exception {
     String description = "Venda do PS5";
     BigDecimal value = BigDecimal.valueOf(2885.00);
@@ -206,20 +232,26 @@ public class IncomeControllerTests {
   }
 
   @Test
+  @Order(15)
   public void deveriaDevolver200AoDeletarUmaReceitaComIdExistente() throws Exception {
-    int id = 2;
+    MvcResult result = mock.get("/receitas", tokenLorem, 200);
+    List<IncomeDto> listIncomeDto = DtoFromMvcResult.listIncomeDto(result);
+
+    Long id = listIncomeDto.get(1).getId();
     mock.delete("/receitas/" + id, tokenLorem, 200);
   }
 
   @Test
+  @Order(16)
   public void deveriaDevolver404AoDeletarUmaReceitaComIdInexistente() throws Exception {
     int id = 1000;
     mock.delete("/receitas/" + id, tokenLorem, 404);
   }
 
   @Test
+  @Order(17)
   public void deveriaDevolverSomenteAsReceitasDeIpsum() throws Exception {
-    // TODO: Refatorar este teste!
+
     String description1 = "Salário";
     BigDecimal value1 = new BigDecimal("2500.0");
     String date1 = "2022-01-08";
@@ -239,27 +271,18 @@ public class IncomeControllerTests {
 
     List<IncomeDto> listExpected = new ArrayList<>();
 
-    IncomeDto incomeDto1 = new IncomeDto();
-    incomeDto1.setId(5l);
-    incomeDto1.setDescription(description1);
-    incomeDto1.setDate(LocalDate.parse(date1));
-    incomeDto1.setValue(value1);
+    IncomeDto incomeDto1 = new IncomeDto(5l, description1, LocalDate.parse(date1), value1);
+    IncomeDto incomeDto2 = new IncomeDto(6l, description2, LocalDate.parse(date2), value2);
     
-    IncomeDto incomeDto2 = new IncomeDto();
-    incomeDto2.setId(6l);
-    incomeDto2.setDescription(description2);
-    incomeDto2.setDate(LocalDate.parse(date2));
-    incomeDto2.setValue(value2);
-
     listExpected.add(incomeDto1);
     listExpected.add(incomeDto2);
 
     Assertions.assertEquals(listExpected.size(), listIncomeDto.size());
-    
     Assertions.assertEquals(listExpected, listIncomeDto);
   }
 
   @Test
+  @Order(18)
   public void deveriaDevolver404AoTentarAtualizarReceitaDeOutroUsuario() throws Exception {
     int id = 1;
     String description = "Salário 1";
@@ -277,19 +300,16 @@ public class IncomeControllerTests {
   }
 
   @Test
+  @Order(19)
   public void deveriaDevolver404AoTentarDeletarReceitaDeOutroUsuario() throws Exception {
     Long id = 1l;
 
-    MvcResult result = mock.delete("/receitas/"+id, tokenIpsum, 404);
+    MvcResult result = mock.delete("/receitas/" + id, tokenIpsum, 404);
 
     ErrorDto errorDto = DtoFromMvcResult.errorDto(result);
 
     Assertions.assertEquals("Not Found", errorDto.getError());
     Assertions.assertEquals("Nenhuma receita com esse id para esse usuário", errorDto.getMessage());
-  }
-
-  private String tokenFromTokenDto(TokenDto tokenDto){
-    return tokenDto.getType()+" "+tokenDto.getToken();
   }
 
 }

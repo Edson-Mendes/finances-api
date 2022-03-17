@@ -4,9 +4,12 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,6 +25,7 @@ import br.com.emendes.financesapi.util.DtoFromMvcResult;
 @SpringBootTest
 @AutoConfigureMockMvc
 @TestInstance(Lifecycle.PER_CLASS)
+@TestMethodOrder(OrderAnnotation.class)
 @ActiveProfiles("test")
 public class SigninTest {
 
@@ -29,13 +33,14 @@ public class SigninTest {
   private CustomMockMvc mock;
 
   @BeforeAll
-  public void addRoles() throws Exception {
+  public void addRoleAndUser() throws Exception {
     mock.post("/role", Map.of("name", "ROLE_USER"), "", 201);
     mock.post("/auth/signup",
-        Map.of("name", "ipsum", "email", "ipsum@email.com", "password", "123123", "confirm", "123123"), "", 201);
+        Map.of("name", "Ipsum", "email", "ipsum@email.com", "password", "123123", "confirm", "123123"), "", 201);
   }
 
   @Test
+  @Order(1)
   public void deveriaDevolver200ETokenDtoAoLogar() throws Exception {
     String email = "ipsum@email.com";
     String password = "123123";
@@ -49,6 +54,7 @@ public class SigninTest {
   }
 
   @Test
+  @Order(2)
   public void deveriaDevolver400EErrorDtoAoLogarComSenhaInvalida() throws Exception {
     String email = "ipsum@email.com";
     String password = "123";
@@ -64,6 +70,7 @@ public class SigninTest {
   }
 
   @Test
+  @Order(3)
   public void deveriaDevolver400EErrorDtoAoLogarComEmailErrado() throws Exception {
     String email = "ips@email.com";
     String password = "123123";
@@ -79,6 +86,7 @@ public class SigninTest {
   }
 
   @Test
+  @Order(4)
   public void deveriaDevolver400EErrorDtoAoLogarComEmailInvalido() throws Exception {
     String email = "email.com";
     String password = "123123";
@@ -90,7 +98,7 @@ public class SigninTest {
 
     Assertions.assertEquals("email", formErrorResponse.getField());
     Assertions.assertEquals("deve ser um e-mail bem formado", formErrorResponse.getError());
-    // TODO: Entender porque está vindo message em inglês.
+    
   }
 
 }

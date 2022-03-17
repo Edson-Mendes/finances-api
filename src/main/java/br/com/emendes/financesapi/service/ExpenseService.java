@@ -102,7 +102,7 @@ public class ExpenseService {
 
   public ResponseEntity<?> update(Long id, ExpenseForm expenseForm, Long userId) {
     Optional<Expense> optional = expenseRepository.findByIdAndUserId(id, userId);
-    if (optional.isPresent() && !expenseForm.exist(expenseRepository, id, userId)) {
+    if (optional.isPresent() && !expenseForm.alreadyExist(expenseRepository, id, userId)) {
       Expense expense = optional.get();
 
       expense.setParams(expenseForm);

@@ -101,7 +101,7 @@ public class IncomeService {
 
   public ResponseEntity<?> update(Long id, IncomeForm incomeForm, Long userId) {
     Optional<Income> optional = incomeRepository.findByIdAndUserId(id, userId);
-    if (optional.isPresent() && !incomeForm.exist(incomeRepository, id, userId)) {
+    if (optional.isPresent() && !incomeForm.alreadyExist(incomeRepository, id, userId)) {
       Income income = optional.get();
 
       income.setDescription(incomeForm.getDescription());

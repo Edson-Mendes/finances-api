@@ -18,4 +18,8 @@ public class TokenDto {
     return type;
   }
 
+  public String getTypeWithToken(){
+    return type+" "+token;
+  }
+
 }

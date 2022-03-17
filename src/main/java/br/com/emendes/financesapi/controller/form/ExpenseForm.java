@@ -64,7 +64,7 @@ public class ExpenseForm {
   }
 
   public Expense convert(ExpenseRepository expenseRepository, Long userId) {
-    exist(expenseRepository, userId);
+    alreadyExist(expenseRepository, userId);
     LocalDate date = LocalDate.parse(this.date);
     if (category == null) {
       category = Category.OUTRAS;
@@ -73,8 +73,18 @@ public class ExpenseForm {
     return expense;
   }
 
-  private boolean exist(ExpenseRepository expenseRepository, Long userId) {
-    // TODO: Mudar nome deste método para ficar mais claro
+  /**
+   * Verifica se o usuário já possui uma despesa com a mesma descrição no mês e
+   * ano da
+   * respectiva despesa.
+   * 
+   * @param expenseRepository
+   * @param userId
+   * @return false, se não existir uma despesa com a mesma descrição em um mesmo
+   *         mês e ano.
+   * @throws ResponseStatusException se existir despesa.
+   */
+  private boolean alreadyExist(ExpenseRepository expenseRepository, Long userId) {
     LocalDate date = LocalDate.parse(this.date);
     Optional<Expense> optional = expenseRepository.findByDescriptionAndMonthAndYearAndUserId(
         description,
@@ -91,18 +101,19 @@ public class ExpenseForm {
   }
 
   /**
-   * Verifica se já existe uma despesa com a mesma descrição no mês e ano do
-   * objeto
-   * e com id diferente do objeto.
+   * Verifica se o usuário já possui uma despesa com a mesma descrição no mês e
+   * ano da
+   * respectiva despesa.
+   * e com id diferente do mesmo.
    * 
-   * @param incomeRepository
+   * @param expenseRepository
    * @param id
+   * @param userId
    * @return false, se não existir uma despesa com a mesma descrição em um mesmo
    *         mês e ano.
-   * @throws ResponseStatusException - se existir despesa.
+   * @throws ResponseStatusException se existir despesa.
    */
-  public boolean exist(ExpenseRepository expenseRepository, Long id, Long userId) {
-    // TODO: Mudar nome deste método para ficar mais claro
+  public boolean alreadyExist(ExpenseRepository expenseRepository, Long id, Long userId) {
     LocalDate date = LocalDate.parse(this.date);
     Optional<Expense> optional = expenseRepository.findByDescriptionAndMonthAndYearAndUserIdAndNotId(
         description,

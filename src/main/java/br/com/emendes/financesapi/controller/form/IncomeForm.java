@@ -53,21 +53,22 @@ public class IncomeForm {
   }
 
   public Income convert(IncomeRepository incomeRepository, Long userId) {
-    exist(incomeRepository, userId);
+    alreadyExist(incomeRepository, userId);
     LocalDate date = LocalDate.parse(this.date);
     Income income = new Income(description, value, date);
     return income;
   }
 
   /**
-   * Verifica se já existe uma receita com a mesma descrição no dado mês e ano.
+   * Verifica se o usuário já possui uma receita com a mesma descrição no dado mês e ano.
    * 
    * @param incomeRepository
+   * @param userId
    * @return false, se não existir uma receita com a mesma descrição em um mesmo
    *         mês e ano.
-   * @throws ResponseStatusException - se existir receita.
+   * @throws ResponseStatusException se existir receita.
    */
-  public boolean exist(IncomeRepository incomeRepository, Long userId) {
+  public boolean alreadyExist(IncomeRepository incomeRepository, Long userId) {
     LocalDate date = LocalDate.parse(this.date);
     Optional<Income> optional = incomeRepository.findByDescriptionAndMonthAndYearAndUserId(description, date.getMonthValue(),
         date.getYear(), userId);
@@ -81,17 +82,18 @@ public class IncomeForm {
   }
 
   /**
-   * Verifica se já existe uma receita com a mesma descrição no mês e ano do
-   * objeto
-   * e com id diferente do objeto.
+   * Verifica se o usuário já possui uma receita com a mesma descrição no mês e ano da
+   * respectiva receita
+   * e com id diferente do mesmo.
    * 
    * @param incomeRepository
    * @param id
+   * @param userId
    * @return false, se não existir uma receita com a mesma descrição em um mesmo
    *         mês e ano.
-   * @throws ResponseStatusException - se existir receita.
+   * @throws ResponseStatusException se existir receita.
    */
-  public boolean exist(IncomeRepository incomeRepository, Long incomeId, Long userId) {
+  public boolean alreadyExist(IncomeRepository incomeRepository, Long incomeId, Long userId) {
     LocalDate date = LocalDate.parse(this.date);
     Optional<Income> optional = incomeRepository.findByDescriptionAndMonthAndYearAndUserIdAndNotId(description,
         date.getMonthValue(), date.getYear(), userId, incomeId);

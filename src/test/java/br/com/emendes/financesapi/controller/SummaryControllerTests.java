@@ -7,8 +7,8 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
@@ -20,7 +20,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MvcResult;
 
 import br.com.emendes.financesapi.controller.dto.SummaryDto;
-import br.com.emendes.financesapi.controller.dto.TokenDto;
 import br.com.emendes.financesapi.controller.dto.ValueByCategory;
 import br.com.emendes.financesapi.model.enumerator.Category;
 import br.com.emendes.financesapi.util.CustomMockMvc;
@@ -28,9 +27,9 @@ import br.com.emendes.financesapi.util.DtoFromMvcResult;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@ActiveProfiles("test")
 @TestInstance(Lifecycle.PER_CLASS)
 @TestMethodOrder(OrderAnnotation.class)
+@ActiveProfiles("test")
 public class SummaryControllerTests {
 
   @Autowired
@@ -45,8 +44,8 @@ public class SummaryControllerTests {
   }
 
   private void addUsuarioLorem() throws Exception {
-    String name = "Lorem";
-    String email = "lorem@email.com";
+    String name = "Lorem Dolor";
+    String email = "lorem.d@email.com";
     String password = "111111";
     String confirm = "111111";
 
@@ -56,12 +55,12 @@ public class SummaryControllerTests {
     mock.post("/auth/signup", paramsSignup, "", 201);
     MvcResult result = mock.post("/auth/signin", paramsSignin, "", 200);
 
-    tokenLorem = tokenFromTokenDto(DtoFromMvcResult.tokenDto(result));
+    tokenLorem = DtoFromMvcResult.tokenDto(result).getTypeWithToken();
   }
 
   private void addUsuarioIpsum() throws Exception {
-    String name = "Ipsum";
-    String email = "ipsum@email.com";
+    String name = "Ipsum Dolor";
+    String email = "ipsum.d@email.com";
     String password = "222222";
     String confirm = "222222";
 
@@ -71,11 +70,9 @@ public class SummaryControllerTests {
     mock.post("/auth/signup", paramsSignup, "", 201);
     MvcResult result = mock.post("/auth/signin", paramsSignin, "", 200);
 
-    tokenIpsum = tokenFromTokenDto(DtoFromMvcResult.tokenDto(result));
+    tokenIpsum = DtoFromMvcResult.tokenDto(result).getTypeWithToken();
   }
 
-  // @Test
-  // @Order(1)
   private void populateLorem() throws Exception {
     mock.post("/receitas", Map.of("description", "Salário1", "value", new BigDecimal(2500.00), "date", "2022-02-08"),
         tokenLorem,
@@ -99,11 +96,6 @@ public class SummaryControllerTests {
         201);
   }
 
-  // @Test
-  // @Order(2)
-  // TODO: Entender por que os testes executaram antes do @BeforeAll terminar de executar.
-  // Os métodos dentro do @BeforeAll eram addRoles(), addUsuarioLorem(), addUsuarioIpsum(),
-  // populateLorem() e populateIpsum().
   private void populateIpsum() throws Exception {
     mock.post("/receitas", Map.of("description", "Salário1", "value", new BigDecimal(1800.00), "date", "2022-02-08"),
         tokenIpsum,
@@ -157,10 +149,10 @@ public class SummaryControllerTests {
     int year = 2022;
     int month = 2;
     MvcResult result = mock.get("/resumo/" + year + "/" + month, tokenLorem, 200);
-    SummaryDto summaryResponse = DtoFromMvcResult.summaryDtoFromJsonNode(result);
+    SummaryDto summaryResponse = DtoFromMvcResult.summaryDto(result);
 
     List<ValueByCategory> valuesByCategory = new ArrayList<>();
-    // FIXME: Refatorar as adicões abaixo.
+    
     valuesByCategory.add(new ValueByCategory(Category.ALIMENTACAO, new BigDecimal("700.0")));
     valuesByCategory.add(new ValueByCategory(Category.SAUDE, new BigDecimal("150.0")));
     valuesByCategory.add(new ValueByCategory(Category.MORADIA, new BigDecimal("1000.0")));
@@ -181,10 +173,10 @@ public class SummaryControllerTests {
     int year = 2022;
     int month = 2;
     MvcResult result = mock.get("/resumo/" + year + "/" + month, tokenIpsum, 200);
-    SummaryDto summaryResponse = DtoFromMvcResult.summaryDtoFromJsonNode(result);
+    SummaryDto summaryResponse = DtoFromMvcResult.summaryDto(result);
 
     List<ValueByCategory> valuesByCategory = new ArrayList<>();
-    // FIXME: Refatorar as adicões abaixo.
+    
     valuesByCategory.add(new ValueByCategory(Category.ALIMENTACAO, new BigDecimal("800.0")));
     valuesByCategory.add(new ValueByCategory(Category.SAUDE, new BigDecimal("250.0")));
     valuesByCategory.add(new ValueByCategory(Category.MORADIA, new BigDecimal("800.0")));
@@ -203,10 +195,6 @@ public class SummaryControllerTests {
   @Order(5)
   public void deveriaDevolver400AoBuscarComAnoNaoNumerico() throws Exception {
     mock.get("/resumo/2O22/12", tokenLorem, 400);
-  }
-
-  private String tokenFromTokenDto(TokenDto tokenDto) {
-    return tokenDto.getType() + " " + tokenDto.getToken();
   }
 
 }

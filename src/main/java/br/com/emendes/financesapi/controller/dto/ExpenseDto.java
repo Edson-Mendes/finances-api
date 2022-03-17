@@ -27,6 +27,14 @@ public class ExpenseDto {
     this.category = expense.getCategory();
   }
 
+  public ExpenseDto(Long id, String description, LocalDate date, BigDecimal value, Category category) {
+    this.id = id;
+    this.description = description;
+    this.date = date;
+    this.value = value;
+    this.category = category;
+  }
+
   public Category getCategory() {
     return category;
   }
@@ -86,8 +94,7 @@ public class ExpenseDto {
 
     ExpenseDto other = (ExpenseDto) obj;
 
-    return this.id.equals(other.getId())
-        && this.description.equals(other.getDescription())
+    return this.description.equals(other.getDescription())
         && this.date.equals(other.getDate())
         && this.value.equals(other.getValue())
         && this.category.equals(other.getCategory());
@@ -97,9 +104,6 @@ public class ExpenseDto {
   public int hashCode() {
     int result = 17;
 
-    if (id != null) {
-      result = result * 31 + id.hashCode();
-    }
     if (description != null) {
       result = result * 31 + description.hashCode();
     }

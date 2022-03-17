@@ -127,7 +127,7 @@ public abstract class DtoFromMvcResult {
     return expenseDto;
   }
 
-  public static SummaryDto summaryDtoFromJsonNode(MvcResult result) throws Exception {
+  public static SummaryDto summaryDto(MvcResult result) throws Exception {
     JsonNode content = new ObjectMapper().readTree(result.getResponse().getContentAsString());
     BigDecimal incomeTotalValue = content.get("incomeTotalValue").decimalValue();
     BigDecimal expenseTotalValue = content.get("expenseTotalValue").decimalValue();
@@ -144,4 +144,8 @@ public abstract class DtoFromMvcResult {
     return new SummaryDto(incomeTotalValue, expenseTotalValue, valuesByCategory);
   }
 
+  public static ExpenseDto expenseDto(MvcResult result) throws Exception {
+    JsonNode content = new ObjectMapper().readTree(result.getResponse().getContentAsString());
+    return expenseDto(content);
+  }
 }

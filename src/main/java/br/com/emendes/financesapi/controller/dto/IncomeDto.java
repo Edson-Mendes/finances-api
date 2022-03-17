@@ -23,6 +23,13 @@ public class IncomeDto {
     this.value = income.getValue();
   }
 
+  public IncomeDto(Long id, String description, LocalDate date, BigDecimal value){
+    this.id = id;
+    this.description = description;
+    this.date = date;
+    this.value = value;
+  }
+
   public Long getId() {
     return id;
   }
@@ -66,8 +73,7 @@ public class IncomeDto {
     }
     IncomeDto other = (IncomeDto) obj;
 
-    return this.id.equals(other.getId())
-        && this.description.equals(other.getDescription())
+    return this.description.equals(other.getDescription())
         && this.date.equals(other.getDate())
         && this.value.equals(other.getValue());
   }
@@ -75,10 +81,6 @@ public class IncomeDto {
   @Override
   public int hashCode() {
     int result = 17;
-
-    if (id != null) {
-      result = result * 31 + id.hashCode();
-    }
     if (description != null) {
       result = result * 31 + description.hashCode();
     }

@@ -4,9 +4,12 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,6 +25,7 @@ import br.com.emendes.financesapi.util.DtoFromMvcResult;
 @SpringBootTest
 @AutoConfigureMockMvc
 @TestInstance(Lifecycle.PER_CLASS)
+@TestMethodOrder(OrderAnnotation.class)
 @ActiveProfiles("test")
 public class SignupTest {
 
@@ -34,9 +38,10 @@ public class SignupTest {
   }
 
   @Test
+  @Order(1)
   public void deveriaDevolver201AoRealizarSignup() throws Exception {
-    String name = "ipsum";
-    String email = "ipsum@email.com";
+    String name = "Ipsum Lorem";
+    String email = "ipsum.l@email.com";
     String password = "12345678";
     String confirm = "12345678";
 
@@ -45,13 +50,15 @@ public class SignupTest {
     UserDto userDtoResponse = DtoFromMvcResult.userDto(result);
 
     UserDto userDtoExpected = new UserDto(1l, name, email);
-    Assertions.assertEquals(userDtoExpected, userDtoResponse);
+    Assertions.assertEquals(userDtoExpected.getName(), userDtoResponse.getName());
+    Assertions.assertEquals(userDtoExpected.getEmail(), userDtoResponse.getEmail());
   }
 
   @Test
+  @Order(2)
   public void deveriaDevolver409AoCadastrarComEmailExistenteNoDB() throws Exception {
-    String name = "ipsom";
-    String email = "ipsum@email.com";
+    String name = "Ipsom";
+    String email = "ipsum.l@email.com";
     String password = "111111";
     String confirm = "111111";
 
@@ -59,6 +66,7 @@ public class SignupTest {
   }
 
   @Test
+  @Order(3)
   public void deveriaDevolver400AoCadastrarComNomeVazioEARespostaBater() throws Exception {
     String name = "";
     String email = "lorem@email.com";
@@ -70,11 +78,12 @@ public class SignupTest {
     FormErrorDto formErrorDto = DtoFromMvcResult.formErrorDto(result);
 
     Assertions.assertEquals("name", formErrorDto.getField());
-    Assertions.assertEquals("must not be blank", formErrorDto.getError());
+    Assertions.assertEquals("não deve estar em branco", formErrorDto.getError());
 
   }
 
   @Test
+  @Order(4)
   public void deveriaDevolver400AoCadastrarComEmailInvalidoEARespostaBater() throws Exception {
     String name = "lorem";
     String email = "lorememail.com";
@@ -83,13 +92,16 @@ public class SignupTest {
 
     MvcResult result = mock.post("/auth/signup",
         Map.of("name", name, "email", email, "password", password, "confirm", confirm), "", 400);
+    // result.getResponse().setCharacterEncoding("UTF-8");
     FormErrorDto formErrorDto = DtoFromMvcResult.formErrorDto(result);
 
     Assertions.assertEquals("email", formErrorDto.getField());
-    Assertions.assertEquals("must be a well-formed email address", formErrorDto.getError());
+    Assertions.assertEquals("deve ser um endereço de e-mail bem formado", formErrorDto.getError());
+    
   }
 
   @Test
+  @Order(5)
   public void deveriaDevolver400AoCadastrarComSenhaVazioEARespostaBater() throws Exception {
     String name = "lorem";
     String email = "lorem@email.com";
@@ -101,10 +113,11 @@ public class SignupTest {
     FormErrorDto formErrorDto = DtoFromMvcResult.formErrorDto(result);
 
     Assertions.assertEquals("password", formErrorDto.getField());
-    Assertions.assertEquals("must not be blank", formErrorDto.getError());
+    Assertions.assertEquals("não deve estar em branco", formErrorDto.getError());
   }
 
   @Test
+  @Order(6)
   public void deveriaDevolver400AoCadastrarComConfimacaoVazioEARespostaBater() throws Exception {
     String name = "lorem";
     String email = "lorem@email.com";
@@ -116,10 +129,11 @@ public class SignupTest {
     FormErrorDto formErrorDto = DtoFromMvcResult.formErrorDto(result);
 
     Assertions.assertEquals("confirm", formErrorDto.getField());
-    Assertions.assertEquals("must not be blank", formErrorDto.getError());
+    Assertions.assertEquals("não deve estar em branco", formErrorDto.getError());
   }
 
   @Test
+  @Order(7)
   public void deveriaDevolver400AoCadastrarSemAsSenhasCondizerem() throws Exception {
     String name = "lorem";
     String email = "lorem@email.com";
