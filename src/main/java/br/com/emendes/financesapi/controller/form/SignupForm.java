@@ -3,6 +3,7 @@ package br.com.emendes.financesapi.controller.form;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
+import br.com.emendes.financesapi.config.validation.annotation.ValidPassword;
 import br.com.emendes.financesapi.model.User;
 public class SignupForm {
 
@@ -11,8 +12,8 @@ public class SignupForm {
   @NotBlank
   @Email
   private String email;
+  @ValidPassword
   @NotBlank
-  // TODO: Pensar numa annotation para validar uma senha forte
   private String password;
   @NotBlank
   private String confirm;

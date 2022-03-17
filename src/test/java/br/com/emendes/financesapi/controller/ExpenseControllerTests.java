@@ -49,8 +49,8 @@ public class ExpenseControllerTests {
   public void addUsuarioLorem() throws Exception {
     String name = "Lorem Amet";
     String email = "lorem.a@email.com";
-    String password = "111111";
-    String confirm = "111111";
+    String password = "111111111";
+    String confirm = "111111111";
 
     Map<String, Object> paramsSignup = Map.of("name", name, "email", email, "password", password, "confirm", confirm);
     Map<String, Object> paramsSignin = Map.of("email", email, "password", password);
@@ -65,8 +65,8 @@ public class ExpenseControllerTests {
   public void addUsuarioIpsum() throws Exception {
     String name = "Ipsum Amet";
     String email = "ipsum.a@email.com";
-    String password = "222222";
-    String confirm = "222222";
+    String password = "22222222";
+    String confirm = "22222222";
 
     Map<String, Object> paramsSignup = Map.of("name", name, "email", email, "password", password, "confirm", confirm);
     Map<String, Object> paramsSignin = Map.of("email", email, "password", password);
@@ -300,9 +300,11 @@ public class ExpenseControllerTests {
     List<ExpenseDto> listExpenseDto = DtoFromMvcResult.listExpenseDto(result);
     List<ExpenseDto> listExpected = new ArrayList<>();
 
-    ExpenseDto expenseDto1 = new ExpenseDto(6l, description1, LocalDate.parse(date1), value1, Category.valueOf(category));
-    ExpenseDto expenseDto2 = new ExpenseDto(7l, description2, LocalDate.parse(date2), value2, Category.valueOf(category));
-    
+    ExpenseDto expenseDto1 = new ExpenseDto(6l, description1, LocalDate.parse(date1), value1,
+        Category.valueOf(category));
+    ExpenseDto expenseDto2 = new ExpenseDto(7l, description2, LocalDate.parse(date2), value2,
+        Category.valueOf(category));
+
     listExpected.add(expenseDto1);
     listExpected.add(expenseDto2);
 

@@ -46,8 +46,8 @@ public class SummaryControllerTests {
   private void addUsuarioLorem() throws Exception {
     String name = "Lorem Dolor";
     String email = "lorem.d@email.com";
-    String password = "111111";
-    String confirm = "111111";
+    String password = "111111111";
+    String confirm = "111111111";
 
     Map<String, Object> paramsSignup = Map.of("name", name, "email", email, "password", password, "confirm", confirm);
     Map<String, Object> paramsSignin = Map.of("email", email, "password", password);
@@ -61,8 +61,8 @@ public class SummaryControllerTests {
   private void addUsuarioIpsum() throws Exception {
     String name = "Ipsum Dolor";
     String email = "ipsum.d@email.com";
-    String password = "222222";
-    String confirm = "222222";
+    String password = "222222222";
+    String confirm = "222222222";
 
     Map<String, Object> paramsSignup = Map.of("name", name, "email", email, "password", password, "confirm", confirm);
     Map<String, Object> paramsSignin = Map.of("email", email, "password", password);

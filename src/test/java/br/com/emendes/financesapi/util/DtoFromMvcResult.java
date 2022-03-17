@@ -23,15 +23,17 @@ import br.com.emendes.financesapi.model.enumerator.Category;
 
 public abstract class DtoFromMvcResult {
 
-  public static FormErrorDto formErrorDto(MvcResult result) throws Exception {
+  public static List<FormErrorDto> formErrorDto(MvcResult result) throws Exception {
+    List<FormErrorDto> listFormErrorDto = new ArrayList<>();
     JsonNode content = new ObjectMapper().readTree(result.getResponse().getContentAsString());
-    JsonNode errorJsonNode = content.elements().next();
-    String field = errorJsonNode.get("field").asText();
-    String error = errorJsonNode.get("error").asText();
 
-    FormErrorDto formErrorDto = new FormErrorDto(field, error);
+    content.elements().forEachRemaining(e -> {
+      String field = e.get("field").asText();
+      String error = e.get("error").asText();
+      listFormErrorDto.add(new FormErrorDto(field, error));
+    });
 
-    return formErrorDto;
+    return listFormErrorDto;
   }
 
   public static UserDto userDto(MvcResult result) throws Exception {

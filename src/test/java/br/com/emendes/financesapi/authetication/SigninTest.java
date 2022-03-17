@@ -1,11 +1,12 @@
 package br.com.emendes.financesapi.authetication;
 
+import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
@@ -36,14 +37,14 @@ public class SigninTest {
   public void addRoleAndUser() throws Exception {
     mock.post("/role", Map.of("name", "ROLE_USER"), "", 201);
     mock.post("/auth/signup",
-        Map.of("name", "Ipsum", "email", "ipsum@email.com", "password", "123123", "confirm", "123123"), "", 201);
+        Map.of("name", "Ipsum", "email", "ipsum@email.com", "password", "123123123", "confirm", "123123123"), "", 201);
   }
 
   @Test
   @Order(1)
   public void deveriaDevolver200ETokenDtoAoLogar() throws Exception {
     String email = "ipsum@email.com";
-    String password = "123123";
+    String password = "123123123";
     Map<String, Object> params = Map.of("email", email, "password", password);
 
     MvcResult result = mock.post("/auth/signin", params, "", 200);
@@ -94,10 +95,11 @@ public class SigninTest {
 
     MvcResult result = mock.post("/auth/signin", params, "", 400);
 
-    FormErrorDto formErrorResponse = DtoFromMvcResult.formErrorDto(result);
-
-    Assertions.assertEquals("email", formErrorResponse.getField());
-    Assertions.assertEquals("deve ser um e-mail bem formado", formErrorResponse.getError());
+    List<FormErrorDto> listFormErrorDto = DtoFromMvcResult.formErrorDto(result);
+    
+        FormErrorDto formErrorExpected = new FormErrorDto("email", "deve ser um e-mail bem formado");
+    
+        Assertions.assertTrue(listFormErrorDto.contains(formErrorExpected));
     
   }
 

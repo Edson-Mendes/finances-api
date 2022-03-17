@@ -20,7 +20,31 @@ public class FormErrorDto {
 
   @Override
   public String toString() {
-    return "[FormErrorDto: field="+field+", error="+error+"]";
+    return "FormErrorDto: {field: "+field+", error: "+error+"}";
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if(this == obj){
+      return true;
+    }
+    if(obj == null || obj.getClass() != getClass()){
+      return false;
+    }
+    FormErrorDto other = (FormErrorDto) obj;
+    return other.getField().equals(this.field) && other.getError().equals(this.error);
+  }
+
+  @Override
+  public int hashCode() {
+    int result = 1;
+    if(field != null){
+      result = result * 31 + field.hashCode();
+    }
+    if(error != null){
+      result = result * 31 + error.hashCode();
+    }
+    return result;
   }
 
 }

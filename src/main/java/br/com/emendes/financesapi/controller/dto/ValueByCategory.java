@@ -1,6 +1,8 @@
 package br.com.emendes.financesapi.controller.dto;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 import br.com.emendes.financesapi.model.enumerator.Category;
 
@@ -44,5 +46,14 @@ public class ValueByCategory {
   @Override
   public String toString() {
     return category.name()+" - "+value;
+  }
+
+  public static List<ValueByCategory> listWithZero(){
+    List<ValueByCategory> totalByCategory = new ArrayList<>();
+    for(Category category : Category.values()){
+      totalByCategory.add(new ValueByCategory(category, BigDecimal.ZERO));
+    }
+
+    return totalByCategory;
   }
 }

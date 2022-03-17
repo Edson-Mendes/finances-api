@@ -1,5 +1,6 @@
 package br.com.emendes.financesapi.authetication;
 
+import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.Assertions;
@@ -39,6 +40,23 @@ public class SignupTest {
 
   @Test
   @Order(1)
+  public void deveriaDevolver400EErroDtoDeSenhaFraca() throws Exception {
+    String name = "Ipsum Lorem";
+    String email = "ipsum.l@email.com";
+    String password = "aaaaaaa 12";
+    String confirm = "aaaaaaa 12";
+
+    MvcResult result = mock.post("/auth/signup",
+        Map.of("name", name, "email", email, "password", password, "confirm", confirm), "", 400);
+
+    List<FormErrorDto> listFormErrorDto = DtoFromMvcResult.formErrorDto(result);
+
+    FormErrorDto formErrorExpected = new FormErrorDto("password", "não deve ter espaço em branco.");
+    Assertions.assertTrue(listFormErrorDto.contains(formErrorExpected));
+  }
+
+  @Test
+  @Order(2)
   public void deveriaDevolver201AoRealizarSignup() throws Exception {
     String name = "Ipsum Lorem";
     String email = "ipsum.l@email.com";
@@ -55,18 +73,18 @@ public class SignupTest {
   }
 
   @Test
-  @Order(2)
+  @Order(3)
   public void deveriaDevolver409AoCadastrarComEmailExistenteNoDB() throws Exception {
     String name = "Ipsom";
     String email = "ipsum.l@email.com";
-    String password = "111111";
-    String confirm = "111111";
+    String password = "12345678";
+    String confirm = "12345678";
 
     mock.post("/auth/signup", Map.of("name", name, "email", email, "password", password, "confirm", confirm), "", 409);
   }
 
   @Test
-  @Order(3)
+  @Order(4)
   public void deveriaDevolver400AoCadastrarComNomeVazioEARespostaBater() throws Exception {
     String name = "";
     String email = "lorem@email.com";
@@ -75,33 +93,31 @@ public class SignupTest {
 
     MvcResult result = mock.post("/auth/signup",
         Map.of("name", name, "email", email, "password", password, "confirm", confirm), "", 400);
-    FormErrorDto formErrorDto = DtoFromMvcResult.formErrorDto(result);
+    List<FormErrorDto> listFormErrorDto = DtoFromMvcResult.formErrorDto(result);
 
-    Assertions.assertEquals("name", formErrorDto.getField());
-    Assertions.assertEquals("não deve estar em branco", formErrorDto.getError());
-
-  }
-
-  @Test
-  @Order(4)
-  public void deveriaDevolver400AoCadastrarComEmailInvalidoEARespostaBater() throws Exception {
-    String name = "lorem";
-    String email = "lorememail.com";
-    String password = "111111";
-    String confirm = "111111";
-
-    MvcResult result = mock.post("/auth/signup",
-        Map.of("name", name, "email", email, "password", password, "confirm", confirm), "", 400);
-    // result.getResponse().setCharacterEncoding("UTF-8");
-    FormErrorDto formErrorDto = DtoFromMvcResult.formErrorDto(result);
-
-    Assertions.assertEquals("email", formErrorDto.getField());
-    Assertions.assertEquals("deve ser um endereço de e-mail bem formado", formErrorDto.getError());
-    
+    FormErrorDto formErrorExpected = new FormErrorDto("name", "não deve estar em branco");
+    Assertions.assertTrue(listFormErrorDto.contains(formErrorExpected));
   }
 
   @Test
   @Order(5)
+  public void deveriaDevolver400AoCadastrarComEmailInvalidoEARespostaBater() throws Exception {
+    String name = "lorem";
+    String email = "lorememail.com";
+    String password = "12345678";
+    String confirm = "12345678";
+
+    MvcResult result = mock.post("/auth/signup",
+        Map.of("name", name, "email", email, "password", password, "confirm", confirm), "", 400);
+
+    List<FormErrorDto> listFormErrorDto = DtoFromMvcResult.formErrorDto(result);
+
+    FormErrorDto formErrorExpected = new FormErrorDto("email", "deve ser um endereço de e-mail bem formado");
+    Assertions.assertTrue(listFormErrorDto.contains(formErrorExpected));
+  }
+
+  @Test
+  @Order(6)
   public void deveriaDevolver400AoCadastrarComSenhaVazioEARespostaBater() throws Exception {
     String name = "lorem";
     String email = "lorem@email.com";
@@ -110,35 +126,35 @@ public class SignupTest {
 
     MvcResult result = mock.post("/auth/signup",
         Map.of("name", name, "email", email, "password", password, "confirm", confirm), "", 400);
-    FormErrorDto formErrorDto = DtoFromMvcResult.formErrorDto(result);
+    List<FormErrorDto> listFormErrorDto = DtoFromMvcResult.formErrorDto(result);
 
-    Assertions.assertEquals("password", formErrorDto.getField());
-    Assertions.assertEquals("não deve estar em branco", formErrorDto.getError());
-  }
-
-  @Test
-  @Order(6)
-  public void deveriaDevolver400AoCadastrarComConfimacaoVazioEARespostaBater() throws Exception {
-    String name = "lorem";
-    String email = "lorem@email.com";
-    String password = "111111";
-    String confirm = "";
-
-    MvcResult result = mock.post("/auth/signup",
-        Map.of("name", name, "email", email, "password", password, "confirm", confirm), "", 400);
-    FormErrorDto formErrorDto = DtoFromMvcResult.formErrorDto(result);
-
-    Assertions.assertEquals("confirm", formErrorDto.getField());
-    Assertions.assertEquals("não deve estar em branco", formErrorDto.getError());
+    FormErrorDto formErrorExpected = new FormErrorDto("password", "não deve estar em branco");
+    Assertions.assertTrue(listFormErrorDto.contains(formErrorExpected));
   }
 
   @Test
   @Order(7)
+  public void deveriaDevolver400AoCadastrarComConfimacaoVazioEARespostaBater() throws Exception {
+    String name = "lorem";
+    String email = "lorem@email.com";
+    String password = "12345678";
+    String confirm = "";
+
+    MvcResult result = mock.post("/auth/signup",
+        Map.of("name", name, "email", email, "password", password, "confirm", confirm), "", 400);
+    List<FormErrorDto> listFormErrorDto = DtoFromMvcResult.formErrorDto(result);
+
+    FormErrorDto formErrorExpected = new FormErrorDto("confirm", "não deve estar em branco");
+    Assertions.assertTrue(listFormErrorDto.contains(formErrorExpected));
+  }
+
+  @Test
+  @Order(8)
   public void deveriaDevolver400AoCadastrarSemAsSenhasCondizerem() throws Exception {
     String name = "lorem";
     String email = "lorem@email.com";
-    String password = "111111";
-    String confirm = "11111";
+    String password = "12345678";
+    String confirm = "123456789";
 
     MvcResult result = mock.post("/auth/signup",
         Map.of("name", name, "email", email, "password", password, "confirm", confirm), "", 400);

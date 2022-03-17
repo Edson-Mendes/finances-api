@@ -29,11 +29,10 @@ public class SummaryService {
       Optional<BigDecimal> incomeTotalValue = incomeService.getTotalValueByMonthAndYearAndUserId(year, month, userId);
       Optional<BigDecimal> expenseTotalValue = expenseService.getTotalValueByMonthAndYearAndUserId(year, month, userId);
       if(incomeTotalValue.isPresent() || expenseTotalValue.isPresent()){
-        // FIXME: Não há necessidade de chamar getTotalBycategory se expenseTotalvalue não existir!
         SummaryDto summaryDto = new SummaryDto(
             incomeTotalValue.orElse(BigDecimal.ZERO), 
             expenseTotalValue.orElse(BigDecimal.ZERO), 
-            getTotalByCategory(year, month, userId));
+            expenseTotalValue.isPresent() ? getTotalByCategory(year, month, userId) : ValueByCategory.listWithZero());
         return ResponseEntity.ok(summaryDto);
       }
       throw new Exception();
@@ -46,7 +45,6 @@ public class SummaryService {
           .header("Content-Type", "application/json;charset=UTF-8")
           .body(errorDto);
     }
-
   }
 
   private List<ValueByCategory> getTotalByCategory(Integer year, Integer month, Long userId) {
