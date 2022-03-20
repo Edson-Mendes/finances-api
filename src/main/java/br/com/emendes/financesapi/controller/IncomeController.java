@@ -60,7 +60,6 @@ public class IncomeController {
     return incomeService.readByIdAndUser(id, userId);
   }
 
-  // TODO: Fazer tratamento caso o path não contenha um número para ano e mês.
   @GetMapping("/{year}/{month}")
   public ResponseEntity<?> readByYearAndMonth(@PathVariable Integer year, @PathVariable Integer month,
       HttpServletRequest request) {

@@ -1,13 +1,14 @@
 package br.com.emendes.financesapi.controller.form;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 
 import br.com.emendes.financesapi.model.Role;
 
 public class RoleForm {
   
-  // TODO: Adicionar uma validação para o nome do Role começar com 'ROLE'
   @NotBlank
+  @Pattern(regexp = "ROLE_[A-Z]{1,}", message = "deve iniciar com \'ROLE_\' e continuar em letras maiúsculas")
   private String name;
 
   public String getName() {

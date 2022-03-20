@@ -28,7 +28,6 @@ public class RoleService {
   }
 
   public ResponseEntity<List<RoleDto>> readAll() {
-    // TODO: Buscar lista de Roles no repositório.
     List<Role> roles = roleRepository.findAll();
     List<RoleDto> rolesDto = RoleDto.convert(roles);
 
