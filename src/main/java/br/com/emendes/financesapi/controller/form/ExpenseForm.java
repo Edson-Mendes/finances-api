@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Optional;
 
-import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
@@ -28,7 +27,6 @@ public class ExpenseForm {
 
   @NotNull
   @Positive
-  @Digits(fraction = 2, integer = 6)
   private BigDecimal value;
 
   private Category category;

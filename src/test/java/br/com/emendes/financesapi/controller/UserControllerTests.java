@@ -63,13 +63,24 @@ public class UserControllerTests {
 
   @Test
   @Order(1)
+  public void deveriaDevolver200AoAtualizarASenhaDoUsuario() throws Exception {
+    String newPassword = "222222222";
+    String confirm = "222222222";
+
+    Map<String, Object> params = Map.of("newPassword", newPassword, "confirm", confirm);
+
+    mock.put("/user/change-password", params, tokenUser, 200);
+  }
+
+  @Test
+  @Order(2)
   public void deveriaDevolver403QuandoRole_UserDeletarUsuario() throws Exception{
     Long id = 1l;
     mock.delete("/user/"+id, tokenUser, 403);
   }
 
   @Test
-  @Order(2)
+  @Order(3)
   public void deveriaDevolver404EErrorDtoAoDeletarUsuarioInexistente() throws Exception {
     Long id = 100l;
     MvcResult result = mock.delete("/user/"+id, tokenAdmin, 404);
@@ -80,9 +91,10 @@ public class UserControllerTests {
   }
 
   @Test
-  @Order(3)
+  @Order(4)
   public void deveriaDevolver200AoAdminDeletarUsuario() throws Exception {
     Long id = 2l;
     mock.delete("/user/"+id, tokenAdmin, 200);
   }
+
 }
