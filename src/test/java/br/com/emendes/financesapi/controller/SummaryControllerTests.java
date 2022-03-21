@@ -194,7 +194,7 @@ public class SummaryControllerTests {
   @Test
   @Order(5)
   public void deveriaDevolver400AoBuscarComAnoNaoNumerico() throws Exception {
-    mock.get("/resumo/2O22/12", tokenLorem, 400);
+    mock.get("/resumo/2O22/12", tokenLorem, 404);
   }
 
 }
