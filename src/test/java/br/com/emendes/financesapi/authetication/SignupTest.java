@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -32,11 +31,6 @@ public class SignupTest {
 
   @Autowired
   private CustomMockMvc mock;
-
-  @BeforeAll
-  public void addRoles() throws Exception {
-    mock.post("/role", Map.of("name", "ROLE_USER"), "", 201);
-  }
 
   @Test
   @Order(1)

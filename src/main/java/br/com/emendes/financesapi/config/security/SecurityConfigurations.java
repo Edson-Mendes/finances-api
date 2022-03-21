@@ -54,11 +54,11 @@ public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
         .antMatchers(HttpMethod.POST, "/auth/signin").permitAll()
         .antMatchers(HttpMethod.POST, "/auth/signup").permitAll()
         .antMatchers(HttpMethod.POST, "/role").permitAll()
+        .antMatchers(HttpMethod.DELETE, "/user/*").hasRole("ADMIN")
         .anyRequest().authenticated()
         .and().csrf().disable()
         .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-        .and()
-        .addFilterBefore(new AuthenticationByTokenFilter(tokenService,
+        .and().addFilterBefore(new AuthenticationByTokenFilter(tokenService,
             userRepository),
             UsernamePasswordAuthenticationFilter.class)
         .exceptionHandling().authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED));

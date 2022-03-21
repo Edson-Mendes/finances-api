@@ -35,7 +35,6 @@ public class SigninTest {
 
   @BeforeAll
   public void addRoleAndUser() throws Exception {
-    mock.post("/role", Map.of("name", "ROLE_USER"), "", 201);
     mock.post("/auth/signup",
         Map.of("name", "Ipsum", "email", "ipsum@email.com", "password", "123123123", "confirm", "123123123"), "", 201);
   }

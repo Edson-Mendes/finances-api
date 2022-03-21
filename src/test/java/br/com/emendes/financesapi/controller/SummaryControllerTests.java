@@ -39,10 +39,6 @@ public class SummaryControllerTests {
 
   private String tokenIpsum;
 
-  private void addRoles() throws Exception {
-    mock.post("/role", Map.of("name", "ROLE_USER"), "", 201);
-  }
-
   private void addUsuarioLorem() throws Exception {
     String name = "Lorem Dolor";
     String email = "lorem.d@email.com";
@@ -120,7 +116,6 @@ public class SummaryControllerTests {
 
   @BeforeAll
   public void populateDB() throws Exception {
-    addRoles();
     addUsuarioLorem();
     addUsuarioIpsum();
     populateLorem();

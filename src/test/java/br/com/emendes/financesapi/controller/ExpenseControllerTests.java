@@ -41,11 +41,6 @@ public class ExpenseControllerTests {
   private String tokenIpsum;
 
   @BeforeAll
-  public void addRoles() throws Exception {
-    mock.post("/role", Map.of("name", "ROLE_USER"), "", 201);
-  }
-
-  @BeforeAll
   public void addUsuarioLorem() throws Exception {
     String name = "Lorem Amet";
     String email = "lorem.a@email.com";

@@ -40,11 +40,6 @@ public class IncomeControllerTests {
   private String tokenIpsum;
 
   @BeforeAll
-  public void addRoles() throws Exception {
-    mock.post("/role", Map.of("name", "ROLE_USER"), "", 201);
-  }
-
-  @BeforeAll
   public void addUsuarioLorem() throws Exception {
     String name = "Lorem Sit";
     String email = "lorem.s@email.com";

@@ -54,18 +54,18 @@ public class TestSecurityConfigurations extends WebSecurityConfigurerAdapter {
         .antMatchers(HttpMethod.POST, "/auth/signin").permitAll()
         .antMatchers(HttpMethod.POST, "/auth/signup").permitAll()
         .antMatchers(HttpMethod.POST, "/role").permitAll()
+        .antMatchers(HttpMethod.DELETE, "/user/*").hasRole("ADMIN")
         .anyRequest().authenticated()
         .and().csrf().disable()
         .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-        .and()
-        .addFilterBefore(new AuthenticationByTokenFilter(tokenService,
+        .and().addFilterBefore(new AuthenticationByTokenFilter(tokenService,
             userRepository),
             UsernamePasswordAuthenticationFilter.class)
         .exceptionHandling().authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED));
 
     // http.authorizeRequests().anyRequest().permitAll().and().csrf().disable().headers().frameOptions().disable();
     // http.authorizeRequests().antMatchers("/").permitAll().and()
-    //     .authorizeRequests().antMatchers("/h2-console/**").permitAll();
+    // .authorizeRequests().antMatchers("/h2-console/**").permitAll();
     // http.csrf().disable();
     // http.headers().frameOptions().disable();
   }
