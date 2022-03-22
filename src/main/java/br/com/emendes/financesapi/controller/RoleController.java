@@ -6,7 +6,9 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,21 +21,29 @@ import br.com.emendes.financesapi.service.RoleService;
 
 @RestController
 @RequestMapping("/role")
-// TODO: O acesso deverá ser apenas para admin.
 public class RoleController {
-  
+
   @Autowired
   private RoleService roleService;
 
   @PostMapping
-  public ResponseEntity<RoleDto> create(@RequestBody @Valid RoleForm roleForm, UriComponentsBuilder uriBuilder){
-
+  public ResponseEntity<?> create(@RequestBody @Valid RoleForm roleForm, UriComponentsBuilder uriBuilder) {
     return roleService.create(roleForm, uriBuilder);
   }
 
   @GetMapping
-  public ResponseEntity<List<RoleDto>> readAll(){
+  public ResponseEntity<List<RoleDto>> readAll() {
     return roleService.readAll();
+  }
+
+  @GetMapping("/{id}")
+  public ResponseEntity<?> readById(@PathVariable Long id){
+    return roleService.readById(id);
+  }
+
+  @DeleteMapping("/{id}")
+  public ResponseEntity<?> deleteById(@PathVariable Long id){
+    return roleService.deleteById(id);
   }
 
 }

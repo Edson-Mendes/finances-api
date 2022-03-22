@@ -48,12 +48,14 @@ public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
   // Configurações de autorização
   @Override
   protected void configure(HttpSecurity http) throws Exception {
-    // TODO: Não esquecer de revisar os acessos aos endpoints
-    // Remover permição livre para POST para /role
+    
     http.authorizeRequests()
         .antMatchers(HttpMethod.POST, "/auth/signin").permitAll()
         .antMatchers(HttpMethod.POST, "/auth/signup").permitAll()
-        .antMatchers(HttpMethod.POST, "/role").permitAll()
+        .antMatchers(HttpMethod.POST, "/role").hasRole("ADMIN")
+        .antMatchers(HttpMethod.GET, "/role").hasRole("ADMIN")
+        .antMatchers(HttpMethod.GET, "/role/*").hasRole("ADMIN")
+        .antMatchers(HttpMethod.DELETE, "/role/*").hasRole("ADMIN")
         .antMatchers(HttpMethod.DELETE, "/user/*").hasRole("ADMIN")
         .anyRequest().authenticated()
         .and().csrf().disable()

@@ -15,6 +15,7 @@ import br.com.emendes.financesapi.config.validation.error_dto.ErrorDto;
 import br.com.emendes.financesapi.config.validation.error_dto.FormErrorDto;
 import br.com.emendes.financesapi.controller.dto.ExpenseDto;
 import br.com.emendes.financesapi.controller.dto.IncomeDto;
+import br.com.emendes.financesapi.controller.dto.RoleDto;
 import br.com.emendes.financesapi.controller.dto.SummaryDto;
 import br.com.emendes.financesapi.controller.dto.TokenDto;
 import br.com.emendes.financesapi.controller.dto.UserDto;
@@ -150,4 +151,15 @@ public abstract class DtoFromMvcResult {
     JsonNode content = new ObjectMapper().readTree(result.getResponse().getContentAsString());
     return expenseDto(content);
   }
+
+  public static RoleDto roleDto(MvcResult result) throws Exception {
+    JsonNode content = new ObjectMapper().readTree(result.getResponse().getContentAsString());
+
+    Long id = content.get("id").asLong();
+    String name = content.get("name").asText();
+
+    RoleDto roleDto = new RoleDto(id, name);
+    return roleDto;
+  }
+  
 }

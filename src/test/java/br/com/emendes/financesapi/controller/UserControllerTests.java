@@ -37,7 +37,7 @@ public class UserControllerTests {
   @BeforeAll
   public void addCommonUser() throws Exception {
     String name = "Common User";
-    String email = "user@email.com";
+    String email = "commonuser@email.com";
     String password = "111111111";
     String confirm = "111111111";
 

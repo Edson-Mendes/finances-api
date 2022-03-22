@@ -9,7 +9,7 @@ import org.springframework.web.server.ResponseStatusException;
 import br.com.emendes.financesapi.config.validation.error_dto.ErrorDto;
 
 @RestControllerAdvice
-public class ConflictHandler {
+public class ConflictErrorHandler {
 
   @ResponseStatus(code = HttpStatus.CONFLICT)
   @ExceptionHandler(ResponseStatusException.class)
