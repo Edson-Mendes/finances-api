@@ -27,7 +27,7 @@ public class RoleController {
   private RoleService roleService;
 
   @PostMapping
-  public ResponseEntity<?> create(@RequestBody @Valid RoleForm roleForm, UriComponentsBuilder uriBuilder) {
+  public ResponseEntity<RoleDto> create(@RequestBody @Valid RoleForm roleForm, UriComponentsBuilder uriBuilder) {
     return roleService.create(roleForm, uriBuilder);
   }
 
@@ -37,13 +37,13 @@ public class RoleController {
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<?> readById(@PathVariable Long id){
+  public ResponseEntity<RoleDto> readById(@PathVariable Long id){
     return roleService.readById(id);
   }
 
   @DeleteMapping("/{id}")
-  public ResponseEntity<?> deleteById(@PathVariable Long id){
-    return roleService.deleteById(id);
+  public void deleteById(@PathVariable Long id){
+    roleService.deleteById(id);
   }
 
 }

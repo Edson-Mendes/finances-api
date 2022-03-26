@@ -1,6 +1,5 @@
 package br.com.emendes.financesapi.config.validation.error_handler;
 
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -8,6 +7,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.server.ResponseStatusException;
 
 import br.com.emendes.financesapi.config.validation.error_dto.ErrorDto;
+import br.com.emendes.financesapi.config.validation.exception.DataConflictException;
 
 @RestControllerAdvice
 public class ConflictErrorHandler {
@@ -18,9 +18,9 @@ public class ConflictErrorHandler {
     return conflictReturn(errorDto);
   }
 
-  @ExceptionHandler(DataIntegrityViolationException.class)
-  public ResponseEntity<ErrorDto> handle(DataIntegrityViolationException exception) {
-    ErrorDto errorDto = new ErrorDto("CONFLICT", "Email inserido já está em uso!");
+  @ExceptionHandler(DataConflictException.class)
+  public ResponseEntity<ErrorDto> handle(DataConflictException exception) {
+    ErrorDto errorDto = new ErrorDto("CONFLICT", exception.getMessage());
     return conflictReturn(errorDto);
   }
 
