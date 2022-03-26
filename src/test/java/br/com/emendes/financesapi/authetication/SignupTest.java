@@ -74,7 +74,11 @@ public class SignupTest {
     String password = "12345678";
     String confirm = "12345678";
 
-    mock.post("/auth/signup", Map.of("name", name, "email", email, "password", password, "confirm", confirm), "", 409);
+    MvcResult result = mock.post("/auth/signup", Map.of("name", name, "email", email, "password", password, "confirm", confirm), "", 409);
+
+    ErrorDto errorDto = DtoFromMvcResult.errorDto(result);
+
+    Assertions.assertEquals("Email inserido já está em uso!", errorDto.getMessage());
   }
 
   @Test
@@ -154,7 +158,7 @@ public class SignupTest {
         Map.of("name", name, "email", email, "password", password, "confirm", confirm), "", 400);
     ErrorDto errorDto = DtoFromMvcResult.errorDto(result);
 
-    Assertions.assertEquals("Bad Request", errorDto.getError());
+    Assertions.assertEquals("BAD REQUEST", errorDto.getError());
     Assertions.assertEquals("As senhas não correspondem!", errorDto.getMessage());
   }
 
