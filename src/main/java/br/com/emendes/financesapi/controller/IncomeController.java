@@ -1,5 +1,7 @@
 package br.com.emendes.financesapi.controller;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
@@ -23,7 +25,6 @@ import br.com.emendes.financesapi.controller.form.IncomeForm;
 import br.com.emendes.financesapi.service.IncomeService;
 
 // TODO: Refatorar as repetições de código.
-// TODO Repensar esses retornos em exclamação (?)
 @RestController
 @RequestMapping("/receitas")
 public class IncomeController {
@@ -43,7 +44,7 @@ public class IncomeController {
   }
 
   @GetMapping
-  public ResponseEntity<?> read(@RequestParam(required = false) String description,
+  public ResponseEntity<List<IncomeDto>> read(@RequestParam(required = false) String description,
       HttpServletRequest request) {
     String token = tokenService.recoverToken(request);
     Long userId = tokenService.getIdUser(token);
@@ -54,14 +55,14 @@ public class IncomeController {
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<?> readById(@PathVariable Long id, HttpServletRequest request) {
+  public ResponseEntity<IncomeDto> readById(@PathVariable Long id, HttpServletRequest request) {
     String token = tokenService.recoverToken(request);
     Long userId = tokenService.getIdUser(token);
     return incomeService.readByIdAndUser(id, userId);
   }
 
   @GetMapping("/{year}/{month}")
-  public ResponseEntity<?> readByYearAndMonth(@PathVariable Integer year, @PathVariable Integer month,
+  public ResponseEntity<List<IncomeDto>> readByYearAndMonth(@PathVariable Integer year, @PathVariable Integer month,
       HttpServletRequest request) {
     String token = tokenService.recoverToken(request);
     Long userId = tokenService.getIdUser(token);
@@ -70,7 +71,7 @@ public class IncomeController {
 
   @PutMapping("/{id}")
   @Transactional
-  public ResponseEntity<?> update(@PathVariable Long id, @Valid @RequestBody IncomeForm incomeForm,
+  public ResponseEntity<IncomeDto> update(@PathVariable Long id, @Valid @RequestBody IncomeForm incomeForm,
       HttpServletRequest request) {
     String token = tokenService.recoverToken(request);
     Long userId = tokenService.getIdUser(token);
@@ -78,10 +79,10 @@ public class IncomeController {
   }
 
   @DeleteMapping("/{id}")
-  public ResponseEntity<?> delete(@PathVariable Long id, HttpServletRequest request) {
+  public void delete(@PathVariable Long id, HttpServletRequest request) {
     String token = tokenService.recoverToken(request);
     Long userId = tokenService.getIdUser(token);
-    return incomeService.delete(id, userId);
+    incomeService.delete(id, userId);
   }
 
 }
