@@ -5,13 +5,14 @@ import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
+import javax.persistence.NoResultException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import br.com.emendes.financesapi.config.validation.error_dto.ErrorDto;
 import br.com.emendes.financesapi.controller.dto.ExpenseDto;
 import br.com.emendes.financesapi.controller.form.ExpenseForm;
 import br.com.emendes.financesapi.model.Expense;
@@ -40,12 +41,10 @@ public class ExpenseService {
     return ResponseEntity.created(uri).body(new ExpenseDto(expense));
   }
 
-  public ResponseEntity<?> readAllByUser(Long userId) {
+  public ResponseEntity<List<ExpenseDto>> readAllByUser(Long userId) {
     List<Expense> expenses = expenseRepository.findByUserId(userId);
     if (expenses.isEmpty()) {
-      return ResponseEntity.status(HttpStatus.NOT_FOUND)
-          .header("Content-Type", "application/json;charset=UTF-8")
-          .body(new ErrorDto("Not Found", "O usuário não possui despesas"));
+      throw new NoResultException("O usuário não possui despesas");
     }
     List<ExpenseDto> expensesDto = ExpenseDto.convert(expenses);
 
@@ -54,13 +53,10 @@ public class ExpenseService {
         .body(expensesDto);
   }
 
-  public ResponseEntity<?> readByDescriptionAndUser(String description, Long userId) {
+  public ResponseEntity<List<ExpenseDto>> readByDescriptionAndUser(String description, Long userId) {
     List<Expense> expenses = expenseRepository.findByDescriptionAndUserId(description, userId);
-    if (expenses.isEmpty() || expenses == null) {
-      return ResponseEntity.status(HttpStatus.NOT_FOUND)
-          .header("Content-Type", "application/json;charset=UTF-8")
-          .body(new ErrorDto("Not Found", "O usuário não possui despesas com descrição similar a " + description));
-
+    if (expenses.isEmpty()) {
+      throw new NoResultException("O usuário não possui despesas com descrição similar a " + description);
     }
 
     List<ExpenseDto> expensesDto = ExpenseDto.convert(expenses);
@@ -69,30 +65,22 @@ public class ExpenseService {
         .body(expensesDto);
   }
 
-  public ResponseEntity<?> readByIdAndUser(Long id, Long userId) {
+  public ResponseEntity<ExpenseDto> readByIdAndUser(Long id, Long userId) {
     Optional<Expense> optional = expenseRepository.findByIdAndUserId(id, userId);
-    if (optional.isPresent()) {
-      ExpenseDto expenseDto = new ExpenseDto(optional.get());
-      return ResponseEntity.status(HttpStatus.OK)
-          .header("Content-Type", "application/json;charset=UTF-8")
-          .body(expenseDto);
+    if (optional.isEmpty()) {
+      throw new NoResultException("Nenhuma despesa com esse id para esse usuário");
     }
-
-    return ResponseEntity.status(HttpStatus.NOT_FOUND)
+    ExpenseDto expenseDto = new ExpenseDto(optional.get());
+    return ResponseEntity.status(HttpStatus.OK)
         .header("Content-Type", "application/json;charset=UTF-8")
-        .body(new ErrorDto("Not Found", "Nenhuma despesa com esse id para esse usuário"));
+        .body(expenseDto);
   }
 
-  public ResponseEntity<?> readByYearAndMonthAndUser(Integer year, Integer month, Long userId) {
+  public ResponseEntity<List<ExpenseDto>> readByYearAndMonthAndUser(Integer year, Integer month, Long userId) {
     List<Expense> expenses = expenseRepository.findByYearAndMonthAndUserId(year, month, userId);
 
-    if (expenses.isEmpty() || expenses == null) {
-      String message = "Não há despesas para o ano " + year + " e mês " + month;
-      ErrorDto errorDto = new ErrorDto("Not Found", message);
-      return ResponseEntity
-          .status(HttpStatus.NOT_FOUND)
-          .header("Content-Type", "application/json;charset=UTF-8")
-          .body(errorDto);
+    if (expenses.isEmpty()) {
+      throw new NoResultException("Não há despesas para o ano " + year + " e mês " + month);
     }
     List<ExpenseDto> expensesDto = ExpenseDto.convert(expenses);
     return ResponseEntity.status(HttpStatus.OK)
@@ -100,11 +88,10 @@ public class ExpenseService {
         .body(expensesDto);
   }
 
-  public ResponseEntity<?> update(Long id, ExpenseForm expenseForm, Long userId) {
+  public ResponseEntity<ExpenseDto> update(Long id, ExpenseForm expenseForm, Long userId) {
     Optional<Expense> optional = expenseRepository.findByIdAndUserId(id, userId);
     if (optional.isPresent() && !expenseForm.alreadyExist(expenseRepository, id, userId)) {
       Expense expense = optional.get();
-
       expense.setParams(expenseForm);
 
       return ResponseEntity.status(HttpStatus.OK)
@@ -112,21 +99,15 @@ public class ExpenseService {
           .body(new ExpenseDto(expense));
     }
 
-    return ResponseEntity.status(HttpStatus.NOT_FOUND)
-        .header("Content-Type", "application/json;charset=UTF-8")
-        .body(new ErrorDto("Not Found", "Nenhuma despesa com esse id para esse usuário"));
+    throw new NoResultException("Nenhuma despesa com esse id para esse usuário");
   }
 
-  public ResponseEntity<?> delete(Long id, Long userId) {
+  public void delete(Long id, Long userId) {
     Optional<Expense> optional = expenseRepository.findByIdAndUserId(id, userId);
-    if (optional.isPresent()) {
-      expenseRepository.deleteById(id);
-      return ResponseEntity.ok().build();
+    if (optional.isEmpty()) {
+      throw new NoResultException("Nenhuma despesa com esse id para esse usuário");
     }
-
-    return ResponseEntity.status(HttpStatus.NOT_FOUND)
-        .header("Content-Type", "application/json;charset=UTF-8")
-        .body(new ErrorDto("Not Found", "Nenhuma despesa com esse id para esse usuário"));
+    expenseRepository.deleteById(id);
   }
 
   public Optional<BigDecimal> getTotalValueByMonthAndYearAndUserId(Integer year, Integer month, Long userId) {

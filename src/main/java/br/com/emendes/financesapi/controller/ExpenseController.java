@@ -1,5 +1,7 @@
 package br.com.emendes.financesapi.controller;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
@@ -41,7 +43,7 @@ public class ExpenseController {
   }
 
   @GetMapping
-  public ResponseEntity<?> read(@RequestParam(required = false) String description,
+  public ResponseEntity<List<ExpenseDto>> read(@RequestParam(required = false) String description,
       HttpServletRequest request) {
     String token = tokenService.recoverToken(request);
     Long userId = tokenService.getIdUser(token);
@@ -53,14 +55,14 @@ public class ExpenseController {
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<?> readById(@PathVariable Long id, HttpServletRequest request) {
+  public ResponseEntity<ExpenseDto> readById(@PathVariable Long id, HttpServletRequest request) {
     String token = tokenService.recoverToken(request);
     Long userId = tokenService.getIdUser(token);
     return expenseService.readByIdAndUser(id, userId);
   }
 
   @GetMapping("/{year}/{month}")
-  public ResponseEntity<?> readByYearAndMonth(@PathVariable Integer year, @PathVariable Integer month,
+  public ResponseEntity<List<ExpenseDto>> readByYearAndMonth(@PathVariable Integer year, @PathVariable Integer month,
       HttpServletRequest request) {
     String token = tokenService.recoverToken(request);
     Long userId = tokenService.getIdUser(token);
@@ -69,7 +71,7 @@ public class ExpenseController {
 
   @PutMapping("/{id}")
   @Transactional
-  public ResponseEntity<?> update(@PathVariable Long id, @Valid @RequestBody ExpenseForm expenseForm,
+  public ResponseEntity<ExpenseDto> update(@PathVariable Long id, @Valid @RequestBody ExpenseForm expenseForm,
       HttpServletRequest request) {
     String token = tokenService.recoverToken(request);
     Long userId = tokenService.getIdUser(token);
@@ -77,10 +79,10 @@ public class ExpenseController {
   }
 
   @DeleteMapping("/{id}")
-  public ResponseEntity<?> delete(@PathVariable Long id, HttpServletRequest request) {
+  public void delete(@PathVariable Long id, HttpServletRequest request) {
     String token = tokenService.recoverToken(request);
     Long userId = tokenService.getIdUser(token);
-    return expenseService.delete(id, userId);
+    expenseService.delete(id, userId);
   }
 
 }
