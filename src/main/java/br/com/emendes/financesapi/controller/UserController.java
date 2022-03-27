@@ -5,7 +5,6 @@ import javax.transaction.Transactional;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -27,17 +26,17 @@ public class UserController {
   @Autowired TokenService tokenService;
 
   @DeleteMapping("/{id}")
-  public ResponseEntity<?> delete(@PathVariable Long id){
-    return userService.delete(id);
+  public void delete(@PathVariable Long id){
+    userService.delete(id);
   }
 
   @PutMapping("/change-password")
   @Transactional
-  public ResponseEntity<?> changePassword(@Valid @RequestBody ChangePasswordForm changeForm, HttpServletRequest request){
+  public void changePassword(@Valid @RequestBody ChangePasswordForm changeForm, HttpServletRequest request){
     String token = tokenService.recoverToken(request);
     Long userId = tokenService.getIdUser(token);
 
-    return userService.changePassword(changeForm, userId);
+    userService.changePassword(changeForm, userId);
   }
 
 }

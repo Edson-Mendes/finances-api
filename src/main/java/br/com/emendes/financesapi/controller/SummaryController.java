@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.emendes.financesapi.config.security.TokenService;
+import br.com.emendes.financesapi.controller.dto.SummaryDto;
 import br.com.emendes.financesapi.service.SummaryService;
 
 @RestController
@@ -23,7 +24,7 @@ public class SummaryController {
   private TokenService tokenService;
 
   @GetMapping("/{year}/{month}")
-  public ResponseEntity<?> monthSummary(@PathVariable Integer year, @PathVariable Integer month, 
+  public ResponseEntity<SummaryDto> monthSummary(@PathVariable Integer year, @PathVariable Integer month, 
       HttpServletRequest request){
     String token = tokenService.recoverToken(request);
     Long userId = tokenService.getIdUser(token);
