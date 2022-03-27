@@ -24,10 +24,9 @@ public class SummaryController {
   private TokenService tokenService;
 
   @GetMapping("/{year}/{month}")
-  public ResponseEntity<SummaryDto> monthSummary(@PathVariable Integer year, @PathVariable Integer month, 
-      HttpServletRequest request){
-    String token = tokenService.recoverToken(request);
-    Long userId = tokenService.getIdUser(token);
+  public ResponseEntity<SummaryDto> monthSummary(@PathVariable Integer year, @PathVariable Integer month,
+      HttpServletRequest request) {
+    Long userId = tokenService.getUserId(request);
     return summaryService.monthSummary(year, month, userId);
   }
 

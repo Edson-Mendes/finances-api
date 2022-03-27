@@ -37,16 +37,14 @@ public class ExpenseController {
   @PostMapping
   public ResponseEntity<ExpenseDto> create(@Valid @RequestBody ExpenseForm form, UriComponentsBuilder uriBuilder,
       HttpServletRequest request) {
-    String token = tokenService.recoverToken(request);
-    Long userId = tokenService.getIdUser(token);
+    Long userId = tokenService.getUserId(request);
     return expenseService.create(form, userId, uriBuilder);
   }
 
   @GetMapping
   public ResponseEntity<List<ExpenseDto>> read(@RequestParam(required = false) String description,
       HttpServletRequest request) {
-    String token = tokenService.recoverToken(request);
-    Long userId = tokenService.getIdUser(token);
+    Long userId = tokenService.getUserId(request);
     if (description == null) {
       return expenseService.readAllByUser(userId);
     } else {
@@ -56,16 +54,14 @@ public class ExpenseController {
 
   @GetMapping("/{id}")
   public ResponseEntity<ExpenseDto> readById(@PathVariable Long id, HttpServletRequest request) {
-    String token = tokenService.recoverToken(request);
-    Long userId = tokenService.getIdUser(token);
+    Long userId = tokenService.getUserId(request);
     return expenseService.readByIdAndUser(id, userId);
   }
 
   @GetMapping("/{year}/{month}")
   public ResponseEntity<List<ExpenseDto>> readByYearAndMonth(@PathVariable Integer year, @PathVariable Integer month,
       HttpServletRequest request) {
-    String token = tokenService.recoverToken(request);
-    Long userId = tokenService.getIdUser(token);
+    Long userId = tokenService.getUserId(request);
     return expenseService.readByYearAndMonthAndUser(year, month, userId);
   }
 
@@ -73,15 +69,13 @@ public class ExpenseController {
   @Transactional
   public ResponseEntity<ExpenseDto> update(@PathVariable Long id, @Valid @RequestBody ExpenseForm expenseForm,
       HttpServletRequest request) {
-    String token = tokenService.recoverToken(request);
-    Long userId = tokenService.getIdUser(token);
+    Long userId = tokenService.getUserId(request);
     return expenseService.update(id, expenseForm, userId);
   }
 
   @DeleteMapping("/{id}")
   public void delete(@PathVariable Long id, HttpServletRequest request) {
-    String token = tokenService.recoverToken(request);
-    Long userId = tokenService.getIdUser(token);
+    Long userId = tokenService.getUserId(request);
     expenseService.delete(id, userId);
   }
 

@@ -33,8 +33,7 @@ public class UserController {
   @PutMapping("/change-password")
   @Transactional
   public void changePassword(@Valid @RequestBody ChangePasswordForm changeForm, HttpServletRequest request){
-    String token = tokenService.recoverToken(request);
-    Long userId = tokenService.getIdUser(token);
+    Long userId = tokenService.getUserId(request);
 
     userService.changePassword(changeForm, userId);
   }

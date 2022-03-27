@@ -45,9 +45,15 @@ public class TokenService {
     }
   }
 
-  public Long getIdUser(String token) {
+  public Long getUserId(String token) {
     Claims claims = Jwts.parser().setSigningKey(this.secret).parseClaimsJws(token).getBody();
     return Long.parseLong(claims.getSubject());
+  }
+
+  public Long getUserId(HttpServletRequest request){
+    String token = recoverToken(request);
+    Long id = getUserId(token);
+    return id;
   }
 
   public String recoverToken(HttpServletRequest request) {

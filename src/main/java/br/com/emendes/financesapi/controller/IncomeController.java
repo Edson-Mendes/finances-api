@@ -24,7 +24,6 @@ import br.com.emendes.financesapi.controller.dto.IncomeDto;
 import br.com.emendes.financesapi.controller.form.IncomeForm;
 import br.com.emendes.financesapi.service.IncomeService;
 
-// TODO: Refatorar as repetições de código.
 @RestController
 @RequestMapping("/receitas")
 public class IncomeController {
@@ -38,16 +37,14 @@ public class IncomeController {
   @PostMapping
   public ResponseEntity<IncomeDto> create(@Valid @RequestBody IncomeForm form, UriComponentsBuilder uriBuilder,
       HttpServletRequest request) {
-    String token = tokenService.recoverToken(request);
-    Long userId = tokenService.getIdUser(token);
+    Long userId = tokenService.getUserId(request);
     return incomeService.create(form, userId, uriBuilder);
   }
 
   @GetMapping
   public ResponseEntity<List<IncomeDto>> read(@RequestParam(required = false) String description,
       HttpServletRequest request) {
-    String token = tokenService.recoverToken(request);
-    Long userId = tokenService.getIdUser(token);
+    Long userId = tokenService.getUserId(request);
     if (description == null) {
       return incomeService.readAllByUser(userId);
     }
@@ -56,16 +53,14 @@ public class IncomeController {
 
   @GetMapping("/{id}")
   public ResponseEntity<IncomeDto> readById(@PathVariable Long id, HttpServletRequest request) {
-    String token = tokenService.recoverToken(request);
-    Long userId = tokenService.getIdUser(token);
+    Long userId = tokenService.getUserId(request);
     return incomeService.readByIdAndUser(id, userId);
   }
 
   @GetMapping("/{year}/{month}")
   public ResponseEntity<List<IncomeDto>> readByYearAndMonth(@PathVariable Integer year, @PathVariable Integer month,
       HttpServletRequest request) {
-    String token = tokenService.recoverToken(request);
-    Long userId = tokenService.getIdUser(token);
+    Long userId = tokenService.getUserId(request);
     return incomeService.readByYearAndMonthAndUser(year, month, userId);
   }
 
@@ -73,15 +68,13 @@ public class IncomeController {
   @Transactional
   public ResponseEntity<IncomeDto> update(@PathVariable Long id, @Valid @RequestBody IncomeForm incomeForm,
       HttpServletRequest request) {
-    String token = tokenService.recoverToken(request);
-    Long userId = tokenService.getIdUser(token);
+    Long userId = tokenService.getUserId(request);
     return incomeService.update(id, incomeForm, userId);
   }
 
   @DeleteMapping("/{id}")
   public void delete(@PathVariable Long id, HttpServletRequest request) {
-    String token = tokenService.recoverToken(request);
-    Long userId = tokenService.getIdUser(token);
+    Long userId = tokenService.getUserId(request);
     incomeService.delete(id, userId);
   }
 
