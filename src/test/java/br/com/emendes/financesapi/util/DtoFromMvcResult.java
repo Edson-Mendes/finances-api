@@ -39,13 +39,7 @@ public abstract class DtoFromMvcResult {
 
   public static UserDto userDto(MvcResult result) throws Exception {
     JsonNode content = new ObjectMapper().readTree(result.getResponse().getContentAsString());
-
-    Long id = content.get("id").asLong();
-    String name = content.get("name").asText();
-    String email = content.get("email").asText();
-
-    UserDto user = new UserDto(id, name, email);
-    return user;
+    return userDto(content);
   }
 
   public static ErrorDto errorDto(MvcResult result) throws Exception {
@@ -83,18 +77,13 @@ public abstract class DtoFromMvcResult {
     return incomesDto;
   }
 
-  public static IncomeDto incomeDto(JsonNode incomeJson) {
-    Long id = incomeJson.get("id").asLong();
-    String description = incomeJson.get("description").asText();
-    LocalDate date = LocalDate.parse(incomeJson.get("date").asText());
-    BigDecimal value = incomeJson.get("value").decimalValue();
+  public static IncomeDto incomeDto(JsonNode content) {
+    Long id = content.get("id").asLong();
+    String description = content.get("description").asText();
+    LocalDate date = LocalDate.parse(content.get("date").asText());
+    BigDecimal value = content.get("value").decimalValue();
 
-    IncomeDto incomeDto = new IncomeDto();
-    incomeDto.setId(id);
-    incomeDto.setDescription(description);
-    incomeDto.setDate(date);
-    incomeDto.setValue(value);
-
+    IncomeDto incomeDto = new IncomeDto(id, description, date, value);
     return incomeDto;
   }
 
@@ -113,20 +102,14 @@ public abstract class DtoFromMvcResult {
     return expensesDto;
   }
 
-  public static ExpenseDto expenseDto(JsonNode expenseJson) {
-    Long id = expenseJson.get("id").asLong();
-    String description = expenseJson.get("description").asText();
-    LocalDate date = LocalDate.parse(expenseJson.get("date").asText());
-    BigDecimal value = expenseJson.get("value").decimalValue();
-    Category category = Category.valueOf(expenseJson.get("category").asText());
+  public static ExpenseDto expenseDto(JsonNode content) {
+    Long id = content.get("id").asLong();
+    String description = content.get("description").asText();
+    LocalDate date = LocalDate.parse(content.get("date").asText());
+    BigDecimal value = content.get("value").decimalValue();
+    Category category = Category.valueOf(content.get("category").asText());
 
-    ExpenseDto expenseDto = new ExpenseDto();
-    expenseDto.setId(id);
-    expenseDto.setDescription(description);
-    expenseDto.setDate(date);
-    expenseDto.setValue(value);
-    expenseDto.setCategory(category);
-
+    ExpenseDto expenseDto = new ExpenseDto(id, description, date, value, category);
     return expenseDto;
   }
 
@@ -160,6 +143,30 @@ public abstract class DtoFromMvcResult {
 
     RoleDto roleDto = new RoleDto(id, name);
     return roleDto;
+  }
+
+  public static List<UserDto> listUserDto(MvcResult result) throws Exception {
+    List<UserDto> listUserDto = new ArrayList<UserDto>();
+
+    JsonNode content = new ObjectMapper().readTree(result.getResponse().getContentAsString());
+    Iterator<JsonNode> elements = content.elements();
+
+    while (elements.hasNext()) {
+      JsonNode expenseJson = elements.next();
+
+      listUserDto.add(userDto(expenseJson));
+    }
+
+    return listUserDto;
+  }
+
+  private static UserDto userDto(JsonNode content) {
+    Long id = content.get("id").asLong();
+    String name = content.get("name").asText();
+    String email = content.get("email").asText();
+
+    UserDto user = new UserDto(id, name, email);
+    return user;
   }
   
 }

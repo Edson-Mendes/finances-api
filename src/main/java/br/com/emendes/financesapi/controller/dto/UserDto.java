@@ -1,5 +1,8 @@
 package br.com.emendes.financesapi.controller.dto;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import br.com.emendes.financesapi.model.User;
 
 public class UserDto {
@@ -46,30 +49,32 @@ public class UserDto {
 
   @Override
   public boolean equals(Object obj) {
-    if(this == obj){
+    if (this == obj) {
       return true;
     }
     if (obj == null || obj.getClass() != getClass()) {
       return false;
     }
     UserDto other = (UserDto) obj;
-    return this.id == other.getId() && this.name.equals(other.getName()) && this.email.equals(other.getEmail());
+    return this.name.equals(other.getName()) && this.email.equals(other.getEmail());
   }
 
   @Override
   public int hashCode() {
     int result = 17;
-    if(id != null){
-      result = result * 31 + id.hashCode();
-    }
-    if(name != null){
+    if (name != null) {
       result = result * 31 + name.hashCode();
     }
-    if(email != null){
+    if (email != null) {
       result = result * 31 + email.hashCode();
     }
 
     return result;
+  }
+
+  public static List<UserDto> convert(List<User> users) {
+    List<UserDto> usersDto = users.stream().map(UserDto::new).collect(Collectors.toList());
+    return usersDto;
   }
 
 }

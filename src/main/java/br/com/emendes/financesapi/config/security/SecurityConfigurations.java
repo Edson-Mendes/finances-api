@@ -48,7 +48,6 @@ public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
   // Configurações de autorização
   @Override
   protected void configure(HttpSecurity http) throws Exception {
-    
     http.authorizeRequests()
         .antMatchers(HttpMethod.POST, "/auth/signin").permitAll()
         .antMatchers(HttpMethod.POST, "/auth/signup").permitAll()
@@ -56,20 +55,17 @@ public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
         .antMatchers(HttpMethod.GET, "/role").hasRole("ADMIN")
         .antMatchers(HttpMethod.GET, "/role/*").hasRole("ADMIN")
         .antMatchers(HttpMethod.DELETE, "/role/*").hasRole("ADMIN")
+        .antMatchers(HttpMethod.GET, "/user").hasRole("ADMIN")
         .antMatchers(HttpMethod.DELETE, "/user/*").hasRole("ADMIN")
+        .antMatchers("/h2-console/**").permitAll()
         .anyRequest().authenticated()
         .and().csrf().disable()
-        .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+        .headers().frameOptions().disable()
+        .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         .and().addFilterBefore(new AuthenticationByTokenFilter(tokenService,
             userRepository),
             UsernamePasswordAuthenticationFilter.class)
         .exceptionHandling().authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED));
-
-    // http.authorizeRequests().anyRequest().permitAll().and().csrf().disable().headers().frameOptions().disable();
-    // http.authorizeRequests().antMatchers("/").permitAll().and()
-    //     .authorizeRequests().antMatchers("/h2-console/**").permitAll();
-    // http.csrf().disable();
-    // http.headers().frameOptions().disable();
   }
 
   // Configurações de recursos estáticos(js, css, img, etc)

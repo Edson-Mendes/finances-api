@@ -1,5 +1,6 @@
 package br.com.emendes.financesapi.controller;
 
+import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.Assertions;
@@ -17,6 +18,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MvcResult;
 
 import br.com.emendes.financesapi.config.validation.error_dto.ErrorDto;
+import br.com.emendes.financesapi.controller.dto.UserDto;
 import br.com.emendes.financesapi.util.CustomMockMvc;
 import br.com.emendes.financesapi.util.DtoFromMvcResult;
 
@@ -35,7 +37,7 @@ public class UserControllerTests {
 
   @BeforeAll
   public void addCommonUser() throws Exception {
-    String name = "Common User";
+    String name = "User Common";
     String email = "commonuser@email.com";
     String password = "111111111";
     String confirm = "111111111";
@@ -93,6 +95,25 @@ public class UserControllerTests {
 
   @Test
   @Order(4)
+  public void deveriaDevolver403QuandoRole_UserBuscarTodosOsUsuarios() throws Exception {
+    mock.get("/user", tokenUser, 403);
+  }
+
+  @Test
+  @Order(5)
+  public void deveriaDevolverUmaListaDeUsuarios() throws Exception {
+    MvcResult result = mock.get("/user", tokenAdmin, 200);
+    List<UserDto> listUserDto = DtoFromMvcResult.listUserDto(result);
+
+    UserDto userCommon = new UserDto(2l, "User Common", "commonuser@email.com");
+    UserDto userAdmin = new UserDto(2l, "User Admin", "admin@email.com");
+
+    Assertions.assertTrue(listUserDto.contains(userCommon));
+    Assertions.assertTrue(listUserDto.contains(userAdmin));
+  }
+
+  @Test
+  @Order(6)
   public void deveriaDevolver404EErrorDtoAoDeletarUsuarioInexistente() throws Exception {
     Long id = 100l;
     MvcResult result = mock.delete("/user/"+id, tokenAdmin, 404);
@@ -103,10 +124,11 @@ public class UserControllerTests {
   }
 
   @Test
-  @Order(5)
+  @Order(7)
   public void deveriaDevolver200AoAdminDeletarUsuario() throws Exception {
     Long id = 2l;
     mock.delete("/user/"+id, tokenAdmin, 200);
   }
 
+ 
 }

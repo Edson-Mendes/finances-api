@@ -48,7 +48,6 @@ public class TestSecurityConfigurations extends WebSecurityConfigurerAdapter {
   // Configurações de autorização
   @Override
   protected void configure(HttpSecurity http) throws Exception {
-    // TODO: Não esquecer de revisar os acessos aos endpoints
     http.authorizeRequests()
         .antMatchers(HttpMethod.POST, "/auth/signin").permitAll()
         .antMatchers(HttpMethod.POST, "/auth/signup").permitAll()
@@ -56,6 +55,7 @@ public class TestSecurityConfigurations extends WebSecurityConfigurerAdapter {
         .antMatchers(HttpMethod.GET, "/role").hasRole("ADMIN")
         .antMatchers(HttpMethod.GET, "/role/*").hasRole("ADMIN")
         .antMatchers(HttpMethod.DELETE, "/role/*").hasRole("ADMIN")
+        .antMatchers(HttpMethod.GET, "/user").hasRole("ADMIN")
         .antMatchers(HttpMethod.DELETE, "/user/*").hasRole("ADMIN")
         .anyRequest().authenticated()
         .and().csrf().disable()
@@ -64,12 +64,6 @@ public class TestSecurityConfigurations extends WebSecurityConfigurerAdapter {
             userRepository),
             UsernamePasswordAuthenticationFilter.class)
         .exceptionHandling().authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED));
-
-    // http.authorizeRequests().anyRequest().permitAll().and().csrf().disable().headers().frameOptions().disable();
-    // http.authorizeRequests().antMatchers("/").permitAll().and()
-    // .authorizeRequests().antMatchers("/h2-console/**").permitAll();
-    // http.csrf().disable();
-    // http.headers().frameOptions().disable();
   }
 
   // Configurações de recursos estáticos(js, css, img, etc)

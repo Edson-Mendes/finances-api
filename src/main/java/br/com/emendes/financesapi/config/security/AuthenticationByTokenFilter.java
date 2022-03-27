@@ -19,7 +19,7 @@ public class AuthenticationByTokenFilter extends OncePerRequestFilter {
   private TokenService tokenService;
   private UserRepository userRepository;
 
-  public AuthenticationByTokenFilter(TokenService tokenService, UserRepository userRepository){
+  public AuthenticationByTokenFilter(TokenService tokenService, UserRepository userRepository) {
     this.tokenService = tokenService;
     this.userRepository = userRepository;
   }
@@ -28,18 +28,19 @@ public class AuthenticationByTokenFilter extends OncePerRequestFilter {
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
       throws ServletException, IOException {
 
-        String token = tokenService.recoverToken(request);
-        boolean isValid = tokenService.isTokenValid(token);
-        if(isValid){
-          authenticateClient(token);
-        }
-        filterChain.doFilter(request, response);
+    String token = tokenService.recoverToken(request);
+    boolean isValid = tokenService.isTokenValid(token);
+    if (isValid) {
+      authenticateClient(token);
+    }
+    filterChain.doFilter(request, response);
   }
 
   private void authenticateClient(String token) {
-    Long idUser = tokenService.getUserId(token);
-    User user = userRepository.findById(idUser).orElse(null);
-    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user, null, user.getRoles());
+    Long userId = tokenService.getUserId(token);
+    User user = userRepository.findById(userId).orElse(null);
+    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user, null,
+        user.getRoles());
     SecurityContextHolder.getContext().setAuthentication(authentication);
   }
 
