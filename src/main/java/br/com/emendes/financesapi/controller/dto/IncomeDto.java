@@ -2,8 +2,8 @@ package br.com.emendes.financesapi.controller.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+
+import org.springframework.data.domain.Page;
 
 import br.com.emendes.financesapi.model.Income;
 
@@ -94,12 +94,8 @@ public class IncomeDto {
     return result;
   }
 
-  public static List<IncomeDto> convert(List<Income> incomes) {
-    List<IncomeDto> incomesDto = new ArrayList<>();
-
-    incomes.forEach(income -> incomesDto.add(new IncomeDto(income)));
-
-    return incomesDto;
+  public static Page<IncomeDto> convert(Page<Income> incomes) {
+    return incomes.map(IncomeDto::new);
   }
 
   @Override

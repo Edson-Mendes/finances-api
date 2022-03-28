@@ -1,12 +1,14 @@
 package br.com.emendes.financesapi.controller;
 
-import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,13 +44,15 @@ public class IncomeController {
   }
 
   @GetMapping
-  public ResponseEntity<List<IncomeDto>> read(@RequestParam(required = false) String description,
+  public ResponseEntity<Page<IncomeDto>> read(
+      @RequestParam(required = false) String description,
+      @PageableDefault(sort = "date", direction = Direction.DESC, page = 0, size = 10) Pageable pageable,
       HttpServletRequest request) {
     Long userId = tokenService.getUserId(request);
     if (description == null) {
-      return incomeService.readAllByUser(userId);
+      return incomeService.readAllByUser(userId, pageable);
     }
-    return incomeService.readByDescriptionAndUser(description, userId);
+    return incomeService.readByDescriptionAndUser(description, userId, pageable);
   }
 
   @GetMapping("/{id}")
@@ -58,10 +62,13 @@ public class IncomeController {
   }
 
   @GetMapping("/{year}/{month}")
-  public ResponseEntity<List<IncomeDto>> readByYearAndMonth(@PathVariable Integer year, @PathVariable Integer month,
+  public ResponseEntity<Page<IncomeDto>> readByYearAndMonth(
+      @PathVariable Integer year, 
+      @PathVariable Integer month,
+      @PageableDefault(sort = "date", direction = Direction.DESC, page = 0, size = 10) Pageable pageable,
       HttpServletRequest request) {
     Long userId = tokenService.getUserId(request);
-    return incomeService.readByYearAndMonthAndUser(year, month, userId);
+    return incomeService.readByYearAndMonthAndUser(year, month, userId, pageable);
   }
 
   @PutMapping("/{id}")

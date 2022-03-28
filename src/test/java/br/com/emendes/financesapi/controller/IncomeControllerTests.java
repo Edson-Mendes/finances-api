@@ -269,8 +269,8 @@ public class IncomeControllerTests {
     IncomeDto incomeDto1 = new IncomeDto(5l, description1, LocalDate.parse(date1), value1);
     IncomeDto incomeDto2 = new IncomeDto(6l, description2, LocalDate.parse(date2), value2);
     
-    listExpected.add(incomeDto1);
     listExpected.add(incomeDto2);
+    listExpected.add(incomeDto1);
 
     Assertions.assertEquals(listExpected.size(), listIncomeDto.size());
     Assertions.assertEquals(listExpected, listIncomeDto);

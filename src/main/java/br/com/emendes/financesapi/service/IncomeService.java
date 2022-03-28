@@ -3,12 +3,13 @@ package br.com.emendes.financesapi.service;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Optional;
 
 import javax.persistence.NoResultException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -41,24 +42,24 @@ public class IncomeService {
     return ResponseEntity.created(uri).body(new IncomeDto(income));
   }
 
-  public ResponseEntity<List<IncomeDto>> readAllByUser(Long userid) {
-    List<Income> incomes = incomeRepository.findByUserId(userid);
+  public ResponseEntity<Page<IncomeDto>> readAllByUser(Long userid, Pageable pageable) {
+    Page<Income> incomes = incomeRepository.findByUserId(userid, pageable);
 
-    if(incomes.isEmpty()){
+    if (incomes.getTotalElements() == 0) {
       throw new NoResultException("O usuário não possui receitas");
     }
-    List<IncomeDto> incomesDto = IncomeDto.convert(incomes);
+    Page<IncomeDto> incomesDto = IncomeDto.convert(incomes);
     return ResponseEntity.status(HttpStatus.OK)
         .header("Content-Type", "application/json;charset=UTF-8")
         .body(incomesDto);
   }
 
-  public ResponseEntity<List<IncomeDto>> readByDescriptionAndUser(String description, Long userid) {
-    List<Income> incomes = incomeRepository.findByDescriptionAndUserId(description, userid);
-    if(incomes.isEmpty()){
+  public ResponseEntity<Page<IncomeDto>> readByDescriptionAndUser(String description, Long userid, Pageable pageable) {
+    Page<Income> incomes = incomeRepository.findByDescriptionAndUserId(description, userid, pageable);
+    if (incomes.getTotalElements() == 0) {
       throw new NoResultException("O usuário não possui receitas com descrição similar a " + description);
     }
-    List<IncomeDto> incomesDto = IncomeDto.convert(incomes);
+    Page<IncomeDto> incomesDto = IncomeDto.convert(incomes);
     return ResponseEntity.status(HttpStatus.OK)
         .header("Content-Type", "application/json;charset=UTF-8")
         .body(incomesDto);
@@ -75,15 +76,16 @@ public class IncomeService {
         .body(incomeDto);
   }
 
-  public ResponseEntity<List<IncomeDto>> readByYearAndMonthAndUser(Integer year, Integer month, Long userId) {
-    List<Income> incomes = incomeRepository.findByYearAndMonthAndUserId(year, month, userId);
-    if (incomes.isEmpty()) {
+  public ResponseEntity<Page<IncomeDto>> readByYearAndMonthAndUser(Integer year, Integer month, Long userId,
+      Pageable pageable) {
+    Page<Income> incomes = incomeRepository.findByYearAndMonthAndUserId(year, month, userId, pageable);
+    if (incomes.getTotalElements() == 0) {
       throw new NoResultException("Não há receitas para o ano " + year + " e mês " + month);
     }
-    List<IncomeDto> incomesDto = IncomeDto.convert(incomes);
+    Page<IncomeDto> incomesDto = IncomeDto.convert(incomes);
     return ResponseEntity.status(HttpStatus.OK)
-          .header("Content-Type", "application/json;charset=UTF-8")
-          .body(incomesDto);
+        .header("Content-Type", "application/json;charset=UTF-8")
+        .body(incomesDto);
   }
 
   public ResponseEntity<IncomeDto> update(Long id, IncomeForm incomeForm, Long userId) {
@@ -107,7 +109,7 @@ public class IncomeService {
     if (optional.isEmpty()) {
       throw new NoResultException("Nenhuma receita com esse id para esse usuário");
     }
-    
+
     incomeRepository.deleteById(id);
   }
 
