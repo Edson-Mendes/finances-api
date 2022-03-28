@@ -149,7 +149,7 @@ public abstract class DtoFromMvcResult {
     List<UserDto> listUserDto = new ArrayList<UserDto>();
 
     JsonNode content = new ObjectMapper().readTree(result.getResponse().getContentAsString());
-    Iterator<JsonNode> elements = content.elements();
+    Iterator<JsonNode> elements = content.get("content").elements();
 
     while (elements.hasNext()) {
       JsonNode expenseJson = elements.next();

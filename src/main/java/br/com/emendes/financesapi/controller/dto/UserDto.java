@@ -1,7 +1,6 @@
 package br.com.emendes.financesapi.controller.dto;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import org.springframework.data.domain.Page;
 
 import br.com.emendes.financesapi.model.User;
 
@@ -72,9 +71,13 @@ public class UserDto {
     return result;
   }
 
-  public static List<UserDto> convert(List<User> users) {
-    List<UserDto> usersDto = users.stream().map(UserDto::new).collect(Collectors.toList());
-    return usersDto;
+  public static Page<UserDto> convert(Page<User> users) {
+    return users.map(UserDto::new);
+  }
+
+  @Override
+  public String toString() {
+    return "UserDto:{id: "+id+", name: "+name+", email: "+email+"}";
   }
 
 }

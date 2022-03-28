@@ -1,12 +1,14 @@
 package br.com.emendes.financesapi.controller;
 
-import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,14 +33,13 @@ public class UserController {
   @Autowired TokenService tokenService;
 
   @GetMapping
-  public ResponseEntity<List<UserDto>> read(){
-    return userService.read();
+  public ResponseEntity<Page<UserDto>> read(
+      @PageableDefault(sort = "id", direction = Direction.ASC, page = 0, size = 10) Pageable pageable){
+    return userService.read(pageable);
   }
 
   @DeleteMapping("/{id}")
   public void delete(@PathVariable Long id){
-    // FIXME: Erro 500 ao tentar deletar usuário
-    // TODO: Deletar todos os registros que pertenciam ao usuário?
     userService.delete(id);
   }
 

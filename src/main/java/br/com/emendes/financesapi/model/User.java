@@ -12,6 +12,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -37,6 +39,7 @@ public class User implements UserDetails {
   }
 
   @ManyToMany(fetch = FetchType.EAGER)
+  @OnDelete(action = OnDeleteAction.CASCADE)
   private List<Role> roles = new ArrayList<>();
 
   @Override

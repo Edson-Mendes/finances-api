@@ -102,7 +102,7 @@ public class UserControllerTests {
   @Test
   @Order(5)
   public void deveriaDevolverUmaListaDeUsuarios() throws Exception {
-    MvcResult result = mock.get("/user", tokenAdmin, 200);
+    MvcResult result = mock.get("/user?page=0&size=20", tokenAdmin, 200);
     List<UserDto> listUserDto = DtoFromMvcResult.listUserDto(result);
 
     UserDto userCommon = new UserDto(2l, "User Common", "commonuser@email.com");

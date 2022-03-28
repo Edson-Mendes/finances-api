@@ -12,6 +12,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import br.com.emendes.financesapi.controller.form.ExpenseForm;
 import br.com.emendes.financesapi.model.enumerator.Category;
 
@@ -30,6 +33,7 @@ public class Expense {
   private Category category;
 
   @ManyToOne
+  @OnDelete(action = OnDeleteAction.CASCADE)
   private User user;
 
   public Expense() {
