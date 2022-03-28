@@ -90,7 +90,7 @@ public abstract class DtoFromMvcResult {
   public static List<ExpenseDto> listExpenseDto(MvcResult result) throws Exception {
     JsonNode content = new ObjectMapper().readTree(result.getResponse().getContentAsString());
 
-    Iterator<JsonNode> elements = content.elements();
+    Iterator<JsonNode> elements = content.get("content").elements();
     List<ExpenseDto> expensesDto = new ArrayList<>();
     
     while (elements.hasNext()) {

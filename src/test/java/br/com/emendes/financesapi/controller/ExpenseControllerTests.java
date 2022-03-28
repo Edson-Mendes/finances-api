@@ -160,13 +160,17 @@ public class ExpenseControllerTests {
   @Test
   @Order(6)
   public void deveriaDevolver200AoBuscarTodasAsDespesas() throws Exception {
-    mock.get("/despesas", tokenLorem, 200);
+    int pagina = 0;
+    int quantidade = 1;
+    mock.get("/despesas?page="+pagina+"&size="+quantidade, tokenLorem, 200);
   }
 
   @Test
   @Order(7)
   public void deveriaDevolver200AoBuscarPorIdExistente() throws Exception {
-    MvcResult result = mock.get("/despesas", tokenLorem, 200);
+    int pagina = 0;
+    int quantidade = 1;
+    MvcResult result = mock.get("/despesas?page="+pagina+"&size="+quantidade, tokenLorem, 200);
     List<ExpenseDto> listExpenseDto = DtoFromMvcResult.listExpenseDto(result);
 
     Long id = listExpenseDto.get(0).getId();
@@ -177,13 +181,13 @@ public class ExpenseControllerTests {
   @Test
   @Order(8)
   public void deveriaDevolver200AoBuscarPorAnoEMesExistentes() throws Exception {
-    mock.get("/despesas/2022/01", tokenLorem, 200);
+    mock.get("/despesas/2022/01?page=0&size=1", tokenLorem, 200);
   }
 
   @Test
   @Order(9)
   public void deveriaDevolver404AoBuscarPorAnoEMesInexistentes() throws Exception {
-    mock.get("/despesas/2022/03", tokenLorem, 404);
+    mock.get("/despesas/2022/03?page=0&size=1", tokenLorem, 404);
   }
 
   @Test
@@ -195,19 +199,23 @@ public class ExpenseControllerTests {
   @Test
   @Order(11)
   public void deveriaDevolver200AoBuscarPorDescricaoExistente() throws Exception {
-    mock.get("/despesas?description=net", tokenLorem, 200);
+    mock.get("/despesas?description=net&page=0&size=1", tokenLorem, 200);
   }
 
   @Test
   @Order(12)
   public void deveriaDevolver404AoBuscarPorDescricaoInexistente() throws Exception {
-    mock.get("/despesas?description=nettttt", tokenLorem, 404);
+    int pagina = 0;
+    int quantidade = 1;
+    mock.get("/despesas?description=nettttt&page="+pagina+"&size="+quantidade, tokenLorem, 404);
   }
 
   @Test
   @Order(13)
   public void deveriaDevolver200AoAtualizarDespesaCorretamente() throws Exception {
-    MvcResult result = mock.get("/despesas", tokenLorem, 200);
+    int pagina = 0;
+    int quantidade = 1;
+    MvcResult result = mock.get("/despesas?page="+pagina+"&size="+quantidade, tokenLorem, 200);
     List<ExpenseDto> listExpenseDto = DtoFromMvcResult.listExpenseDto(result);
 
     Long id = listExpenseDto.get(0).getId();
@@ -256,7 +264,9 @@ public class ExpenseControllerTests {
   @Test
   @Order(16)
   public void deveriaDevolver200AoDeletarUmaDespesaComIdExistente() throws Exception {
-    MvcResult result = mock.get("/despesas", tokenLorem, 200);
+    int pagina = 0;
+    int quantidade = 1;
+    MvcResult result = mock.get("/despesas?page="+pagina+"&size="+quantidade, tokenLorem, 200);
     List<ExpenseDto> listExpenseDto = DtoFromMvcResult.listExpenseDto(result);
 
     Long id = listExpenseDto.get(0).getId();
@@ -281,7 +291,7 @@ public class ExpenseControllerTests {
 
     String description2 = "Condomínio";
     BigDecimal value2 = new BigDecimal("200.0");
-    String date2 = "2022-01-05";
+    String date2 = "2022-01-06";
 
     Map<String, Object> params1 = Map.of("description", description1, "value", value1, "date", date1, "category",
         category);
@@ -291,7 +301,9 @@ public class ExpenseControllerTests {
     mock.post("/despesas", params1, tokenIpsum, 201);
     mock.post("/despesas", params2, tokenIpsum, 201);
 
-    MvcResult result = mock.get("/despesas", tokenIpsum, 200);
+    int pagina = 0;
+    int quantidade = 2;
+    MvcResult result = mock.get("/despesas?page="+pagina+"&size="+quantidade, tokenIpsum, 200);
     List<ExpenseDto> listExpenseDto = DtoFromMvcResult.listExpenseDto(result);
     List<ExpenseDto> listExpected = new ArrayList<>();
 
@@ -300,8 +312,8 @@ public class ExpenseControllerTests {
     ExpenseDto expenseDto2 = new ExpenseDto(7l, description2, LocalDate.parse(date2), value2,
         Category.valueOf(category));
 
-    listExpected.add(expenseDto1);
     listExpected.add(expenseDto2);
+    listExpected.add(expenseDto1);
 
     Assertions.assertEquals(listExpected.size(), listExpenseDto.size());
     Assertions.assertEquals(listExpected, listExpenseDto);

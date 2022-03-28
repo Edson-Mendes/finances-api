@@ -129,6 +129,4 @@ public class UserControllerTests {
     Long id = 2l;
     mock.delete("/user/"+id, tokenAdmin, 200);
   }
-
- 
 }

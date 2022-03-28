@@ -2,12 +2,13 @@ package br.com.emendes.financesapi.service;
 
 import java.math.BigDecimal;
 import java.net.URI;
-import java.util.List;
 import java.util.Optional;
 
 import javax.persistence.NoResultException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -41,25 +42,25 @@ public class ExpenseService {
     return ResponseEntity.created(uri).body(new ExpenseDto(expense));
   }
 
-  public ResponseEntity<List<ExpenseDto>> readAllByUser(Long userId) {
-    List<Expense> expenses = expenseRepository.findByUserId(userId);
-    if (expenses.isEmpty()) {
+  public ResponseEntity<Page<ExpenseDto>> readAllByUser(Long userId, Pageable pageable) {
+    Page<Expense> expenses = expenseRepository.findByUserId(userId, pageable);
+    if (expenses.getTotalElements() == 0) {
       throw new NoResultException("O usuário não possui despesas");
     }
-    List<ExpenseDto> expensesDto = ExpenseDto.convert(expenses);
+    Page<ExpenseDto> expensesDto = ExpenseDto.convert(expenses);
 
     return ResponseEntity.status(HttpStatus.OK)
         .header("Content-Type", "application/json;charset=UTF-8")
         .body(expensesDto);
   }
 
-  public ResponseEntity<List<ExpenseDto>> readByDescriptionAndUser(String description, Long userId) {
-    List<Expense> expenses = expenseRepository.findByDescriptionAndUserId(description, userId);
-    if (expenses.isEmpty()) {
+  public ResponseEntity<Page<ExpenseDto>> readByDescriptionAndUser(String description, Long userId, Pageable pageable) {
+    Page<Expense> expenses = expenseRepository.findByDescriptionAndUserId(description, userId, pageable);
+    if (expenses.getTotalElements() == 0) {
       throw new NoResultException("O usuário não possui despesas com descrição similar a " + description);
     }
 
-    List<ExpenseDto> expensesDto = ExpenseDto.convert(expenses);
+    Page<ExpenseDto> expensesDto = ExpenseDto.convert(expenses);
     return ResponseEntity.status(HttpStatus.OK)
         .header("Content-Type", "application/json;charset=UTF-8")
         .body(expensesDto);
@@ -76,13 +77,17 @@ public class ExpenseService {
         .body(expenseDto);
   }
 
-  public ResponseEntity<List<ExpenseDto>> readByYearAndMonthAndUser(Integer year, Integer month, Long userId) {
-    List<Expense> expenses = expenseRepository.findByYearAndMonthAndUserId(year, month, userId);
+  public ResponseEntity<Page<ExpenseDto>> readByYearAndMonthAndUser(
+      Integer year,
+      Integer month,
+      Long userId,
+      Pageable pageable) {
+    Page<Expense> expenses = expenseRepository.findByYearAndMonthAndUserId(year, month, userId, pageable);
 
-    if (expenses.isEmpty()) {
+    if (expenses.getTotalElements() == 0) {
       throw new NoResultException("Não há despesas para o ano " + year + " e mês " + month);
     }
-    List<ExpenseDto> expensesDto = ExpenseDto.convert(expenses);
+    Page<ExpenseDto> expensesDto = ExpenseDto.convert(expenses);
     return ResponseEntity.status(HttpStatus.OK)
         .header("Content-Type", "application/json;charset=UTF-8")
         .body(expensesDto);

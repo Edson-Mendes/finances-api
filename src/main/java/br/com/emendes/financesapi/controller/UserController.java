@@ -37,6 +37,8 @@ public class UserController {
 
   @DeleteMapping("/{id}")
   public void delete(@PathVariable Long id){
+    // FIXME: Erro 500 ao tentar deletar usuário
+    // TODO: Deletar todos os registros que pertenciam ao usuário?
     userService.delete(id);
   }
 

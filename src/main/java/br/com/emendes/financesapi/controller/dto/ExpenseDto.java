@@ -2,8 +2,8 @@ package br.com.emendes.financesapi.controller.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+
+import org.springframework.data.domain.Page;
 
 import br.com.emendes.financesapi.model.Expense;
 import br.com.emendes.financesapi.model.enumerator.Category;
@@ -75,12 +75,8 @@ public class ExpenseDto {
     this.value = value;
   }
 
-  public static List<ExpenseDto> convert(List<Expense> expenses) {
-    List<ExpenseDto> expensesDto = new ArrayList<>();
-
-    expenses.forEach(expense -> expensesDto.add(new ExpenseDto(expense)));
-
-    return expensesDto;
+  public static Page<ExpenseDto> convert(Page<Expense> expenses) {
+    return expenses.map(ExpenseDto::new);
   }
 
   @Override

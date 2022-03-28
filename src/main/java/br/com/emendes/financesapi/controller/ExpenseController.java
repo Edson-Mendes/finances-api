@@ -1,12 +1,14 @@
 package br.com.emendes.financesapi.controller;
 
-import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,20 +37,22 @@ public class ExpenseController {
   private TokenService tokenService;
 
   @PostMapping
-  public ResponseEntity<ExpenseDto> create(@Valid @RequestBody ExpenseForm form, UriComponentsBuilder uriBuilder,
+  public ResponseEntity<ExpenseDto> create(@Valid @RequestBody ExpenseForm form, 
+      UriComponentsBuilder uriBuilder,
       HttpServletRequest request) {
     Long userId = tokenService.getUserId(request);
     return expenseService.create(form, userId, uriBuilder);
   }
 
   @GetMapping
-  public ResponseEntity<List<ExpenseDto>> read(@RequestParam(required = false) String description,
+  public ResponseEntity<Page<ExpenseDto>> read(@RequestParam(required = false) String description,
+      @PageableDefault(sort = "date", direction = Direction.DESC, page = 0, size = 10) Pageable pageable,
       HttpServletRequest request) {
     Long userId = tokenService.getUserId(request);
     if (description == null) {
-      return expenseService.readAllByUser(userId);
+      return expenseService.readAllByUser(userId, pageable);
     } else {
-      return expenseService.readByDescriptionAndUser(description, userId);
+      return expenseService.readByDescriptionAndUser(description, userId, pageable);
     }
   }
 
@@ -59,10 +63,13 @@ public class ExpenseController {
   }
 
   @GetMapping("/{year}/{month}")
-  public ResponseEntity<List<ExpenseDto>> readByYearAndMonth(@PathVariable Integer year, @PathVariable Integer month,
+  public ResponseEntity<Page<ExpenseDto>> readByYearAndMonth(
+      @PathVariable Integer year, 
+      @PathVariable Integer month,
+      @PageableDefault(sort = "date", direction = Direction.DESC, page = 0, size = 10) Pageable pageable,
       HttpServletRequest request) {
     Long userId = tokenService.getUserId(request);
-    return expenseService.readByYearAndMonthAndUser(year, month, userId);
+    return expenseService.readByYearAndMonthAndUser(year, month, userId, pageable);
   }
 
   @PutMapping("/{id}")
