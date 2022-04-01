@@ -18,9 +18,11 @@ import org.springframework.web.util.UriComponentsBuilder;
 import br.com.emendes.financesapi.controller.dto.RoleDto;
 import br.com.emendes.financesapi.controller.form.RoleForm;
 import br.com.emendes.financesapi.service.RoleService;
+import io.swagger.v3.oas.annotations.Hidden;
 
 @RestController
 @RequestMapping("/role")
+@Hidden
 public class RoleController {
 
   @Autowired

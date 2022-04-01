@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import br.com.emendes.financesapi.config.validation.error_dto.FormErrorDto;
@@ -22,7 +21,6 @@ public class ValidationErrorHandler {
   @Autowired
   private MessageSource messageSource;
   
-  @ResponseStatus(code = HttpStatus.BAD_REQUEST)
   @ExceptionHandler(MethodArgumentNotValidException.class)
   public ResponseEntity<List<FormErrorDto>> handle(MethodArgumentNotValidException exception){
 
