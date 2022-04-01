@@ -25,6 +25,8 @@ import br.com.emendes.financesapi.config.security.TokenService;
 import br.com.emendes.financesapi.controller.dto.IncomeDto;
 import br.com.emendes.financesapi.controller.form.IncomeForm;
 import br.com.emendes.financesapi.service.IncomeService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 @RestController
 @RequestMapping("/receitas")
@@ -36,6 +38,7 @@ public class IncomeController {
   @Autowired
   TokenService tokenService;
 
+  @Operation(security = { @SecurityRequirement(name = "bearer-key") })
   @PostMapping
   public ResponseEntity<IncomeDto> create(@Valid @RequestBody IncomeForm form, UriComponentsBuilder uriBuilder,
       HttpServletRequest request) {
@@ -43,6 +46,7 @@ public class IncomeController {
     return incomeService.create(form, userId, uriBuilder);
   }
 
+  @Operation(security = { @SecurityRequirement(name = "bearer-key") })
   @GetMapping
   public ResponseEntity<Page<IncomeDto>> read(
       @RequestParam(required = false) String description,
@@ -55,15 +59,17 @@ public class IncomeController {
     return incomeService.readByDescriptionAndUser(description, userId, pageable);
   }
 
+  @Operation(security = { @SecurityRequirement(name = "bearer-key") })
   @GetMapping("/{id}")
   public ResponseEntity<IncomeDto> readById(@PathVariable Long id, HttpServletRequest request) {
     Long userId = tokenService.getUserId(request);
     return incomeService.readByIdAndUser(id, userId);
   }
 
+  @Operation(security = { @SecurityRequirement(name = "bearer-key") })
   @GetMapping("/{year}/{month}")
   public ResponseEntity<Page<IncomeDto>> readByYearAndMonth(
-      @PathVariable Integer year, 
+      @PathVariable Integer year,
       @PathVariable Integer month,
       @PageableDefault(sort = "date", direction = Direction.DESC, page = 0, size = 10) Pageable pageable,
       HttpServletRequest request) {
@@ -71,6 +77,7 @@ public class IncomeController {
     return incomeService.readByYearAndMonthAndUser(year, month, userId, pageable);
   }
 
+  @Operation(security = { @SecurityRequirement(name = "bearer-key") })
   @PutMapping("/{id}")
   @Transactional
   public ResponseEntity<IncomeDto> update(@PathVariable Long id, @Valid @RequestBody IncomeForm incomeForm,
@@ -79,6 +86,7 @@ public class IncomeController {
     return incomeService.update(id, incomeForm, userId);
   }
 
+  @Operation(security = { @SecurityRequirement(name = "bearer-key") })
   @DeleteMapping("/{id}")
   public void delete(@PathVariable Long id, HttpServletRequest request) {
     Long userId = tokenService.getUserId(request);

@@ -22,6 +22,8 @@ import br.com.emendes.financesapi.config.security.TokenService;
 import br.com.emendes.financesapi.controller.dto.UserDto;
 import br.com.emendes.financesapi.controller.form.ChangePasswordForm;
 import br.com.emendes.financesapi.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 @RestController
 @RequestMapping("/user")
@@ -32,17 +34,20 @@ public class UserController {
 
   @Autowired TokenService tokenService;
 
+  @Operation(security = { @SecurityRequirement(name = "bearer-key") })
   @GetMapping
   public ResponseEntity<Page<UserDto>> read(
       @PageableDefault(sort = "id", direction = Direction.ASC, page = 0, size = 10) Pageable pageable){
     return userService.read(pageable);
   }
 
+  @Operation(security = { @SecurityRequirement(name = "bearer-key") })
   @DeleteMapping("/{id}")
   public void delete(@PathVariable Long id){
     userService.delete(id);
   }
 
+  @Operation(security = { @SecurityRequirement(name = "bearer-key") })
   @PutMapping("/change-password")
   @Transactional
   public void changePassword(@Valid @RequestBody ChangePasswordForm changeForm, HttpServletRequest request){

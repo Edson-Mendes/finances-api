@@ -51,10 +51,8 @@ public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
     http.authorizeRequests()
         .antMatchers(HttpMethod.POST, "/auth/signin").permitAll()
         .antMatchers(HttpMethod.POST, "/auth/signup").permitAll()
-        .antMatchers(HttpMethod.POST, "/role").hasRole("ADMIN")
         .antMatchers(HttpMethod.GET, "/role").hasRole("ADMIN")
         .antMatchers(HttpMethod.GET, "/role/*").hasRole("ADMIN")
-        .antMatchers(HttpMethod.DELETE, "/role/*").hasRole("ADMIN")
         .antMatchers(HttpMethod.GET, "/user").hasRole("ADMIN")
         .antMatchers(HttpMethod.DELETE, "/user/*").hasRole("ADMIN")
         .antMatchers("/h2-console/**").permitAll()
@@ -72,7 +70,8 @@ public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
   @Override
   public void configure(WebSecurity web) throws Exception {
     web.ignoring()
-        .antMatchers("/swagger-ui/index.html","/**.html", "/api-docs/**", "/webjars/**", "/configuration/**", "/swagger-resources/**", "/swagger-ui/**");
+        .antMatchers("/swagger-ui/index.html", "/**.html", "/api-docs/**", "/webjars/**", "/configuration/**",
+            "/swagger-resources/**", "/swagger-ui/**");
   }
 
 }

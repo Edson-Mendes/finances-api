@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.emendes.financesapi.config.security.TokenService;
 import br.com.emendes.financesapi.controller.dto.SummaryDto;
 import br.com.emendes.financesapi.service.SummaryService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 @RestController
 @RequestMapping("/resumo")
@@ -23,6 +25,7 @@ public class SummaryController {
   @Autowired
   private TokenService tokenService;
 
+  @Operation(security = { @SecurityRequirement(name = "bearer-key") })
   @GetMapping("/{year}/{month}")
   public ResponseEntity<SummaryDto> monthSummary(@PathVariable Integer year, @PathVariable Integer month,
       HttpServletRequest request) {

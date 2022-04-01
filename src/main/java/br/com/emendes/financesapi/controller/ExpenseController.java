@@ -25,6 +25,8 @@ import br.com.emendes.financesapi.config.security.TokenService;
 import br.com.emendes.financesapi.controller.dto.ExpenseDto;
 import br.com.emendes.financesapi.controller.form.ExpenseForm;
 import br.com.emendes.financesapi.service.ExpenseService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 @RestController
 @RequestMapping("/despesas")
@@ -36,8 +38,8 @@ public class ExpenseController {
   @Autowired
   private TokenService tokenService;
 
+  @Operation(security = { @SecurityRequirement(name = "bearer-key") })
   @PostMapping
-  
   public ResponseEntity<ExpenseDto> create(@Valid @RequestBody ExpenseForm form, 
       UriComponentsBuilder uriBuilder,
       HttpServletRequest request) {
@@ -45,6 +47,7 @@ public class ExpenseController {
     return expenseService.create(form, userId, uriBuilder);
   }
 
+  @Operation(security = { @SecurityRequirement(name = "bearer-key") })
   @GetMapping
   public ResponseEntity<Page<ExpenseDto>> read(@RequestParam(required = false) String description,
       @PageableDefault(sort = "date", direction = Direction.DESC, page = 0, size = 10) Pageable pageable,
@@ -57,12 +60,14 @@ public class ExpenseController {
     }
   }
 
+  @Operation(security = { @SecurityRequirement(name = "bearer-key") })
   @GetMapping("/{id}")
   public ResponseEntity<ExpenseDto> readById(@PathVariable Long id, HttpServletRequest request) {
     Long userId = tokenService.getUserId(request);
     return expenseService.readByIdAndUser(id, userId);
   }
 
+  @Operation(security = { @SecurityRequirement(name = "bearer-key") })
   @GetMapping("/{year}/{month}")
   public ResponseEntity<Page<ExpenseDto>> readByYearAndMonth(
       @PathVariable Integer year, 
@@ -73,6 +78,7 @@ public class ExpenseController {
     return expenseService.readByYearAndMonthAndUser(year, month, userId, pageable);
   }
 
+  @Operation(security = { @SecurityRequirement(name = "bearer-key") })
   @PutMapping("/{id}")
   @Transactional
   public ResponseEntity<ExpenseDto> update(@PathVariable Long id, @Valid @RequestBody ExpenseForm expenseForm,
@@ -81,6 +87,7 @@ public class ExpenseController {
     return expenseService.update(id, expenseForm, userId);
   }
 
+  @Operation(security = { @SecurityRequirement(name = "bearer-key") })
   @DeleteMapping("/{id}")
   public void delete(@PathVariable Long id, HttpServletRequest request) {
     Long userId = tokenService.getUserId(request);
