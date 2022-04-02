@@ -49,9 +49,9 @@ public class IncomeController {
   @ApiResponses(value = {
       @ApiResponse(responseCode = "201", description = "Receita salva", content = {
           @Content(mediaType = "application/json", schema = @Schema(implementation = IncomeDto.class)) }),
-      @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
       @ApiResponse(responseCode = "400", description = "Bad request - Algum parâmetro do corpo da requisição inválido", content = {
           @Content(mediaType = "application/json", schema = @Schema(implementation = FormErrorDto.class)) }),
+      @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
   })
   @PostMapping
   public ResponseEntity<IncomeDto> create(@Valid @RequestBody IncomeForm form, UriComponentsBuilder uriBuilder,
@@ -60,11 +60,11 @@ public class IncomeController {
     return incomeService.create(form, userId, uriBuilder);
   }
 
-
   @Operation(summary = "Buscar todas as receitas do usuário, opcional buscar por descrição", security = {
       @SecurityRequirement(name = "bearer-key") })
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "Encontrou receitas"),
+      @ApiResponse(responseCode = "400", description = "Bad request - Algum parâmetro da requisição inválido", content = @Content),
       @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
       @ApiResponse(responseCode = "404", description = "Nenhuma receita encontrada", content = {
           @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDto.class)) }),
@@ -81,7 +81,6 @@ public class IncomeController {
     return incomeService.readByDescriptionAndUser(description, userId, pageable);
   }
 
-
   @Operation(summary = "Buscar receita por id", security = { @SecurityRequirement(name = "bearer-key") })
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "Encontrou a receita"),
@@ -95,11 +94,11 @@ public class IncomeController {
     return incomeService.readByIdAndUser(id, userId);
   }
 
-
   @Operation(summary = "Buscar receitas do usuário por ano e mês", security = {
       @SecurityRequirement(name = "bearer-key") })
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "Encontrou receitas"),
+      @ApiResponse(responseCode = "400", description = "Bad request - Algum parâmetro da requisição inválido", content = @Content),
       @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
       @ApiResponse(responseCode = "404", description = "Nenhuma receita encontrada", content = {
           @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDto.class)) }),
@@ -113,7 +112,6 @@ public class IncomeController {
     Long userId = tokenService.getUserId(request);
     return incomeService.readByYearAndMonthAndUser(year, month, userId, pageable);
   }
-
 
   @Operation(summary = "Atualizar receita por id", security = { @SecurityRequirement(name = "bearer-key") })
   @ApiResponses(value = {
@@ -131,7 +129,6 @@ public class IncomeController {
     Long userId = tokenService.getUserId(request);
     return incomeService.update(id, incomeForm, userId);
   }
-
 
   @Operation(summary = "Deletar receita por id", security = { @SecurityRequirement(name = "bearer-key") })
   @ApiResponses(value = {

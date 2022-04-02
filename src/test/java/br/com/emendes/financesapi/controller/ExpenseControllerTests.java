@@ -351,4 +351,38 @@ public class ExpenseControllerTests {
     Assertions.assertEquals("Nenhuma despesa com esse id para esse usuário", errorDto.getMessage());
   }
 
+  @Test
+  @Order(21)
+  public void deveriaDevolver400EErrorDtoAoSalvarComCategoriaInvalida() throws Exception {
+    String description = "Farmácia";
+    BigDecimal value = BigDecimal.valueOf(82.00);
+    String date = "2022-01-14";
+    String category = "FARMACIA";
+
+    Map<String, Object> params = Map.of("description", description, "value", value, "date", date, "category", category);
+
+    MvcResult result = mock.post("/despesas", params, tokenLorem, 400);
+    ErrorDto errorDto = DtoFromMvcResult.errorDto(result);
+
+    Assertions.assertEquals("Categoria inválida", errorDto.getError());
+    Assertions.assertEquals("Categorias válidas: ALIMENTACAO, SAUDE, MORADIA, TRANSPORTE, EDUCACAO, LAZER, IMPREVISTOS, OUTRAS", errorDto.getMessage());
+  }
+
+  @Test
+  @Order(21)
+  public void deveriaDevolver400EErrorDtoAoSalvarComCategoriaVazia() throws Exception {
+    String description = "Farmácia";
+    BigDecimal value = BigDecimal.valueOf(82.00);
+    String date = "2022-01-14";
+    String category = "";
+
+    Map<String, Object> params = Map.of("description", description, "value", value, "date", date, "category", category);
+
+    MvcResult result = mock.post("/despesas", params, tokenLorem, 400);
+    ErrorDto errorDto = DtoFromMvcResult.errorDto(result);
+
+    Assertions.assertEquals("Categoria inválida", errorDto.getError());
+    Assertions.assertEquals("Categorias válidas: ALIMENTACAO, SAUDE, MORADIA, TRANSPORTE, EDUCACAO, LAZER, IMPREVISTOS, OUTRAS", errorDto.getMessage());
+  }
+  
 }
