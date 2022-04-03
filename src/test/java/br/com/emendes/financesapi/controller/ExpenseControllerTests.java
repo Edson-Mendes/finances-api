@@ -53,7 +53,7 @@ public class ExpenseControllerTests {
     mock.post("/auth/signup", paramsSignup, "", 201);
     MvcResult result = mock.post("/auth/signin", paramsSignin, "", 200);
 
-    tokenLorem = DtoFromMvcResult.tokenDto(result).getTypeWithToken();
+    tokenLorem = DtoFromMvcResult.tokenDto(result).generateTypeWithToken();
   }
 
   @BeforeAll
@@ -69,7 +69,7 @@ public class ExpenseControllerTests {
     mock.post("/auth/signup", paramsSignup, "", 201);
     MvcResult result = mock.post("/auth/signin", paramsSignin, "", 200);
 
-    tokenIpsum = DtoFromMvcResult.tokenDto(result).getTypeWithToken();
+    tokenIpsum = DtoFromMvcResult.tokenDto(result).generateTypeWithToken();
   }
 
   @Test

@@ -22,7 +22,7 @@ public class SignupService {
   private UserRepository userRepository;
 
   public ResponseEntity<UserDto> createAccount(SignupForm signupForm, UriComponentsBuilder uriBuilder) {
-    if (signupForm.isMatch()) {
+    if (signupForm.passwordMatch()) {
       User newUser = signupForm.toUser();
       try {
         userRepository.save(newUser);

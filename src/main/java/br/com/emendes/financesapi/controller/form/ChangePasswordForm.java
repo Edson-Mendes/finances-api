@@ -30,7 +30,7 @@ public class ChangePasswordForm {
     this.confirm = confirm;
   }
 
-  public boolean isMatch(){
+  public boolean passwordMatch(){
     return this.newPassword.equals(this.confirm);
   }
 

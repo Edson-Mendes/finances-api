@@ -54,7 +54,7 @@ public class SignupForm {
     return new User(name, email, password);
   }
 
-  public boolean isMatch(){
+  public boolean passwordMatch(){
     return this.password.equals(this.confirm);
   }
 

@@ -47,7 +47,7 @@ public class RoleControllerTests {
     mock.post("/auth/signup", paramsSignup, "", 201);
     MvcResult result = mock.post("/auth/signin", paramsSignin, "", 200);
 
-    tokenUser = DtoFromMvcResult.tokenDto(result).getTypeWithToken();
+    tokenUser = DtoFromMvcResult.tokenDto(result).generateTypeWithToken();
   }
 
   @BeforeAll
@@ -58,7 +58,7 @@ public class RoleControllerTests {
     Map<String, Object> paramsSignin = Map.of("email", email, "password", password);
     MvcResult result = mock.post("/auth/signin", paramsSignin, "", 200);
     
-    tokenAdmin = DtoFromMvcResult.tokenDto(result).getTypeWithToken();
+    tokenAdmin = DtoFromMvcResult.tokenDto(result).generateTypeWithToken();
   }
 
   @Test

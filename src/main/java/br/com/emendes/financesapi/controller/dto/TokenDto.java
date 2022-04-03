@@ -18,7 +18,7 @@ public class TokenDto {
     return type;
   }
 
-  public String getTypeWithToken(){
+  public String generateTypeWithToken(){
     return type+" "+token;
   }
 

@@ -21,6 +21,11 @@ import br.com.emendes.financesapi.controller.dto.UserDto;
 import br.com.emendes.financesapi.controller.form.LoginForm;
 import br.com.emendes.financesapi.controller.form.SignupForm;
 import br.com.emendes.financesapi.service.SignupService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 @RestController
 @RequestMapping("/auth")
@@ -35,6 +40,12 @@ public class AuthenticationController {
   @Autowired
   private SignupService signupService;
 
+  @Operation(summary = "Logar um usuário")
+  @ApiResponses(value = {
+    @ApiResponse(responseCode = "200", description = "Logado com sucesso, retorna o token que deve ser enviado a cada requisição", content = {
+      @Content(mediaType = "application/json", schema = @Schema(implementation = TokenDto.class))}),
+      @ApiResponse(responseCode = "400", description = "Bad request - Algum parâmetro do corpo da requisição inválido", content = @Content),
+  })
   @PostMapping("/signin")
   public ResponseEntity<TokenDto> auth(@RequestBody @Valid LoginForm form) {
     UsernamePasswordAuthenticationToken loginData = form.converter();
@@ -45,6 +56,13 @@ public class AuthenticationController {
     return ResponseEntity.ok(new TokenDto(token, "Bearer"));
   }
 
+  @Operation(summary = "Cadastrar um usuário")
+  @ApiResponses(value = {
+    @ApiResponse(responseCode = "200", description = "Cadastrado com sucesso", content = {
+      @Content(mediaType = "application/json", schema = @Schema(implementation = UserDto.class))}),
+      @ApiResponse(responseCode = "400", description = "Bad request - Algum parâmetro do corpo da requisição inválido", content = @Content),
+      @ApiResponse(responseCode = "409", description = "Email inserido já está em uso", content = @Content)
+  })
   @PostMapping("/signup")
   public ResponseEntity<UserDto> register(@RequestBody @Valid SignupForm signupForm, UriComponentsBuilder uriBuilder)
       throws URISyntaxException {
