@@ -39,7 +39,7 @@ public class UserService {
   public void changePassword(@Valid ChangePasswordForm changeForm, Long userId) {
     if (changeForm.passwordMatch()) {
       User user = userRepository.findById(userId).get();
-      user.setPassword(changeForm.getNewPasswordEncoded());
+      user.setPassword(changeForm.generateNewPasswordEncoded());
     } else {
       throw new PasswordsDoNotMatchException("as senhas não correspondem!");
     }

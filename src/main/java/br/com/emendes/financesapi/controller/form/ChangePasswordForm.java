@@ -34,7 +34,7 @@ public class ChangePasswordForm {
     return this.newPassword.equals(this.confirm);
   }
 
-  public String getNewPasswordEncoded(){
+  public String generateNewPasswordEncoded(){
     return new BCryptPasswordEncoder().encode(newPassword);
   }
 }
