@@ -23,6 +23,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import br.com.emendes.financesapi.config.validation.error_dto.ErrorDto;
 import br.com.emendes.financesapi.controller.dto.IncomeDto;
 import br.com.emendes.financesapi.util.CustomMockMvc;
+import br.com.emendes.financesapi.util.Formatter;
 import br.com.emendes.financesapi.util.DtoFromMvcResult;
 
 @SpringBootTest
@@ -76,7 +77,7 @@ public class IncomeControllerTests {
   public void deveriaDevolver201AoCriarReceita() throws Exception {
     String description = "Salário";
     BigDecimal value = new BigDecimal(2500.00);
-    String date = "2022-01-05";
+    String date = "05/01/2022";
 
     Map<String, Object> params = Map.of("description", description, "value", value, "date", date);
 
@@ -89,7 +90,7 @@ public class IncomeControllerTests {
 
     String description = "Venda do PS5";
     BigDecimal value = BigDecimal.valueOf(2885.00);
-    String date = "2022-01-22";
+    String date = "22/01/2022";
 
     mock.post("/receitas", Map.of("value", value, "date", date), tokenLorem, 400);
     mock.post("/receitas", Map.of("description", description, "date", date), tokenLorem, 400);
@@ -112,7 +113,7 @@ public class IncomeControllerTests {
 
     String description = "Lotofácil";
     BigDecimal value = BigDecimal.valueOf(500.00);
-    String date = "2022-01-08";
+    String date = "08/01/2022";
 
     Map<String, Object> params = Map.of("description", description, "value", value, "date", date);
 
@@ -127,11 +128,11 @@ public class IncomeControllerTests {
 
     String description = "Trabalho por fora";
     BigDecimal value = BigDecimal.valueOf(300.00);
-    String date = "2022-01-18";
+    String date = "18/01/2022";
 
     Map<String, Object> params1 = Map.of("description", description, "value", value, "date", date);
 
-    String newDate = "2022-02-18";
+    String newDate = "18/02/2022";
     Map<String, Object> params2 = Map.of("description", description, "value", value, "date", newDate);
 
     mock.post("/receitas", params1, tokenLorem, 201);
@@ -190,7 +191,7 @@ public class IncomeControllerTests {
 
     String description = "Salário 1";
     BigDecimal value = BigDecimal.valueOf(2500.00);
-    String date = "2022-01-08";
+    String date = "08/01/2022";
 
     Map<String, Object> params = Map.of("description", description, "value", value, "date", date);
 
@@ -203,7 +204,7 @@ public class IncomeControllerTests {
     int id = 1000;
     String description = "Salário 1";
     BigDecimal value = BigDecimal.valueOf(2500.00);
-    String date = "2022-01-08";
+    String date = "08/01/2022";
 
     Map<String, Object> params = Map.of("description", description, "value", value, "date", date);
 
@@ -215,7 +216,7 @@ public class IncomeControllerTests {
   public void deveriaDevolver400AoAtualizarReceitaSemAlgumParametroObrigatorio() throws Exception {
     String description = "Venda do PS5";
     BigDecimal value = BigDecimal.valueOf(2885.00);
-    String date = "2022-01-22";
+    String date = "22/01/2022";
 
     mock.put("/receitas/1", Map.of("value", value, "date", date), tokenLorem, 400);
     mock.put("/receitas/1", Map.of("description", description, "date", date), tokenLorem, 400);
@@ -249,11 +250,11 @@ public class IncomeControllerTests {
 
     String description1 = "Salário";
     BigDecimal value1 = new BigDecimal("2500.0");
-    String date1 = "2022-01-08";
+    String date1 = "08/01/2022";
 
     String description2 = "Venda do PC";
     BigDecimal value2 = new BigDecimal("1200.0");
-    String date2 = "2022-01-22";
+    String date2 = "22/01/2022";
 
     Map<String, Object> params1 = Map.of("description", description1, "value", value1, "date", date1);
     Map<String, Object> params2 = Map.of("description", description2, "value", value2, "date", date2);
@@ -266,8 +267,8 @@ public class IncomeControllerTests {
 
     List<IncomeDto> listExpected = new ArrayList<>();
 
-    IncomeDto incomeDto1 = new IncomeDto(5l, description1, LocalDate.parse(date1), value1);
-    IncomeDto incomeDto2 = new IncomeDto(6l, description2, LocalDate.parse(date2), value2);
+    IncomeDto incomeDto1 = new IncomeDto(5l, description1, LocalDate.parse(date1, Formatter.dateFormatter), value1);
+    IncomeDto incomeDto2 = new IncomeDto(6l, description2, LocalDate.parse(date2, Formatter.dateFormatter), value2);
     
     listExpected.add(incomeDto2);
     listExpected.add(incomeDto1);
@@ -282,7 +283,7 @@ public class IncomeControllerTests {
     int id = 1;
     String description = "Salário 1";
     BigDecimal value = BigDecimal.valueOf(2500.00);
-    String date = "2022-01-08";
+    String date = "08/01/2022";
 
     Map<String, Object> params = Map.of("description", description, "value", value, "date", date);
 

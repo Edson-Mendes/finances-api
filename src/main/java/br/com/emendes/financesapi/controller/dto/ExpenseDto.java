@@ -3,17 +3,31 @@ package br.com.emendes.financesapi.controller.dto;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+
 import org.springframework.data.domain.Page;
 
 import br.com.emendes.financesapi.model.Expense;
 import br.com.emendes.financesapi.model.enumerator.Category;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 public class ExpenseDto {
 
+  @Schema(example = "8")
   private Long id;
+
+  @Schema(example = "Aluguel")
   private String description;
+
+  @JsonFormat(pattern = "dd/MM/yyyy")
+  @Schema(pattern = "dd/MM/yyyy", type = "string", example = "08/01/2022")
   private LocalDate date;
+
+  @Schema(example = "1200.00")
   private BigDecimal value;
+
+  @Schema(example = "MORADIA")
   private Category category;
 
   public ExpenseDto() {

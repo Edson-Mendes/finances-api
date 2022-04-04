@@ -3,14 +3,23 @@ package br.com.emendes.financesapi.controller.dto;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import org.springframework.data.domain.Page;
 
 import br.com.emendes.financesapi.model.Income;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 public class IncomeDto {
+
+  @Schema(example = "10")
   private Long id;
+  @Schema(example = "Salário")
   private String description;
+  @JsonFormat(pattern = "dd/MM/yyyy")
+  @Schema(pattern = "dd/MM/yyyy", type = "string", example = "05/01/2022")
   private LocalDate date;
+  @Schema(example = "3500.00")
   private BigDecimal value;
 
   public IncomeDto() {
@@ -23,7 +32,7 @@ public class IncomeDto {
     this.value = income.getValue();
   }
 
-  public IncomeDto(Long id, String description, LocalDate date, BigDecimal value){
+  public IncomeDto(Long id, String description, LocalDate date, BigDecimal value) {
     this.id = id;
     this.description = description;
     this.date = date;

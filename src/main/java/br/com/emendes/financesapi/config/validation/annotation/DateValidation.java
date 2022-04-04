@@ -11,6 +11,8 @@ import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import javax.validation.Payload;
 
+import br.com.emendes.financesapi.util.Formatter;
+
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = DateValidator.class)
@@ -29,7 +31,7 @@ class DateValidator implements ConstraintValidator<DateValidation, String>{
   @Override
   public boolean isValid(String value, ConstraintValidatorContext context) {
     try{
-      LocalDate.parse(value);
+      LocalDate.parse(value, Formatter.dateFormatter);
       return true;
     }catch(Exception e){
       return false;

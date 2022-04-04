@@ -14,16 +14,21 @@ import org.springframework.web.server.ResponseStatusException;
 import br.com.emendes.financesapi.config.validation.annotation.DateValidation;
 import br.com.emendes.financesapi.model.Income;
 import br.com.emendes.financesapi.repository.IncomeRepository;
+import br.com.emendes.financesapi.util.Formatter;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 public class IncomeForm {
 
+  @Schema(example = "Salário")
   @NotBlank
   private String description;
 
+  @Schema(pattern = "dd/MM/yyyy", type = "string", example = "05/01/2022")
   @NotNull
   @DateValidation
   private String date;
 
+  @Schema(example = "3500.00")
   @NotNull
   @Positive
   private BigDecimal value;
@@ -54,7 +59,7 @@ public class IncomeForm {
 
   public Income convert(IncomeRepository incomeRepository, Long userId) {
     alreadyExist(incomeRepository, userId);
-    LocalDate date = LocalDate.parse(this.date);
+    LocalDate date = LocalDate.parse(this.date, Formatter.dateFormatter);
     Income income = new Income(description, value, date);
     return income;
   }
@@ -69,7 +74,7 @@ public class IncomeForm {
    * @throws ResponseStatusException se existir receita.
    */
   public boolean alreadyExist(IncomeRepository incomeRepository, Long userId) {
-    LocalDate date = LocalDate.parse(this.date);
+    LocalDate date = LocalDate.parse(this.date, Formatter.dateFormatter);
     Optional<Income> optional = incomeRepository.findByDescriptionAndMonthAndYearAndUserId(description, date.getMonthValue(),
         date.getYear(), userId);
     if (optional.isPresent()) {
@@ -94,7 +99,7 @@ public class IncomeForm {
    * @throws ResponseStatusException se existir receita.
    */
   public boolean alreadyExist(IncomeRepository incomeRepository, Long incomeId, Long userId) {
-    LocalDate date = LocalDate.parse(this.date);
+    LocalDate date = LocalDate.parse(this.date, Formatter.dateFormatter);
     Optional<Income> optional = incomeRepository.findByDescriptionAndMonthAndYearAndUserIdAndNotId(description,
         date.getMonthValue(), date.getYear(), userId, incomeId);
     if (optional.isPresent()) {

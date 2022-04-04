@@ -70,46 +70,46 @@ public class SummaryControllerTests {
   }
 
   private void populateLorem() throws Exception {
-    mock.post("/receitas", Map.of("description", "Salário1", "value", new BigDecimal(2500.00), "date", "2022-02-08"),
+    mock.post("/receitas", Map.of("description", "Salário1", "value", new BigDecimal(2500.00), "date", "08/02/2022"),
         tokenLorem,
         201);
-    mock.post("/receitas", Map.of("description", "Salário2", "value", new BigDecimal(1500.00), "date", "2022-02-10"),
+    mock.post("/receitas", Map.of("description", "Salário2", "value", new BigDecimal(1500.00), "date", "10/02/2022"),
         tokenLorem,
         201);
 
     mock.post("/despesas",
-        Map.of("description", "Aluguel", "value", new BigDecimal(1000.00), "date", "2022-02-05", "category", "MORADIA"),
+        Map.of("description", "Aluguel", "value", new BigDecimal(1000.00), "date", "05/02/2022", "category", "MORADIA"),
         tokenLorem,
         201);
     mock.post("/despesas",
-        Map.of("description", "Alimentação", "value", new BigDecimal(800.00), "date", "2022-02-28", "category",
+        Map.of("description", "Alimentação", "value", new BigDecimal(800.00), "date", "28/02/2022", "category",
             "ALIMENTACAO"),
         tokenLorem,
         201);
     mock.post("/despesas",
-        Map.of("description", "Farmácia", "value", new BigDecimal(150.00), "date", "2022-02-28", "category", "SAUDE"),
+        Map.of("description", "Farmácia", "value", new BigDecimal(150.00), "date", "28/02/2022", "category", "SAUDE"),
         tokenLorem,
         201);
   }
 
   private void populateIpsum() throws Exception {
-    mock.post("/receitas", Map.of("description", "Salário1", "value", new BigDecimal(1800.00), "date", "2022-02-08"),
+    mock.post("/receitas", Map.of("description", "Salário1", "value", new BigDecimal(1800.00), "date", "08/02/2022"),
         tokenIpsum,
         201);
-    mock.post("/receitas", Map.of("description", "Salário2", "value", new BigDecimal(1200.00), "date", "2022-02-10"),
-        tokenIpsum,
-        201);
-    mock.post("/despesas",
-        Map.of("description", "Aluguel", "value", new BigDecimal(800.00), "date", "2022-02-05", "category", "MORADIA"),
+    mock.post("/receitas", Map.of("description", "Salário2", "value", new BigDecimal(1200.00), "date", "10/02/2022"),
         tokenIpsum,
         201);
     mock.post("/despesas",
-        Map.of("description", "Alimentação", "value", new BigDecimal(700.00), "date", "2022-02-28", "category",
+        Map.of("description", "Aluguel", "value", new BigDecimal(800.00), "date", "05/02/2022", "category", "MORADIA"),
+        tokenIpsum,
+        201);
+    mock.post("/despesas",
+        Map.of("description", "Alimentação", "value", new BigDecimal(700.00), "date", "28/02/2022", "category",
             "ALIMENTACAO"),
         tokenIpsum,
         201);
     mock.post("/despesas",
-        Map.of("description", "Farmácia", "value", new BigDecimal(250.00), "date", "2022-02-28", "category", "SAUDE"),
+        Map.of("description", "Farmácia", "value", new BigDecimal(250.00), "date", "28/02/2022", "category", "SAUDE"),
         tokenIpsum,
         201);
   }

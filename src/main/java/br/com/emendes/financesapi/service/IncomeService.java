@@ -21,6 +21,7 @@ import br.com.emendes.financesapi.model.Income;
 import br.com.emendes.financesapi.model.User;
 import br.com.emendes.financesapi.repository.IncomeRepository;
 import br.com.emendes.financesapi.repository.UserRepository;
+import br.com.emendes.financesapi.util.Formatter;
 
 @Service
 public class IncomeService {
@@ -95,7 +96,7 @@ public class IncomeService {
 
       income.setDescription(incomeForm.getDescription());
       income.setValue(incomeForm.getValue());
-      income.setDate(LocalDate.parse(incomeForm.getDate()));
+      income.setDate(LocalDate.parse(incomeForm.getDate(), Formatter.dateFormatter));
 
       return ResponseEntity.status(HttpStatus.OK).header("Content-Type", "application/json;charset=UTF-8")
           .body(new IncomeDto(income));

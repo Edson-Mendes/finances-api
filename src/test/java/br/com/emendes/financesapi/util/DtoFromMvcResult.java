@@ -80,7 +80,7 @@ public abstract class DtoFromMvcResult {
   public static IncomeDto incomeDto(JsonNode content) {
     Long id = content.get("id").asLong();
     String description = content.get("description").asText();
-    LocalDate date = LocalDate.parse(content.get("date").asText());
+    LocalDate date = LocalDate.parse(content.get("date").asText(), Formatter.dateFormatter);
     BigDecimal value = content.get("value").decimalValue();
 
     IncomeDto incomeDto = new IncomeDto(id, description, date, value);
@@ -105,7 +105,7 @@ public abstract class DtoFromMvcResult {
   public static ExpenseDto expenseDto(JsonNode content) {
     Long id = content.get("id").asLong();
     String description = content.get("description").asText();
-    LocalDate date = LocalDate.parse(content.get("date").asText());
+    LocalDate date = LocalDate.parse(content.get("date").asText(), Formatter.dateFormatter);
     BigDecimal value = content.get("value").decimalValue();
     Category category = Category.valueOf(content.get("category").asText());
 

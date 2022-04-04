@@ -17,6 +17,7 @@ import org.hibernate.annotations.OnDeleteAction;
 
 import br.com.emendes.financesapi.controller.form.ExpenseForm;
 import br.com.emendes.financesapi.model.enumerator.Category;
+import br.com.emendes.financesapi.util.Formatter;
 
 @Entity
 public class Expense {
@@ -48,7 +49,7 @@ public class Expense {
 
   public void setParams(ExpenseForm expenseForm) {
     this.description = expenseForm.getDescription();
-    this.date = LocalDate.parse(expenseForm.getDate());
+    this.date = LocalDate.parse(expenseForm.getDate(), Formatter.dateFormatter);
     this.value = expenseForm.getValue();
     if (expenseForm.getCategory() != null) {
       this.category = expenseForm.getCategory();

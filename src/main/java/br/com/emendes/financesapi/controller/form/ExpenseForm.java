@@ -15,20 +15,26 @@ import br.com.emendes.financesapi.config.validation.annotation.DateValidation;
 import br.com.emendes.financesapi.model.Expense;
 import br.com.emendes.financesapi.model.enumerator.Category;
 import br.com.emendes.financesapi.repository.ExpenseRepository;
+import br.com.emendes.financesapi.util.Formatter;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 public class ExpenseForm {
 
+  @Schema(example = "Aluguel")
   @NotBlank
   private String description;
 
+  @Schema(pattern = "dd/MM/yyyy", type = "string", example = "08/01/2022")
   @NotNull
   @DateValidation
   private String date;
 
+  @Schema(example = "1200.00")
   @NotNull
   @Positive
   private BigDecimal value;
 
+  @Schema(example = "MORADIA")
   private Category category;
 
   public String getDescription() {
@@ -65,7 +71,7 @@ public class ExpenseForm {
 
   public Expense convert(ExpenseRepository expenseRepository, Long userId) {
     alreadyExist(expenseRepository, userId);
-    LocalDate date = LocalDate.parse(this.date);
+    LocalDate date = LocalDate.parse(this.date, Formatter.dateFormatter);
     if (category == null) {
       category = Category.OUTRAS;
     }
@@ -85,7 +91,7 @@ public class ExpenseForm {
    * @throws ResponseStatusException se existir despesa.
    */
   private boolean alreadyExist(ExpenseRepository expenseRepository, Long userId) {
-    LocalDate date = LocalDate.parse(this.date);
+    LocalDate date = LocalDate.parse(this.date, Formatter.dateFormatter);
     Optional<Expense> optional = expenseRepository.findByDescriptionAndMonthAndYearAndUserId(
         description,
         date.getMonthValue(),
@@ -114,7 +120,7 @@ public class ExpenseForm {
    * @throws ResponseStatusException se existir despesa.
    */
   public boolean alreadyExist(ExpenseRepository expenseRepository, Long id, Long userId) {
-    LocalDate date = LocalDate.parse(this.date);
+    LocalDate date = LocalDate.parse(this.date, Formatter.dateFormatter);
     Optional<Expense> optional = expenseRepository.findByDescriptionAndMonthAndYearAndUserIdAndNotId(
         description,
         date.getMonthValue(),

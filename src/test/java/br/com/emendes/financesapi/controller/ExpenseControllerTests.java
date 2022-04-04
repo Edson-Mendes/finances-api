@@ -25,6 +25,7 @@ import br.com.emendes.financesapi.controller.dto.ExpenseDto;
 import br.com.emendes.financesapi.model.enumerator.Category;
 import br.com.emendes.financesapi.util.CustomMockMvc;
 import br.com.emendes.financesapi.util.DtoFromMvcResult;
+import br.com.emendes.financesapi.util.Formatter;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -78,7 +79,7 @@ public class ExpenseControllerTests {
 
     String description = "Gasolina";
     BigDecimal value = BigDecimal.valueOf(341.87);
-    String date = "2022-01-28";
+    String date = "28/01/2022";
 
     Map<String, Object> params = Map.of("description", description, "value", value, "date", date);
 
@@ -91,7 +92,7 @@ public class ExpenseControllerTests {
 
     String description = "Mercado";
     BigDecimal value = BigDecimal.valueOf(719.40);
-    String date = "2022-01-31";
+    String date = "31/01/2022";
 
     Map<String, Object> params = Map.of("description", description, "value", value, "date", date);
 
@@ -108,7 +109,7 @@ public class ExpenseControllerTests {
 
     String description = "Aluguel";
     BigDecimal value = BigDecimal.valueOf(1500.00);
-    String date = "2022-01-08";
+    String date = "08/01/2022";
     String category = "MORADIA";
 
     Map<String, Object> params = Map.of("description", description, "value", value, "date", date, "category", category);
@@ -124,13 +125,13 @@ public class ExpenseControllerTests {
 
     String description = "Netflix";
     BigDecimal value = BigDecimal.valueOf(39.90);
-    String date = "2022-01-18";
+    String date = "18/01/2022";
     String category = "LAZER";
 
     Map<String, Object> params1 = Map.of("description", description, "value", value, "date", date, "category",
         category);
 
-    String newDate = "2022-02-18";
+    String newDate = "18/02/2022";
     Map<String, Object> params2 = Map.of("description", description, "value", value, "date", newDate, "category",
         category);
 
@@ -145,7 +146,7 @@ public class ExpenseControllerTests {
 
     String description = "Farmácia";
     BigDecimal value = BigDecimal.valueOf(85.00);
-    String date = "2022-01-22";
+    String date = "22/01/2022";
     String category = "SAUDE";
 
     mock.post("/despesas", Map.of("value", value, "date", date, "category", category), tokenLorem, 400);
@@ -222,7 +223,7 @@ public class ExpenseControllerTests {
 
     String description = "Combustivel";
     BigDecimal value = BigDecimal.valueOf(341.87);
-    String date = "2022-01-28";
+    String date = "28/01/2022";
     String category = "TRANSPORTE";
 
     Map<String, Object> params = Map.of("description", description, "value", value, "date", date, "category", category);
@@ -236,7 +237,7 @@ public class ExpenseControllerTests {
     int id = 1000;
     String description = "Combustivel";
     BigDecimal value = BigDecimal.valueOf(341.87);
-    String date = "2022-01-28";
+    String date = "28/01/2022";
     String category = "TRANSPORTE";
 
     Map<String, Object> params = Map.of("description", description, "value", value, "date", date, "category", category);
@@ -249,7 +250,7 @@ public class ExpenseControllerTests {
   public void deveriaDevolver400AoAtualizarDespesaSemAlgumParametroObrigatorio() throws Exception {
     String description = "Combustivel";
     BigDecimal value = BigDecimal.valueOf(341.87);
-    String date = "2022-01-28";
+    String date = "28/01/2022";
     String category = "TRANSPORTE";
 
     mock.put("/despesas/1", Map.of("value", value, "date", date, "category", category), tokenLorem, 400);
@@ -286,12 +287,12 @@ public class ExpenseControllerTests {
   public void deveriaDevolverSomenteAsDespesasDeIpsum() throws Exception {
     String description1 = "Aluguel";
     BigDecimal value1 = new BigDecimal("1000.0");
-    String date1 = "2022-01-05";
+    String date1 = "05/01/2022";
     String category = "MORADIA";
 
     String description2 = "Condomínio";
     BigDecimal value2 = new BigDecimal("200.0");
-    String date2 = "2022-01-06";
+    String date2 = "06/01/2022";
 
     Map<String, Object> params1 = Map.of("description", description1, "value", value1, "date", date1, "category",
         category);
@@ -307,9 +308,9 @@ public class ExpenseControllerTests {
     List<ExpenseDto> listExpenseDto = DtoFromMvcResult.listExpenseDto(result);
     List<ExpenseDto> listExpected = new ArrayList<>();
 
-    ExpenseDto expenseDto1 = new ExpenseDto(6l, description1, LocalDate.parse(date1), value1,
+    ExpenseDto expenseDto1 = new ExpenseDto(6l, description1, LocalDate.parse(date1, Formatter.dateFormatter), value1,
         Category.valueOf(category));
-    ExpenseDto expenseDto2 = new ExpenseDto(7l, description2, LocalDate.parse(date2), value2,
+    ExpenseDto expenseDto2 = new ExpenseDto(7l, description2, LocalDate.parse(date2, Formatter.dateFormatter), value2,
         Category.valueOf(category));
 
     listExpected.add(expenseDto2);
@@ -325,7 +326,7 @@ public class ExpenseControllerTests {
     int id = 1;
     String description = "Spotify";
     BigDecimal value = BigDecimal.valueOf(20.00);
-    String date = "2022-01-08";
+    String date = "08/01/2022";
     String category = "LAZER";
 
     Map<String, Object> params = Map.of("description", description, "value", value, "date", date, "category", category);
@@ -356,7 +357,7 @@ public class ExpenseControllerTests {
   public void deveriaDevolver400EErrorDtoAoSalvarComCategoriaInvalida() throws Exception {
     String description = "Farmácia";
     BigDecimal value = BigDecimal.valueOf(82.00);
-    String date = "2022-01-14";
+    String date = "14/01/2022";
     String category = "FARMACIA";
 
     Map<String, Object> params = Map.of("description", description, "value", value, "date", date, "category", category);
@@ -373,7 +374,7 @@ public class ExpenseControllerTests {
   public void deveriaDevolver400EErrorDtoAoSalvarComCategoriaVazia() throws Exception {
     String description = "Farmácia";
     BigDecimal value = BigDecimal.valueOf(82.00);
-    String date = "2022-01-14";
+    String date = "14/01/2022";
     String category = "";
 
     Map<String, Object> params = Map.of("description", description, "value", value, "date", date, "category", category);
