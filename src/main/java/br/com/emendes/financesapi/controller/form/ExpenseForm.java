@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Optional;
 
+import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
@@ -32,6 +33,7 @@ public class ExpenseForm {
   @Schema(example = "1200.00")
   @NotNull
   @Positive
+  @Digits(integer = 6, fraction = 2)
   private BigDecimal value;
 
   @Schema(example = "MORADIA")

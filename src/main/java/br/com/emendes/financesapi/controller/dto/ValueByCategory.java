@@ -5,9 +5,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import br.com.emendes.financesapi.model.enumerator.Category;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 public class ValueByCategory {
+
+  @Schema(example = "MORADIA")
   private Category category;
+
+  @Schema(example = "3700.00")
   private BigDecimal value;
 
   public ValueByCategory(Category category, BigDecimal value){

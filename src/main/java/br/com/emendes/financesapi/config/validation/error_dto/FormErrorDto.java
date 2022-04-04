@@ -1,8 +1,13 @@
 package br.com.emendes.financesapi.config.validation.error_dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 public class FormErrorDto {
 
+  @Schema(example = "date")
   private String field;
+
+  @Schema(example = "A data informada é inválida!")
   private String error;
 
   public FormErrorDto(String field, String error) {

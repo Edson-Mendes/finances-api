@@ -5,16 +5,24 @@ import javax.validation.constraints.NotBlank;
 
 import br.com.emendes.financesapi.config.validation.annotation.ValidPassword;
 import br.com.emendes.financesapi.model.User;
+import io.swagger.v3.oas.annotations.media.Schema;
 public class SignupForm {
 
+  @Schema(example = "Mei")
   @NotBlank
   private String name;
+
+  @Schema(example = "mei@email.com")
   @NotBlank
   @Email
   private String email;
+
+  @Schema(example = "myPassword123")
   @ValidPassword
   @NotBlank
   private String password;
+
+  @Schema(example = "myPassword123")
   @NotBlank
   private String confirm;
 

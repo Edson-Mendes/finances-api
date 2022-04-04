@@ -4,9 +4,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import br.com.emendes.financesapi.model.Role;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 public class RoleDto {
+  
+  @Schema(example = "2")
   private Long id;
+
+  @Schema(example = "ROLE_USER")
   private String name;
 
   public RoleDto(Role role) {

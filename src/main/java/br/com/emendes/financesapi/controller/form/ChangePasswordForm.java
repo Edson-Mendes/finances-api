@@ -5,12 +5,16 @@ import javax.validation.constraints.NotBlank;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import br.com.emendes.financesapi.config.validation.annotation.ValidPassword;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 public class ChangePasswordForm {
 
+  @Schema(example = "myNewPassword1234")
   @ValidPassword
   @NotBlank
   private String newPassword;
+
+  @Schema(example = "myNewPassword1234")
   @NotBlank
   private String confirm;
 

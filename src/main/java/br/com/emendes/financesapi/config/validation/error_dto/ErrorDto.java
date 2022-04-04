@@ -1,7 +1,13 @@
 package br.com.emendes.financesapi.config.validation.error_dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 public class ErrorDto {
+
+  @Schema(example = "Erro")
   private String error;
+
+  @Schema(example = "Informação a mais sobre o erro")
   private String message;
 
   public ErrorDto(String error, String message) {

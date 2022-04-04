@@ -4,10 +4,19 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 public class SummaryDto {
+
+  @Schema(example = "5000.00")
   private BigDecimal incomeTotalValue = BigDecimal.ZERO;
+
+  @Schema(example = "3700.00")
   private BigDecimal expenseTotalValue = BigDecimal.ZERO;
+
+  @Schema(example = "1300.00")
   private BigDecimal finalBalance = BigDecimal.ZERO;
+  
   private List<ValueByCategory> valuesByCategory = new ArrayList<>();
 
   public SummaryDto() {

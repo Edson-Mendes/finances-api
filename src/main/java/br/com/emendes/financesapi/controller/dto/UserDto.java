@@ -3,11 +3,17 @@ package br.com.emendes.financesapi.controller.dto;
 import org.springframework.data.domain.Page;
 
 import br.com.emendes.financesapi.model.User;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 public class UserDto {
 
+  @Schema(example = "13")
   private Long id;
+
+  @Schema(example = "Mei")
   private String name;
+
+  @Schema(example = "mei@email.com")
   private String email;
 
   public UserDto(User user) {
