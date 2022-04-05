@@ -26,7 +26,7 @@ import br.com.emendes.financesapi.util.DtoFromMvcResult;
 @TestMethodOrder(OrderAnnotation.class)
 @ActiveProfiles("test")
 public class RoleControllerTests {
-  
+
   @Autowired
   private CustomMockMvc mock;
 
@@ -35,7 +35,7 @@ public class RoleControllerTests {
   private String tokenUser;
 
   @BeforeAll
-  public void generateTokenUser() throws Exception{
+  public void generateTokenUser() {
     String name = "User Common";
     String email = "user@email.com";
     String password = "111111111";
@@ -51,43 +51,43 @@ public class RoleControllerTests {
   }
 
   @BeforeAll
-  public void generateTokenAdmin() throws Exception{
+  public void generateTokenAdmin() {
     String email = "admin@email.com";
     String password = "123456";
 
     Map<String, Object> paramsSignin = Map.of("email", email, "password", password);
     MvcResult result = mock.post("/auth/signin", paramsSignin, "", 200);
-    
+
     tokenAdmin = DtoFromMvcResult.tokenDto(result).generateTypeWithToken();
   }
 
   @Test
   @Order(1)
-  public void deveriaDevolver403QuandoUserBuscarRoles() throws Exception {
+  public void deveriaDevolver403QuandoUserBuscarRoles() {
     mock.get("/role", tokenUser, 403);
-  } 
+  }
 
   @Test
   @Order(2)
-  public void deveriaDevolver200AoBuscarTodosOsRoles() throws Exception {
+  public void deveriaDevolver200AoBuscarTodosOsRoles() {
     mock.get("/role", tokenAdmin, 200);
   }
 
   @Test
   @Order(3)
-  public void deveriaDevolver403QuandoUserBuscarRolePorId() throws Exception {
+  public void deveriaDevolver403QuandoUserBuscarRolePorId() {
     Long id = 1l;
-    mock.get("/role/"+id, tokenUser, 403);
+    mock.get("/role/" + id, tokenUser, 403);
   }
 
   @Test
   @Order(4)
-  public void deveriaDevolver200ERoleDtoAoBuscarRolePorId() throws Exception {
+  public void deveriaDevolver200ERoleDtoAoBuscarRolePorId() {
     Long id = 1l;
-    MvcResult result = mock.get("/role/"+id, tokenAdmin, 200);
+    MvcResult result = mock.get("/role/" + id, tokenAdmin, 200);
     RoleDto roleDto = DtoFromMvcResult.roleDto(result);
 
     Assertions.assertEquals("ROLE_USER", roleDto.getName());
   }
-  
+
 }

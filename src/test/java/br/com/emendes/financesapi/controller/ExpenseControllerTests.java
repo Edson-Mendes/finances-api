@@ -42,7 +42,7 @@ public class ExpenseControllerTests {
   private String tokenIpsum;
 
   @BeforeAll
-  public void addUsuarioLorem() throws Exception {
+  public void addUsuarioLorem() {
     String name = "Lorem Amet";
     String email = "lorem.a@email.com";
     String password = "111111111";
@@ -58,7 +58,7 @@ public class ExpenseControllerTests {
   }
 
   @BeforeAll
-  public void addUsuarioIpsum() throws Exception {
+  public void addUsuarioIpsum() {
     String name = "Ipsum Amet";
     String email = "ipsum.a@email.com";
     String password = "22222222";
@@ -75,7 +75,7 @@ public class ExpenseControllerTests {
 
   @Test
   @Order(1)
-  public void deveriaDevolverStatus201AoCriarDespesa() throws Exception {
+  public void deveriaDevolverStatus201AoCriarDespesa() {
 
     String description = "Gasolina";
     BigDecimal value = BigDecimal.valueOf(341.87);
@@ -88,7 +88,7 @@ public class ExpenseControllerTests {
 
   @Test
   @Order(2)
-  public void deveriaDevolverCategoryOutrasQuandoNaoInseridoCategory() throws Exception {
+  public void deveriaDevolverCategoryOutrasQuandoNaoInseridoCategory() {
 
     String description = "Mercado";
     BigDecimal value = BigDecimal.valueOf(719.40);
@@ -105,7 +105,7 @@ public class ExpenseControllerTests {
 
   @Test
   @Order(3)
-  public void deveriaDevolver409AoCadastrarDescricaoDuplicadaEmMesmoMesEAno() throws Exception {
+  public void deveriaDevolver409AoCadastrarDescricaoDuplicadaEmMesmoMesEAno() {
 
     String description = "Aluguel";
     BigDecimal value = BigDecimal.valueOf(1500.00);
@@ -121,7 +121,7 @@ public class ExpenseControllerTests {
 
   @Test
   @Order(4)
-  public void deveriaDevolver201AoCadastrarDescricaoEmMesDiferentes() throws Exception {
+  public void deveriaDevolver201AoCadastrarDescricaoEmMesDiferentes() {
 
     String description = "Netflix";
     BigDecimal value = BigDecimal.valueOf(39.90);
@@ -142,7 +142,7 @@ public class ExpenseControllerTests {
 
   @Test
   @Order(5)
-  public void deveriaDevolver400AoNaoEnviarAlgumParametroObrigatorio() throws Exception {
+  public void deveriaDevolver400AoNaoEnviarAlgumParametroObrigatorio() {
 
     String description = "Farmácia";
     BigDecimal value = BigDecimal.valueOf(85.00);
@@ -160,18 +160,18 @@ public class ExpenseControllerTests {
 
   @Test
   @Order(6)
-  public void deveriaDevolver200AoBuscarTodasAsDespesas() throws Exception {
+  public void deveriaDevolver200AoBuscarTodasAsDespesas() {
     int pagina = 0;
     int quantidade = 1;
-    mock.get("/despesas?page="+pagina+"&size="+quantidade, tokenLorem, 200);
+    mock.get("/despesas?page=" + pagina + "&size=" + quantidade, tokenLorem, 200);
   }
 
   @Test
   @Order(7)
-  public void deveriaDevolver200AoBuscarPorIdExistente() throws Exception {
+  public void deveriaDevolver200AoBuscarPorIdExistente() {
     int pagina = 0;
     int quantidade = 1;
-    MvcResult result = mock.get("/despesas?page="+pagina+"&size="+quantidade, tokenLorem, 200);
+    MvcResult result = mock.get("/despesas?page=" + pagina + "&size=" + quantidade, tokenLorem, 200);
     List<ExpenseDto> listExpenseDto = DtoFromMvcResult.listExpenseDto(result);
 
     Long id = listExpenseDto.get(0).getId();
@@ -181,42 +181,42 @@ public class ExpenseControllerTests {
 
   @Test
   @Order(8)
-  public void deveriaDevolver200AoBuscarPorAnoEMesExistentes() throws Exception {
+  public void deveriaDevolver200AoBuscarPorAnoEMesExistentes() {
     mock.get("/despesas/2022/01?page=0&size=1", tokenLorem, 200);
   }
 
   @Test
   @Order(9)
-  public void deveriaDevolver404AoBuscarPorAnoEMesInexistentes() throws Exception {
+  public void deveriaDevolver404AoBuscarPorAnoEMesInexistentes() {
     mock.get("/despesas/2022/03?page=0&size=1", tokenLorem, 404);
   }
 
   @Test
   @Order(10)
-  public void deveriaDevolver404AoBuscarPorIdInexistentes() throws Exception {
+  public void deveriaDevolver404AoBuscarPorIdInexistentes() {
     mock.get("/despesas/999", tokenLorem, 404);
   }
 
   @Test
   @Order(11)
-  public void deveriaDevolver200AoBuscarPorDescricaoExistente() throws Exception {
+  public void deveriaDevolver200AoBuscarPorDescricaoExistente() {
     mock.get("/despesas?description=net&page=0&size=1", tokenLorem, 200);
   }
 
   @Test
   @Order(12)
-  public void deveriaDevolver404AoBuscarPorDescricaoInexistente() throws Exception {
+  public void deveriaDevolver404AoBuscarPorDescricaoInexistente() {
     int pagina = 0;
     int quantidade = 1;
-    mock.get("/despesas?description=nettttt&page="+pagina+"&size="+quantidade, tokenLorem, 404);
+    mock.get("/despesas?description=nettttt&page=" + pagina + "&size=" + quantidade, tokenLorem, 404);
   }
 
   @Test
   @Order(13)
-  public void deveriaDevolver200AoAtualizarDespesaCorretamente() throws Exception {
+  public void deveriaDevolver200AoAtualizarDespesaCorretamente() {
     int pagina = 0;
     int quantidade = 1;
-    MvcResult result = mock.get("/despesas?page="+pagina+"&size="+quantidade, tokenLorem, 200);
+    MvcResult result = mock.get("/despesas?page=" + pagina + "&size=" + quantidade, tokenLorem, 200);
     List<ExpenseDto> listExpenseDto = DtoFromMvcResult.listExpenseDto(result);
 
     Long id = listExpenseDto.get(0).getId();
@@ -233,7 +233,7 @@ public class ExpenseControllerTests {
 
   @Test
   @Order(14)
-  public void deveriaDevolver404AoAtualizarDespesaComIdInexistente() throws Exception {
+  public void deveriaDevolver404AoAtualizarDespesaComIdInexistente() {
     int id = 1000;
     String description = "Combustivel";
     BigDecimal value = BigDecimal.valueOf(341.87);
@@ -247,7 +247,7 @@ public class ExpenseControllerTests {
 
   @Test
   @Order(15)
-  public void deveriaDevolver400AoAtualizarDespesaSemAlgumParametroObrigatorio() throws Exception {
+  public void deveriaDevolver400AoAtualizarDespesaSemAlgumParametroObrigatorio() {
     String description = "Combustivel";
     BigDecimal value = BigDecimal.valueOf(341.87);
     String date = "28/01/2022";
@@ -264,10 +264,10 @@ public class ExpenseControllerTests {
 
   @Test
   @Order(16)
-  public void deveriaDevolver200AoDeletarUmaDespesaComIdExistente() throws Exception {
+  public void deveriaDevolver200AoDeletarUmaDespesaComIdExistente() {
     int pagina = 0;
     int quantidade = 1;
-    MvcResult result = mock.get("/despesas?page="+pagina+"&size="+quantidade, tokenLorem, 200);
+    MvcResult result = mock.get("/despesas?page=" + pagina + "&size=" + quantidade, tokenLorem, 200);
     List<ExpenseDto> listExpenseDto = DtoFromMvcResult.listExpenseDto(result);
 
     Long id = listExpenseDto.get(0).getId();
@@ -277,14 +277,14 @@ public class ExpenseControllerTests {
 
   @Test
   @Order(17)
-  public void deveriaDevolver404AoDeletarUmaDespesaComIdInexistente() throws Exception {
+  public void deveriaDevolver404AoDeletarUmaDespesaComIdInexistente() {
     int id = 1000;
     mock.delete("/despesas/" + id, tokenLorem, 404);
   }
 
   @Test
   @Order(18)
-  public void deveriaDevolverSomenteAsDespesasDeIpsum() throws Exception {
+  public void deveriaDevolverSomenteAsDespesasDeIpsum() {
     String description1 = "Aluguel";
     BigDecimal value1 = new BigDecimal("1000.0");
     String date1 = "05/01/2022";
@@ -304,7 +304,7 @@ public class ExpenseControllerTests {
 
     int pagina = 0;
     int quantidade = 2;
-    MvcResult result = mock.get("/despesas?page="+pagina+"&size="+quantidade, tokenIpsum, 200);
+    MvcResult result = mock.get("/despesas?page=" + pagina + "&size=" + quantidade, tokenIpsum, 200);
     List<ExpenseDto> listExpenseDto = DtoFromMvcResult.listExpenseDto(result);
     List<ExpenseDto> listExpected = new ArrayList<>();
 
@@ -322,7 +322,7 @@ public class ExpenseControllerTests {
 
   @Test
   @Order(19)
-  public void deveriaDevolver404AoTentarAtualizarDespesaDeOutroUsuario() throws Exception {
+  public void deveriaDevolver404AoTentarAtualizarDespesaDeOutroUsuario() {
     int id = 1;
     String description = "Spotify";
     BigDecimal value = BigDecimal.valueOf(20.00);
@@ -341,7 +341,7 @@ public class ExpenseControllerTests {
 
   @Test
   @Order(20)
-  public void deveriaDevolver404AoTentarDeletarDespesaDeOutroUsuario() throws Exception {
+  public void deveriaDevolver404AoTentarDeletarDespesaDeOutroUsuario() {
     Long id = 1l;
 
     MvcResult result = mock.delete("/despesas/" + id, tokenIpsum, 404);
@@ -354,7 +354,7 @@ public class ExpenseControllerTests {
 
   @Test
   @Order(21)
-  public void deveriaDevolver400EErrorDtoAoSalvarComCategoriaInvalida() throws Exception {
+  public void deveriaDevolver400EErrorDtoAoSalvarComCategoriaInvalida() {
     String description = "Farmácia";
     BigDecimal value = BigDecimal.valueOf(82.00);
     String date = "14/01/2022";
@@ -366,12 +366,14 @@ public class ExpenseControllerTests {
     ErrorDto errorDto = DtoFromMvcResult.errorDto(result);
 
     Assertions.assertEquals("Categoria inválida", errorDto.getError());
-    Assertions.assertEquals("Categorias válidas: ALIMENTACAO, SAUDE, MORADIA, TRANSPORTE, EDUCACAO, LAZER, IMPREVISTOS, OUTRAS", errorDto.getMessage());
+    Assertions.assertEquals(
+        "Categorias válidas: ALIMENTACAO, SAUDE, MORADIA, TRANSPORTE, EDUCACAO, LAZER, IMPREVISTOS, OUTRAS",
+        errorDto.getMessage());
   }
 
   @Test
   @Order(21)
-  public void deveriaDevolver400EErrorDtoAoSalvarComCategoriaVazia() throws Exception {
+  public void deveriaDevolver400EErrorDtoAoSalvarComCategoriaVazia() {
     String description = "Farmácia";
     BigDecimal value = BigDecimal.valueOf(82.00);
     String date = "14/01/2022";
@@ -383,7 +385,9 @@ public class ExpenseControllerTests {
     ErrorDto errorDto = DtoFromMvcResult.errorDto(result);
 
     Assertions.assertEquals("Categoria inválida", errorDto.getError());
-    Assertions.assertEquals("Categorias válidas: ALIMENTACAO, SAUDE, MORADIA, TRANSPORTE, EDUCACAO, LAZER, IMPREVISTOS, OUTRAS", errorDto.getMessage());
+    Assertions.assertEquals(
+        "Categorias válidas: ALIMENTACAO, SAUDE, MORADIA, TRANSPORTE, EDUCACAO, LAZER, IMPREVISTOS, OUTRAS",
+        errorDto.getMessage());
   }
-  
+
 }

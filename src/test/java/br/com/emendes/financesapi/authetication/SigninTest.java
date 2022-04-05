@@ -34,14 +34,14 @@ public class SigninTest {
   private CustomMockMvc mock;
 
   @BeforeAll
-  public void addRoleAndUser() throws Exception {
+  public void addRoleAndUser() {
     mock.post("/auth/signup",
         Map.of("name", "Ipsum", "email", "ipsum@email.com", "password", "123123123", "confirm", "123123123"), "", 201);
   }
 
   @Test
   @Order(1)
-  public void deveriaDevolver200ETokenDtoAoLogar() throws Exception {
+  public void deveriaDevolver200ETokenDtoAoLogar() {
     String email = "ipsum@email.com";
     String password = "123123123";
     Map<String, Object> params = Map.of("email", email, "password", password);
@@ -55,7 +55,7 @@ public class SigninTest {
 
   @Test
   @Order(2)
-  public void deveriaDevolver400EErrorDtoAoLogarComSenhaInvalida() throws Exception {
+  public void deveriaDevolver400EErrorDtoAoLogarComSenhaInvalida() {
     String email = "ipsum@email.com";
     String password = "123";
     Map<String, Object> params = Map.of("email", email, "password", password);
@@ -71,7 +71,7 @@ public class SigninTest {
 
   @Test
   @Order(3)
-  public void deveriaDevolver400EErrorDtoAoLogarComEmailErrado() throws Exception {
+  public void deveriaDevolver400EErrorDtoAoLogarComEmailErrado() {
     String email = "ips@email.com";
     String password = "123123";
     Map<String, Object> params = Map.of("email", email, "password", password);
@@ -87,7 +87,7 @@ public class SigninTest {
 
   @Test
   @Order(4)
-  public void deveriaDevolver400EErrorDtoAoLogarComEmailInvalido() throws Exception {
+  public void deveriaDevolver400EErrorDtoAoLogarComEmailInvalido() {
     String email = "email.com";
     String password = "123123";
     Map<String, Object> params = Map.of("email", email, "password", password);
@@ -95,11 +95,11 @@ public class SigninTest {
     MvcResult result = mock.post("/auth/signin", params, "", 400);
 
     List<FormErrorDto> listFormErrorDto = DtoFromMvcResult.formErrorDto(result);
-    
-        FormErrorDto formErrorExpected = new FormErrorDto("email", "deve ser um e-mail bem formado");
-    
-        Assertions.assertTrue(listFormErrorDto.contains(formErrorExpected));
-    
+
+    FormErrorDto formErrorExpected = new FormErrorDto("email", "deve ser um e-mail bem formado");
+
+    Assertions.assertTrue(listFormErrorDto.contains(formErrorExpected));
+
   }
 
 }

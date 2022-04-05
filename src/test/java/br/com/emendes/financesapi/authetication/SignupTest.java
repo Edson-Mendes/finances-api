@@ -34,7 +34,7 @@ public class SignupTest {
 
   @Test
   @Order(1)
-  public void deveriaDevolver400EErroDtoDeSenhaFraca() throws Exception {
+  public void deveriaDevolver400EErroDtoDeSenhaFraca() {
     String name = "Ipsum Lorem";
     String email = "ipsum.l@email.com";
     String password = "aaaaaaa 12";
@@ -51,7 +51,7 @@ public class SignupTest {
 
   @Test
   @Order(2)
-  public void deveriaDevolver201AoRealizarSignup() throws Exception {
+  public void deveriaDevolver201AoRealizarSignup() {
     String name = "Ipsum Lorem";
     String email = "ipsum.l@email.com";
     String password = "12345678";
@@ -68,13 +68,14 @@ public class SignupTest {
 
   @Test
   @Order(3)
-  public void deveriaDevolver409AoCadastrarComEmailExistenteNoDB() throws Exception {
+  public void deveriaDevolver409AoCadastrarComEmailExistenteNoDB() {
     String name = "Ipsom";
     String email = "ipsum.l@email.com";
     String password = "12345678";
     String confirm = "12345678";
 
-    MvcResult result = mock.post("/auth/signup", Map.of("name", name, "email", email, "password", password, "confirm", confirm), "", 409);
+    MvcResult result = mock.post("/auth/signup",
+        Map.of("name", name, "email", email, "password", password, "confirm", confirm), "", 409);
 
     ErrorDto errorDto = DtoFromMvcResult.errorDto(result);
 
@@ -83,7 +84,7 @@ public class SignupTest {
 
   @Test
   @Order(4)
-  public void deveriaDevolver400AoCadastrarComNomeVazioEARespostaBater() throws Exception {
+  public void deveriaDevolver400AoCadastrarComNomeVazioEARespostaBater() {
     String name = "";
     String email = "lorem@email.com";
     String password = "111111";
@@ -99,7 +100,7 @@ public class SignupTest {
 
   @Test
   @Order(5)
-  public void deveriaDevolver400AoCadastrarComEmailInvalidoEARespostaBater() throws Exception {
+  public void deveriaDevolver400AoCadastrarComEmailInvalidoEARespostaBater() {
     String name = "lorem";
     String email = "lorememail.com";
     String password = "12345678";
@@ -116,7 +117,7 @@ public class SignupTest {
 
   @Test
   @Order(6)
-  public void deveriaDevolver400AoCadastrarComSenhaVazioEARespostaBater() throws Exception {
+  public void deveriaDevolver400AoCadastrarComSenhaVazioEARespostaBater() {
     String name = "lorem";
     String email = "lorem@email.com";
     String password = "";
@@ -132,7 +133,7 @@ public class SignupTest {
 
   @Test
   @Order(7)
-  public void deveriaDevolver400AoCadastrarComConfimacaoVazioEARespostaBater() throws Exception {
+  public void deveriaDevolver400AoCadastrarComConfimacaoVazioEARespostaBater() {
     String name = "lorem";
     String email = "lorem@email.com";
     String password = "12345678";
@@ -148,7 +149,7 @@ public class SignupTest {
 
   @Test
   @Order(8)
-  public void deveriaDevolver400AoCadastrarSemAsSenhasCondizerem() throws Exception {
+  public void deveriaDevolver400AoCadastrarSemAsSenhasCondizerem() {
     String name = "lorem";
     String email = "lorem@email.com";
     String password = "12345678";

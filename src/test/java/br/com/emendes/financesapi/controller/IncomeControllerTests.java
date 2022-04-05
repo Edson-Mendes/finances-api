@@ -41,7 +41,7 @@ public class IncomeControllerTests {
   private String tokenIpsum;
 
   @BeforeAll
-  public void addUsuarioLorem() throws Exception {
+  public void addUsuarioLorem() {
     String name = "Lorem Sit";
     String email = "lorem.s@email.com";
     String password = "111111111";
@@ -57,7 +57,7 @@ public class IncomeControllerTests {
   }
 
   @BeforeAll
-  public void addUsuarioIpsum() throws Exception {
+  public void addUsuarioIpsum() {
     String name = "Ipsum Sit";
     String email = "ipsum.s@email.com";
     String password = "222222222";
@@ -74,7 +74,7 @@ public class IncomeControllerTests {
 
   @Test
   @Order(1)
-  public void deveriaDevolver201AoCriarReceita() throws Exception {
+  public void deveriaDevolver201AoCriarReceita() {
     String description = "Salário";
     BigDecimal value = new BigDecimal(2500.00);
     String date = "05/01/2022";
@@ -86,7 +86,7 @@ public class IncomeControllerTests {
 
   @Test
   @Order(2)
-  public void deveriaDevolver400AoCriarSemAlgumParametroObrigatorio() throws Exception {
+  public void deveriaDevolver400AoCriarSemAlgumParametroObrigatorio() {
 
     String description = "Venda do PS5";
     BigDecimal value = BigDecimal.valueOf(2885.00);
@@ -103,13 +103,13 @@ public class IncomeControllerTests {
 
   @Test
   @Order(3)
-  public void deveriaDevolver200AoBuscarTodasAsReceitas() throws Exception {
+  public void deveriaDevolver200AoBuscarTodasAsReceitas() {
     mock.get("/receitas", tokenLorem, 200);
   }
 
   @Test
   @Order(4)
-  public void deveriaDevolver409AoCadastrarDescricaoDuplicadaEmMesmoMesEAno() throws Exception {
+  public void deveriaDevolver409AoCadastrarDescricaoDuplicadaEmMesmoMesEAno() {
 
     String description = "Lotofácil";
     BigDecimal value = BigDecimal.valueOf(500.00);
@@ -124,7 +124,7 @@ public class IncomeControllerTests {
 
   @Test
   @Order(5)
-  public void deveriaDevolver201AoCadastrarDescricaoEmMesDiferentes() throws Exception {
+  public void deveriaDevolver201AoCadastrarDescricaoEmMesDiferentes() {
 
     String description = "Trabalho por fora";
     BigDecimal value = BigDecimal.valueOf(300.00);
@@ -142,7 +142,7 @@ public class IncomeControllerTests {
 
   @Test
   @Order(6)
-  public void deveriaDevolver200AoBuscarPorIdExistente() throws Exception {
+  public void deveriaDevolver200AoBuscarPorIdExistente() {
     MvcResult result = mock.get("/receitas", tokenLorem, 200);
     List<IncomeDto> listIncomeDto = DtoFromMvcResult.listIncomeDto(result);
 
@@ -153,37 +153,37 @@ public class IncomeControllerTests {
 
   @Test
   @Order(7)
-  public void deveriaDevolver200AoBuscarPorAnoEMesExistentes() throws Exception {
+  public void deveriaDevolver200AoBuscarPorAnoEMesExistentes() {
     mock.get("/receitas/2022/01", tokenLorem, 200);
   }
 
   @Test
   @Order(8)
-  public void deveriaDevolver404AoBuscarPorAnoEMesInexistentes() throws Exception {
+  public void deveriaDevolver404AoBuscarPorAnoEMesInexistentes() {
     mock.get("/receitas/2022/03", tokenLorem, 404);
   }
 
   @Test
   @Order(9)
-  public void deveriaDevolver404AoBuscarPorIdInexistentes() throws Exception {
+  public void deveriaDevolver404AoBuscarPorIdInexistentes() {
     mock.get("/receitas/999", tokenLorem, 404);
   }
 
   @Test
   @Order(10)
-  public void deveriaDevolver200AoBuscarPorDescricaoExistente() throws Exception {
+  public void deveriaDevolver200AoBuscarPorDescricaoExistente() {
     mock.get("/receitas?description=sal", tokenLorem, 200);
   }
 
   @Test
   @Order(11)
-  public void deveriaDevolver404AoBuscarPorDescricaoInexistente() throws Exception {
+  public void deveriaDevolver404AoBuscarPorDescricaoInexistente() {
     mock.get("/receitas?description=salllllll", tokenLorem, 404);
   }
 
   @Test
   @Order(12)
-  public void deveriaDevolver200AoAtualizarReceitaCorretamente() throws Exception {
+  public void deveriaDevolver200AoAtualizarReceitaCorretamente() {
     MvcResult result = mock.get("/receitas", tokenLorem, 200);
     List<IncomeDto> listIncomeDto = DtoFromMvcResult.listIncomeDto(result);
 
@@ -200,7 +200,7 @@ public class IncomeControllerTests {
 
   @Test
   @Order(13)
-  public void deveriaDevolver404AoAtualizarReceitaComIdInexistente() throws Exception {
+  public void deveriaDevolver404AoAtualizarReceitaComIdInexistente() {
     int id = 1000;
     String description = "Salário 1";
     BigDecimal value = BigDecimal.valueOf(2500.00);
@@ -213,7 +213,7 @@ public class IncomeControllerTests {
 
   @Test
   @Order(14)
-  public void deveriaDevolver400AoAtualizarReceitaSemAlgumParametroObrigatorio() throws Exception {
+  public void deveriaDevolver400AoAtualizarReceitaSemAlgumParametroObrigatorio() {
     String description = "Venda do PS5";
     BigDecimal value = BigDecimal.valueOf(2885.00);
     String date = "22/01/2022";
@@ -229,7 +229,7 @@ public class IncomeControllerTests {
 
   @Test
   @Order(15)
-  public void deveriaDevolver200AoDeletarUmaReceitaComIdExistente() throws Exception {
+  public void deveriaDevolver200AoDeletarUmaReceitaComIdExistente() {
     MvcResult result = mock.get("/receitas", tokenLorem, 200);
     List<IncomeDto> listIncomeDto = DtoFromMvcResult.listIncomeDto(result);
 
@@ -239,14 +239,14 @@ public class IncomeControllerTests {
 
   @Test
   @Order(16)
-  public void deveriaDevolver404AoDeletarUmaReceitaComIdInexistente() throws Exception {
+  public void deveriaDevolver404AoDeletarUmaReceitaComIdInexistente() {
     int id = 1000;
     mock.delete("/receitas/" + id, tokenLorem, 404);
   }
 
   @Test
   @Order(17)
-  public void deveriaDevolverSomenteAsReceitasDeIpsum() throws Exception {
+  public void deveriaDevolverSomenteAsReceitasDeIpsum() {
 
     String description1 = "Salário";
     BigDecimal value1 = new BigDecimal("2500.0");
@@ -269,7 +269,7 @@ public class IncomeControllerTests {
 
     IncomeDto incomeDto1 = new IncomeDto(5l, description1, LocalDate.parse(date1, Formatter.dateFormatter), value1);
     IncomeDto incomeDto2 = new IncomeDto(6l, description2, LocalDate.parse(date2, Formatter.dateFormatter), value2);
-    
+
     listExpected.add(incomeDto2);
     listExpected.add(incomeDto1);
 
@@ -279,7 +279,7 @@ public class IncomeControllerTests {
 
   @Test
   @Order(18)
-  public void deveriaDevolver404AoTentarAtualizarReceitaDeOutroUsuario() throws Exception {
+  public void deveriaDevolver404AoTentarAtualizarReceitaDeOutroUsuario() {
     int id = 1;
     String description = "Salário 1";
     BigDecimal value = BigDecimal.valueOf(2500.00);
@@ -297,7 +297,7 @@ public class IncomeControllerTests {
 
   @Test
   @Order(19)
-  public void deveriaDevolver404AoTentarDeletarReceitaDeOutroUsuario() throws Exception {
+  public void deveriaDevolver404AoTentarDeletarReceitaDeOutroUsuario() {
     Long id = 1l;
 
     MvcResult result = mock.delete("/receitas/" + id, tokenIpsum, 404);

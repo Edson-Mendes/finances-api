@@ -36,7 +36,7 @@ public class UserControllerTests {
   private String tokenAdmin;
 
   @BeforeAll
-  public void addCommonUser() throws Exception {
+  public void addCommonUser() {
     String name = "User Common";
     String email = "commonuser@email.com";
     String password = "111111111";
@@ -52,10 +52,10 @@ public class UserControllerTests {
   }
 
   @BeforeAll
-  public void loginAdminUser() throws Exception {
+  public void loginAdminUser() {
     String email = "admin@email.com";
     String password = "123456";
-  
+
     Map<String, Object> paramsSignin = Map.of("email", email, "password", password);
     MvcResult result = mock.post("/auth/signin", paramsSignin, "", 200);
 
@@ -64,7 +64,7 @@ public class UserControllerTests {
 
   @Test
   @Order(1)
-  public void deveriaDevolver200AoAtualizarASenhaDoUsuario() throws Exception {
+  public void deveriaDevolver200AoAtualizarASenhaDoUsuario() {
     String newPassword = "222222222";
     String confirm = "222222222";
 
@@ -75,7 +75,7 @@ public class UserControllerTests {
 
   @Test
   @Order(2)
-  public void deveriaDevolver400AoAtualizarASenhaQueNaoCondizem() throws Exception {
+  public void deveriaDevolver400AoAtualizarASenhaQueNaoCondizem() {
     String newPassword = "2222222222222";
     String confirm = "222222222";
 
@@ -88,20 +88,20 @@ public class UserControllerTests {
 
   @Test
   @Order(3)
-  public void deveriaDevolver403QuandoRole_UserDeletarUsuario() throws Exception{
+  public void deveriaDevolver403QuandoRole_UserDeletarUsuario() {
     Long id = 1l;
-    mock.delete("/user/"+id, tokenUser, 403);
+    mock.delete("/user/" + id, tokenUser, 403);
   }
 
   @Test
   @Order(4)
-  public void deveriaDevolver403QuandoRole_UserBuscarTodosOsUsuarios() throws Exception {
+  public void deveriaDevolver403QuandoRole_UserBuscarTodosOsUsuarios() {
     mock.get("/user", tokenUser, 403);
   }
 
   @Test
   @Order(5)
-  public void deveriaDevolverUmaListaDeUsuarios() throws Exception {
+  public void deveriaDevolverUmaListaDeUsuarios() {
     MvcResult result = mock.get("/user?page=0&size=20", tokenAdmin, 200);
     List<UserDto> listUserDto = DtoFromMvcResult.listUserDto(result);
 
@@ -114,19 +114,19 @@ public class UserControllerTests {
 
   @Test
   @Order(6)
-  public void deveriaDevolver404EErrorDtoAoDeletarUsuarioInexistente() throws Exception {
+  public void deveriaDevolver404EErrorDtoAoDeletarUsuarioInexistente() {
     Long id = 100l;
-    MvcResult result = mock.delete("/user/"+id, tokenAdmin, 404);
+    MvcResult result = mock.delete("/user/" + id, tokenAdmin, 404);
 
     ErrorDto errorDto = DtoFromMvcResult.errorDto(result);
     Assertions.assertEquals("Not Found", errorDto.getError());
-    Assertions.assertEquals("não existe usuário com id: "+id, errorDto.getMessage());
+    Assertions.assertEquals("não existe usuário com id: " + id, errorDto.getMessage());
   }
 
   @Test
   @Order(7)
-  public void deveriaDevolver200AoAdminDeletarUsuario() throws Exception {
+  public void deveriaDevolver200AoAdminDeletarUsuario() {
     Long id = 2l;
-    mock.delete("/user/"+id, tokenAdmin, 200);
+    mock.delete("/user/" + id, tokenAdmin, 200);
   }
 }

@@ -39,7 +39,7 @@ public class SummaryControllerTests {
 
   private String tokenIpsum;
 
-  private void addUsuarioLorem() throws Exception {
+  private void addUsuarioLorem() {
     String name = "Lorem Dolor";
     String email = "lorem.d@email.com";
     String password = "111111111";
@@ -54,7 +54,7 @@ public class SummaryControllerTests {
     tokenLorem = DtoFromMvcResult.tokenDto(result).generateTypeWithToken();
   }
 
-  private void addUsuarioIpsum() throws Exception {
+  private void addUsuarioIpsum() {
     String name = "Ipsum Dolor";
     String email = "ipsum.d@email.com";
     String password = "222222222";
@@ -69,7 +69,7 @@ public class SummaryControllerTests {
     tokenIpsum = DtoFromMvcResult.tokenDto(result).generateTypeWithToken();
   }
 
-  private void populateLorem() throws Exception {
+  private void populateLorem() {
     mock.post("/receitas", Map.of("description", "Salário1", "value", new BigDecimal(2500.00), "date", "08/02/2022"),
         tokenLorem,
         201);
@@ -92,7 +92,7 @@ public class SummaryControllerTests {
         201);
   }
 
-  private void populateIpsum() throws Exception {
+  private void populateIpsum() {
     mock.post("/receitas", Map.of("description", "Salário1", "value", new BigDecimal(1800.00), "date", "08/02/2022"),
         tokenIpsum,
         201);
@@ -115,7 +115,7 @@ public class SummaryControllerTests {
   }
 
   @BeforeAll
-  public void populateDB() throws Exception {
+  public void populateDB() {
     addUsuarioLorem();
     addUsuarioIpsum();
     populateLorem();
@@ -124,7 +124,7 @@ public class SummaryControllerTests {
 
   @Test
   @Order(1)
-  public void deveriaDevolver200AoBuscarPorResumoMensal() throws Exception {
+  public void deveriaDevolver200AoBuscarPorResumoMensal() {
     int year = 2022;
     int month = 2;
     mock.get("/resumo/" + year + "/" + month, tokenLorem, 200);
@@ -132,7 +132,7 @@ public class SummaryControllerTests {
 
   @Test
   @Order(2)
-  public void deveriaDevolver404AoBuscarPorResumoInexistente() throws Exception {
+  public void deveriaDevolver404AoBuscarPorResumoInexistente() {
     int year = 2022;
     int month = 5;
     mock.get("/resumo/" + year + "/" + month, tokenLorem, 404);
@@ -140,14 +140,14 @@ public class SummaryControllerTests {
 
   @Test
   @Order(3)
-  public void summaryDtoRecebidoDeveriaSerIgualAoSummaryDtoDeLorem() throws Exception {
+  public void summaryDtoRecebidoDeveriaSerIgualAoSummaryDtoDeLorem() {
     int year = 2022;
     int month = 2;
     MvcResult result = mock.get("/resumo/" + year + "/" + month, tokenLorem, 200);
     SummaryDto summaryResponse = DtoFromMvcResult.summaryDto(result);
 
     List<ValueByCategory> valuesByCategory = new ArrayList<>();
-    
+
     valuesByCategory.add(new ValueByCategory(Category.ALIMENTACAO, new BigDecimal("700.0")));
     valuesByCategory.add(new ValueByCategory(Category.SAUDE, new BigDecimal("150.0")));
     valuesByCategory.add(new ValueByCategory(Category.MORADIA, new BigDecimal("1000.0")));
@@ -164,14 +164,14 @@ public class SummaryControllerTests {
 
   @Test
   @Order(4)
-  public void summaryDtoRecebidoDeveriaSerIgualAoSummaryDtoDeIpsum() throws Exception {
+  public void summaryDtoRecebidoDeveriaSerIgualAoSummaryDtoDeIpsum() {
     int year = 2022;
     int month = 2;
     MvcResult result = mock.get("/resumo/" + year + "/" + month, tokenIpsum, 200);
     SummaryDto summaryResponse = DtoFromMvcResult.summaryDto(result);
 
     List<ValueByCategory> valuesByCategory = new ArrayList<>();
-    
+
     valuesByCategory.add(new ValueByCategory(Category.ALIMENTACAO, new BigDecimal("800.0")));
     valuesByCategory.add(new ValueByCategory(Category.SAUDE, new BigDecimal("250.0")));
     valuesByCategory.add(new ValueByCategory(Category.MORADIA, new BigDecimal("800.0")));
@@ -188,7 +188,7 @@ public class SummaryControllerTests {
 
   @Test
   @Order(5)
-  public void deveriaDevolver404AoBuscarComAnoNaoNumerico() throws Exception {
+  public void deveriaDevolver404AoBuscarComAnoNaoNumerico() {
     mock.get("/resumo/2O22/12", tokenLorem, 404);
   }
 
