@@ -83,9 +83,7 @@ public class ExpenseForm {
 
   /**
    * Verifica se o usuário já possui uma despesa com a mesma descrição no mês e
-   * ano da
-   * respectiva despesa.
-   * 
+   * ano da respectiva despesa.
    * @param expenseRepository
    * @param userId
    * @return false, se não existir uma despesa com a mesma descrição em um mesmo

@@ -16,31 +16,34 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
 
   Page<Expense> findByUserId(Long userId, Pageable pageable);
 
-  @Query("SELECT e FROM Expense e WHERE e.description = :description AND MONTH(e.date) = :month AND YEAR(e.date) = :year AND e.user.id = :userId")
+  @Query("SELECT e FROM Expense e WHERE e.description = :description AND " +
+      "MONTH(e.date) = :month AND YEAR(e.date) = :year AND e.user.id = :userId")
   Optional<Expense> findByDescriptionAndMonthAndYearAndUserId(@Param("description") String description,
       @Param("month") Integer month, @Param("year") Integer year, @Param("userId") Long userId);
 
-  @Query("SELECT e FROM Expense e WHERE e.description = :description AND MONTH(e.date) = :month AND YEAR(e.date) = :year AND e.user.id = :userId AND e.id != :id")
+  @Query("SELECT e FROM Expense e WHERE e.description = :description AND " +
+      "MONTH(e.date) = :month AND YEAR(e.date) = :year AND e.user.id = :userId AND e.id != :id")
   Optional<Expense> findByDescriptionAndMonthAndYearAndUserIdAndNotId(@Param("description") String description,
       @Param("month") Integer month, @Param("year") Integer year, @Param("userId") Long userId, @Param("id") Long id);
 
   @Query("SELECT e FROM Expense e WHERE e.description LIKE %:description% AND e.user.id = :userId")
-  Page<Expense> findByDescriptionAndUserId(@Param("description") String description, 
+  Page<Expense> findByDescriptionAndUserId(@Param("description") String description,
       @Param("userId") Long userId,
       Pageable pageable);
 
   @Query("SELECT e FROM Expense e WHERE YEAR(e.date) = :year AND MONTH(e.date)= :month AND e.user.id = :userId")
   Page<Expense> findByYearAndMonthAndUserId(@Param("year") Integer year,
-  @Param("month") Integer month,
-  @Param("userId") long userId,
-  Pageable pageable);
+      @Param("month") Integer month,
+      @Param("userId") long userId,
+      Pageable pageable);
 
   @Query("SELECT SUM(e.value) FROM Expense e WHERE YEAR(e.date) = :year AND MONTH(e.date) = :month AND e.user.id = :userId")
   Optional<BigDecimal> getTotalValueByMonthAndYearAndUserId(@Param("year") Integer year,
       @Param("month") Integer month,
       @Param("userId") Long userId);
 
-  @Query("SELECT SUM(value) FROM Expense e WHERE YEAR(e.date) = :year AND MONTH (e.date) = :month AND e.category = :category AND e.user.id = :userId")
+  @Query("SELECT SUM(value) FROM Expense e WHERE YEAR(e.date) = :year AND " +
+      "MONTH (e.date) = :month AND e.category = :category AND e.user.id = :userId")
   Optional<BigDecimal> getTotalByCategoryOnYearAndMonth(@Param("category") Category category,
       @Param("year") Integer year,
       @Param("month") Integer month,

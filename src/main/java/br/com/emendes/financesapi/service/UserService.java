@@ -1,7 +1,6 @@
 package br.com.emendes.financesapi.service;
 
 import javax.persistence.NoResultException;
-import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -36,7 +35,7 @@ public class UserService {
     }
   }
 
-  public void changePassword(@Valid ChangePasswordForm changeForm, Long userId) {
+  public void changePassword(ChangePasswordForm changeForm, Long userId) {
     if (changeForm.passwordMatch()) {
       User user = userRepository.findById(userId).get();
       user.setPassword(changeForm.generateNewPasswordEncoded());

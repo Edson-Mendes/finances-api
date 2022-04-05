@@ -24,9 +24,9 @@ import br.com.emendes.financesapi.model.enumerator.Category;
 
 public abstract class DtoFromMvcResult {
 
-  public static List<FormErrorDto> formErrorDto(MvcResult result) throws Exception {
+  public static List<FormErrorDto> formErrorDto(MvcResult result) {
     List<FormErrorDto> listFormErrorDto = new ArrayList<>();
-    JsonNode content = new ObjectMapper().readTree(result.getResponse().getContentAsString());
+    JsonNode content = getJsonNodeFromMvcResult(result);
 
     content.elements().forEachRemaining(e -> {
       String field = e.get("field").asText();
@@ -37,13 +37,13 @@ public abstract class DtoFromMvcResult {
     return listFormErrorDto;
   }
 
-  public static UserDto userDto(MvcResult result) throws Exception {
-    JsonNode content = new ObjectMapper().readTree(result.getResponse().getContentAsString());
+  public static UserDto userDto(MvcResult result) {
+    JsonNode content = getJsonNodeFromMvcResult(result);
     return userDto(content);
   }
 
-  public static ErrorDto errorDto(MvcResult result) throws Exception {
-    JsonNode content = new ObjectMapper().readTree(result.getResponse().getContentAsString());
+  public static ErrorDto errorDto(MvcResult result) {
+    JsonNode content = getJsonNodeFromMvcResult(result);
 
     String error = content.get("error").asText();
     String message = content.get("message").asText();
@@ -52,8 +52,8 @@ public abstract class DtoFromMvcResult {
     return errorDto;
   }
 
-  public static TokenDto tokenDto(MvcResult result) throws Exception {
-    JsonNode content = new ObjectMapper().readTree(result.getResponse().getContentAsString());
+  public static TokenDto tokenDto(MvcResult result) {
+    JsonNode content = getJsonNodeFromMvcResult(result);
 
     String token = content.get("token").asText();
     String type = content.get("type").asText();
@@ -62,8 +62,8 @@ public abstract class DtoFromMvcResult {
     return tokenDto;
   }
 
-  public static List<IncomeDto> listIncomeDto(MvcResult result) throws Exception {
-    JsonNode content = new ObjectMapper().readTree(result.getResponse().getContentAsString());
+  public static List<IncomeDto> listIncomeDto(MvcResult result) {
+    JsonNode content = getJsonNodeFromMvcResult(result);
 
     Iterator<JsonNode> elements = content.get("content").elements();
     List<IncomeDto> incomesDto = new ArrayList<>();
@@ -87,8 +87,8 @@ public abstract class DtoFromMvcResult {
     return incomeDto;
   }
 
-  public static List<ExpenseDto> listExpenseDto(MvcResult result) throws Exception {
-    JsonNode content = new ObjectMapper().readTree(result.getResponse().getContentAsString());
+  public static List<ExpenseDto> listExpenseDto(MvcResult result) {
+    JsonNode content = getJsonNodeFromMvcResult(result);
 
     Iterator<JsonNode> elements = content.get("content").elements();
     List<ExpenseDto> expensesDto = new ArrayList<>();
@@ -113,8 +113,8 @@ public abstract class DtoFromMvcResult {
     return expenseDto;
   }
 
-  public static SummaryDto summaryDto(MvcResult result) throws Exception {
-    JsonNode content = new ObjectMapper().readTree(result.getResponse().getContentAsString());
+  public static SummaryDto summaryDto(MvcResult result) {
+    JsonNode content = getJsonNodeFromMvcResult(result);
     BigDecimal incomeTotalValue = content.get("incomeTotalValue").decimalValue();
     BigDecimal expenseTotalValue = content.get("expenseTotalValue").decimalValue();
 
@@ -130,13 +130,13 @@ public abstract class DtoFromMvcResult {
     return new SummaryDto(incomeTotalValue, expenseTotalValue, valuesByCategory);
   }
 
-  public static ExpenseDto expenseDto(MvcResult result) throws Exception {
-    JsonNode content = new ObjectMapper().readTree(result.getResponse().getContentAsString());
+  public static ExpenseDto expenseDto(MvcResult result) {
+    JsonNode content = getJsonNodeFromMvcResult(result);
     return expenseDto(content);
   }
 
-  public static RoleDto roleDto(MvcResult result) throws Exception {
-    JsonNode content = new ObjectMapper().readTree(result.getResponse().getContentAsString());
+  public static RoleDto roleDto(MvcResult result) {
+    JsonNode content = getJsonNodeFromMvcResult(result);
 
     Long id = content.get("id").asLong();
     String name = content.get("name").asText();
@@ -145,10 +145,10 @@ public abstract class DtoFromMvcResult {
     return roleDto;
   }
 
-  public static List<UserDto> listUserDto(MvcResult result) throws Exception {
+  public static List<UserDto> listUserDto(MvcResult result) {
     List<UserDto> listUserDto = new ArrayList<UserDto>();
 
-    JsonNode content = new ObjectMapper().readTree(result.getResponse().getContentAsString());
+    JsonNode content = getJsonNodeFromMvcResult(result);
     Iterator<JsonNode> elements = content.get("content").elements();
 
     while (elements.hasNext()) {
@@ -169,4 +169,13 @@ public abstract class DtoFromMvcResult {
     return user;
   }
   
+  private static JsonNode getJsonNodeFromMvcResult(MvcResult result){
+    try{
+      JsonNode content = new ObjectMapper().readTree(result.getResponse().getContentAsString());
+      return content;
+    }catch(Exception e){
+      throw new RuntimeException("Não foi possível gerar o JsonNode");
+    }
+  }
+
 }

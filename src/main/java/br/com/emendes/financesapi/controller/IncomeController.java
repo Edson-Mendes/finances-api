@@ -52,6 +52,8 @@ public class IncomeController {
       @ApiResponse(responseCode = "400", description = "Bad request - Algum parâmetro do corpo da requisição inválido", content = {
           @Content(mediaType = "application/json", schema = @Schema(implementation = FormErrorDto.class)) }),
       @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
+      @ApiResponse(responseCode = "409", description = "Já existe essa descrição no mesmo mês e ano", content = {
+        @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDto.class)) }),
   })
   @PostMapping
   public ResponseEntity<IncomeDto> create(@Valid @RequestBody IncomeForm form, UriComponentsBuilder uriBuilder,

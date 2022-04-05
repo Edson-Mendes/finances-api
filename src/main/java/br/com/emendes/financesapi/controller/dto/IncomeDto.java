@@ -14,11 +14,14 @@ public class IncomeDto {
 
   @Schema(example = "10")
   private Long id;
+
   @Schema(example = "Salário")
   private String description;
+
   @JsonFormat(pattern = "dd/MM/yyyy")
   @Schema(pattern = "dd/MM/yyyy", type = "string", example = "05/01/2022")
   private LocalDate date;
+  
   @Schema(example = "3500.00")
   private BigDecimal value;
 

@@ -7,7 +7,7 @@ public class ErrorDto {
   @Schema(example = "Erro")
   private String error;
 
-  @Schema(example = "Informação a mais sobre o erro")
+  @Schema(example = "Informação sobre o erro")
   private String message;
 
   public ErrorDto(String error, String message) {

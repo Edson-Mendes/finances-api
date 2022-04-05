@@ -42,8 +42,8 @@ public class AuthenticationController {
 
   @Operation(summary = "Logar um usuário")
   @ApiResponses(value = {
-    @ApiResponse(responseCode = "200", description = "Logado com sucesso, retorna o token que deve ser enviado a cada requisição", content = {
-      @Content(mediaType = "application/json", schema = @Schema(implementation = TokenDto.class))}),
+      @ApiResponse(responseCode = "200", description = "Logado com sucesso, retorna o token que deve ser enviado a cada requisição", content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = TokenDto.class)) }),
       @ApiResponse(responseCode = "400", description = "Bad request - Algum parâmetro do corpo da requisição inválido", content = @Content),
   })
   @PostMapping("/signin")
@@ -58,8 +58,8 @@ public class AuthenticationController {
 
   @Operation(summary = "Cadastrar um usuário")
   @ApiResponses(value = {
-    @ApiResponse(responseCode = "200", description = "Cadastrado com sucesso", content = {
-      @Content(mediaType = "application/json", schema = @Schema(implementation = UserDto.class))}),
+      @ApiResponse(responseCode = "200", description = "Cadastrado com sucesso", content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = UserDto.class)) }),
       @ApiResponse(responseCode = "400", description = "Bad request - Algum parâmetro do corpo da requisição inválido", content = @Content),
       @ApiResponse(responseCode = "409", description = "Email inserido já está em uso", content = @Content)
   })

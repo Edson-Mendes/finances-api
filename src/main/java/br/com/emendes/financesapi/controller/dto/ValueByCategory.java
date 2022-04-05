@@ -53,6 +53,9 @@ public class ValueByCategory {
     return category.name()+" - "+value;
   }
 
+  /**
+   * @return Lista com todas as categorias com valor igual a zero.
+   */
   public static List<ValueByCategory> listWithZero(){
     List<ValueByCategory> totalByCategory = new ArrayList<>();
     for(Category category : Category.values()){
