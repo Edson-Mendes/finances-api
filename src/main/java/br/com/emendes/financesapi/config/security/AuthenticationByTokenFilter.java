@@ -12,16 +12,17 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import br.com.emendes.financesapi.model.User;
-import br.com.emendes.financesapi.repository.UserRepository;
+import br.com.emendes.financesapi.service.TokenService;
+import br.com.emendes.financesapi.service.UserService;
 
 public class AuthenticationByTokenFilter extends OncePerRequestFilter {
 
   private TokenService tokenService;
-  private UserRepository userRepository;
+  private UserService userService;
 
-  public AuthenticationByTokenFilter(TokenService tokenService, UserRepository userRepository) {
+  public AuthenticationByTokenFilter(TokenService tokenService, UserService userService) {
     this.tokenService = tokenService;
-    this.userRepository = userRepository;
+    this.userService = userService;
   }
 
   @Override
@@ -38,7 +39,7 @@ public class AuthenticationByTokenFilter extends OncePerRequestFilter {
 
   private void authenticateClient(String token) {
     Long userId = tokenService.getUserId(token);
-    User user = userRepository.findById(userId).orElse(null);
+    User user = userService.readById(userId);
     UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user, null,
         user.getRoles());
     SecurityContextHolder.getContext().setAuthentication(authentication);

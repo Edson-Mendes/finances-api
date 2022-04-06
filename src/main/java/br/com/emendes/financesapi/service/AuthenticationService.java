@@ -1,4 +1,4 @@
-package br.com.emendes.financesapi.config.security;
+package br.com.emendes.financesapi.service;
 
 import java.util.Optional;
 

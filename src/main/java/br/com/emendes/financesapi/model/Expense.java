@@ -29,7 +29,7 @@ public class Expense {
   private String description;
   private BigDecimal value;
   private LocalDate date;
-  
+
   @Enumerated(EnumType.STRING)
   private Category category;
 
@@ -40,11 +40,12 @@ public class Expense {
   public Expense() {
   }
 
-  public Expense(String description, BigDecimal value, LocalDate date, Category category) {
+  public Expense(String description, BigDecimal value, LocalDate date, Category category, User user) {
     this.description = description;
     this.date = date;
     this.value = value;
     this.category = category;
+    this.user = user;
   }
 
   public void setParams(ExpenseForm expenseForm) {

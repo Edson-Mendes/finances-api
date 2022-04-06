@@ -22,12 +22,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import br.com.emendes.financesapi.config.security.TokenService;
-import br.com.emendes.financesapi.config.validation.error_dto.ErrorDto;
-import br.com.emendes.financesapi.config.validation.error_dto.FormErrorDto;
 import br.com.emendes.financesapi.controller.dto.ExpenseDto;
+import br.com.emendes.financesapi.controller.dto.error.ErrorDto;
+import br.com.emendes.financesapi.controller.dto.error.FormErrorDto;
 import br.com.emendes.financesapi.controller.form.ExpenseForm;
 import br.com.emendes.financesapi.service.ExpenseService;
+import br.com.emendes.financesapi.service.TokenService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -52,8 +52,8 @@ public class ExpenseController {
       @ApiResponse(responseCode = "400", description = "Bad request - Algum parâmetro do corpo da requisição inválido", content = {
           @Content(mediaType = "application/json", schema = @Schema(implementation = FormErrorDto.class)) }),
       @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
-      @ApiResponse(responseCode = "409", description = "Já existe essa descrição no mesmo mês e ano", content = {
-        @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDto.class)) }),
+      @ApiResponse(responseCode = "409", description = "Já existe despesa com essa descrição no mesmo mês e ano", content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDto.class)) }),
   })
   @PostMapping
   public ResponseEntity<ExpenseDto> create(@Valid @RequestBody ExpenseForm form,
@@ -63,7 +63,8 @@ public class ExpenseController {
     return expenseService.create(form, userId, uriBuilder);
   }
 
-  @Operation(summary = "Buscar todas as despesas do usuário, opcional buscar por descrição", security = { @SecurityRequirement(name = "bearer-key") })
+  @Operation(summary = "Buscar todas as despesas do usuário, opcional buscar por descrição", security = {
+      @SecurityRequirement(name = "bearer-key") })
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "Encontrou despesas"),
       @ApiResponse(responseCode = "400", description = "Bad request - Algum parâmetro da requisição inválido", content = @Content),
@@ -96,7 +97,8 @@ public class ExpenseController {
     return expenseService.readByIdAndUser(id, userId);
   }
 
-  @Operation(summary = "Buscar despesas do usuário por ano e mês", security = { @SecurityRequirement(name = "bearer-key") })
+  @Operation(summary = "Buscar despesas do usuário por ano e mês", security = {
+      @SecurityRequirement(name = "bearer-key") })
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "Encontrou despesas"),
       @ApiResponse(responseCode = "400", description = "Bad request - Algum parâmetro da requisição inválido", content = @Content),
@@ -121,6 +123,8 @@ public class ExpenseController {
       @ApiResponse(responseCode = "400", description = "Bad request - Algum parâmetro do corpo da requisição inválido", content = {
           @Content(mediaType = "application/json", schema = @Schema(implementation = FormErrorDto.class)) }),
       @ApiResponse(responseCode = "404", description = "Despesa não encontrada", content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDto.class)) }),
+      @ApiResponse(responseCode = "409", description = "Já existe despesa com essa descrição no mesmo mês e ano", content = {
           @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDto.class)) }),
   })
   @PutMapping("/{id}")

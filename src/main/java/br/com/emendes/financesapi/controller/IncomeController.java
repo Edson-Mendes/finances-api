@@ -22,12 +22,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import br.com.emendes.financesapi.config.security.TokenService;
-import br.com.emendes.financesapi.config.validation.error_dto.ErrorDto;
-import br.com.emendes.financesapi.config.validation.error_dto.FormErrorDto;
 import br.com.emendes.financesapi.controller.dto.IncomeDto;
+import br.com.emendes.financesapi.controller.dto.error.ErrorDto;
+import br.com.emendes.financesapi.controller.dto.error.FormErrorDto;
 import br.com.emendes.financesapi.controller.form.IncomeForm;
 import br.com.emendes.financesapi.service.IncomeService;
+import br.com.emendes.financesapi.service.TokenService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -52,8 +52,8 @@ public class IncomeController {
       @ApiResponse(responseCode = "400", description = "Bad request - Algum parâmetro do corpo da requisição inválido", content = {
           @Content(mediaType = "application/json", schema = @Schema(implementation = FormErrorDto.class)) }),
       @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
-      @ApiResponse(responseCode = "409", description = "Já existe essa descrição no mesmo mês e ano", content = {
-        @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDto.class)) }),
+      @ApiResponse(responseCode = "409", description = "Já existe receita com essa descrição no mesmo mês e ano", content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDto.class)) }),
   })
   @PostMapping
   public ResponseEntity<IncomeDto> create(@Valid @RequestBody IncomeForm form, UriComponentsBuilder uriBuilder,
@@ -122,6 +122,8 @@ public class IncomeController {
       @ApiResponse(responseCode = "400", description = "Bad request - Algum parâmetro do corpo da requisição inválido", content = {
           @Content(mediaType = "application/json", schema = @Schema(implementation = FormErrorDto.class)) }),
       @ApiResponse(responseCode = "404", description = "Receita não encontrada", content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDto.class)) }),
+      @ApiResponse(responseCode = "409", description = "Já existe receita com essa descrição no mesmo mês e ano", content = {
           @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDto.class)) }),
   })
   @PutMapping("/{id}")

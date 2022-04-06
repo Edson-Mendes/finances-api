@@ -29,13 +29,18 @@ public class User implements UserDetails {
   private String email;
   private String password;
 
-  public User(){}
+  public User() {
+  }
 
-  public User(String name, String email, String password){
+  public User(String name, String email, String password) {
     this.name = name;
     this.email = email;
     this.password = new BCryptPasswordEncoder().encode(password);
     this.roles.add(new Role(1l, "ROLE_USER"));
+  }
+
+  public User(Long id) {
+    this.id = id;
   }
 
   @ManyToMany(fetch = FetchType.EAGER)

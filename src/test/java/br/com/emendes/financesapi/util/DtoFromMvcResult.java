@@ -11,8 +11,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.test.web.servlet.MvcResult;
 
-import br.com.emendes.financesapi.config.validation.error_dto.ErrorDto;
-import br.com.emendes.financesapi.config.validation.error_dto.FormErrorDto;
 import br.com.emendes.financesapi.controller.dto.ExpenseDto;
 import br.com.emendes.financesapi.controller.dto.IncomeDto;
 import br.com.emendes.financesapi.controller.dto.RoleDto;
@@ -20,6 +18,8 @@ import br.com.emendes.financesapi.controller.dto.SummaryDto;
 import br.com.emendes.financesapi.controller.dto.TokenDto;
 import br.com.emendes.financesapi.controller.dto.UserDto;
 import br.com.emendes.financesapi.controller.dto.ValueByCategory;
+import br.com.emendes.financesapi.controller.dto.error.ErrorDto;
+import br.com.emendes.financesapi.controller.dto.error.FormErrorDto;
 import br.com.emendes.financesapi.model.enumerator.Category;
 
 public abstract class DtoFromMvcResult {

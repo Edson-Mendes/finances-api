@@ -2,20 +2,16 @@ package br.com.emendes.financesapi.controller.form;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Optional;
 
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
-
 import br.com.emendes.financesapi.config.validation.annotation.DateValidation;
 import br.com.emendes.financesapi.model.Expense;
+import br.com.emendes.financesapi.model.User;
 import br.com.emendes.financesapi.model.enumerator.Category;
-import br.com.emendes.financesapi.repository.ExpenseRepository;
 import br.com.emendes.financesapi.util.Formatter;
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -71,69 +67,14 @@ public class ExpenseForm {
     this.value = value;
   }
 
-  public Expense convert(ExpenseRepository expenseRepository, Long userId) {
-    alreadyExist(expenseRepository, userId);
+  public Expense convert(Long userId) {
     LocalDate date = LocalDate.parse(this.date, Formatter.dateFormatter);
     if (category == null) {
       category = Category.OUTRAS;
     }
-    Expense expense = new Expense(description, value, date, category);
+    User user = new User(userId);
+    Expense expense = new Expense(description, value, date, category, user);
     return expense;
-  }
-
-  /**
-   * Verifica se o usuário já possui uma despesa com a mesma descrição no mês e
-   * ano da respectiva despesa.
-   * @param expenseRepository
-   * @param userId
-   * @return false, se não existir uma despesa com a mesma descrição em um mesmo
-   *         mês e ano.
-   * @throws ResponseStatusException se existir despesa.
-   */
-  private boolean alreadyExist(ExpenseRepository expenseRepository, Long userId) {
-    LocalDate date = LocalDate.parse(this.date, Formatter.dateFormatter);
-    Optional<Expense> optional = expenseRepository.findByDescriptionAndMonthAndYearAndUserId(
-        description,
-        date.getMonthValue(),
-        date.getYear(),
-        userId);
-    if (optional.isPresent()) {
-      String message = "Uma despesa com essa descrição já existe em " + date.getMonth().name().toLowerCase() + " "
-          + date.getYear();
-      throw new ResponseStatusException(
-          HttpStatus.CONFLICT, message, null);
-    }
-    return false;
-  }
-
-  /**
-   * Verifica se o usuário já possui uma despesa com a mesma descrição no mês e
-   * ano da
-   * respectiva despesa.
-   * e com id diferente do mesmo.
-   * 
-   * @param expenseRepository
-   * @param id
-   * @param userId
-   * @return false, se não existir uma despesa com a mesma descrição em um mesmo
-   *         mês e ano.
-   * @throws ResponseStatusException se existir despesa.
-   */
-  public boolean alreadyExist(ExpenseRepository expenseRepository, Long id, Long userId) {
-    LocalDate date = LocalDate.parse(this.date, Formatter.dateFormatter);
-    Optional<Expense> optional = expenseRepository.findByDescriptionAndMonthAndYearAndUserIdAndNotId(
-        description,
-        date.getMonthValue(),
-        date.getYear(),
-        userId,
-        id);
-    if (optional.isPresent()) {
-      String message = "Descrição de despesa duplicada para " + date.getMonth().name().toLowerCase() + " "
-          + date.getYear();
-      throw new ResponseStatusException(
-          HttpStatus.CONFLICT, message, null);
-    }
-    return false;
   }
 
 }

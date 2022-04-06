@@ -17,7 +17,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import br.com.emendes.financesapi.repository.UserRepository;
+import br.com.emendes.financesapi.service.AuthenticationService;
+import br.com.emendes.financesapi.service.TokenService;
+import br.com.emendes.financesapi.service.UserService;
 
 @EnableWebSecurity
 @Configuration
@@ -31,7 +33,7 @@ public class TestSecurityConfigurations extends WebSecurityConfigurerAdapter {
   private TokenService tokenService;
 
   @Autowired
-  private UserRepository userRepository;
+  private UserService userService;
 
   @Override
   @Bean
@@ -61,7 +63,7 @@ public class TestSecurityConfigurations extends WebSecurityConfigurerAdapter {
         .and().csrf().disable()
         .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         .and().addFilterBefore(new AuthenticationByTokenFilter(tokenService,
-            userRepository),
+            userService),
             UsernamePasswordAuthenticationFilter.class)
         .exceptionHandling().authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED));
   }

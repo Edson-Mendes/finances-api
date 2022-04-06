@@ -5,16 +5,12 @@ import javax.validation.constraints.NotBlank;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-
 public class LoginForm {
 
-  @Schema(example = "mei@email.com")
   @NotBlank
   @Email(message = "deve ser um e-mail bem formado")
   private String email;
-  
-  @Schema(example = "myPassword1234")
+
   @NotBlank
   private String password;
 

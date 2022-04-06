@@ -13,7 +13,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import br.com.emendes.financesapi.config.validation.error_dto.FormErrorDto;
+import br.com.emendes.financesapi.controller.dto.error.FormErrorDto;
 
 @RestControllerAdvice
 public class ValidationErrorHandler {

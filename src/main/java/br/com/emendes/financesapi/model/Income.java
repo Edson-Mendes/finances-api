@@ -15,7 +15,7 @@ import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 public class Income {
-  
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
@@ -28,12 +28,14 @@ public class Income {
   @OnDelete(action = OnDeleteAction.CASCADE)
   private User user;
 
-  public Income(){}
+  public Income() {
+  }
 
-  public Income(String description, BigDecimal value, LocalDate date) {
+  public Income(String description, BigDecimal value, LocalDate date, User user) {
     this.description = description;
     this.value = value;
     this.date = date;
+    this.user = user;
   }
 
   public User getUser() {

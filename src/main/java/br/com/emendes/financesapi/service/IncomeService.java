@@ -13,14 +13,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import br.com.emendes.financesapi.controller.dto.IncomeDto;
 import br.com.emendes.financesapi.controller.form.IncomeForm;
 import br.com.emendes.financesapi.model.Income;
-import br.com.emendes.financesapi.model.User;
 import br.com.emendes.financesapi.repository.IncomeRepository;
-import br.com.emendes.financesapi.repository.UserRepository;
 import br.com.emendes.financesapi.util.Formatter;
 
 @Service
@@ -29,14 +28,9 @@ public class IncomeService {
   @Autowired
   private IncomeRepository incomeRepository;
 
-  @Autowired
-  private UserRepository userRepository;
-
-  public ResponseEntity<IncomeDto> create(IncomeForm form, Long userId, UriComponentsBuilder uriBuilder) {
-    User user = userRepository.findById(userId).get();
-    Income income = form.convert(incomeRepository, userId);
-    income.setUser(user);
-
+  public ResponseEntity<IncomeDto> create(IncomeForm incomeForm, Long userId, UriComponentsBuilder uriBuilder) {
+    alreadyExist(incomeForm, userId);
+    Income income = incomeForm.convert(userId);
     incomeRepository.save(income);
 
     URI uri = uriBuilder.path("/despesas/{id}").buildAndExpand(income.getId()).toUri();
@@ -91,7 +85,7 @@ public class IncomeService {
 
   public ResponseEntity<IncomeDto> update(Long id, IncomeForm incomeForm, Long userId) {
     Optional<Income> optional = incomeRepository.findByIdAndUserId(id, userId);
-    if (optional.isPresent() && !incomeForm.alreadyExist(incomeRepository, id, userId)) {
+    if (optional.isPresent() && !alreadyExist(incomeForm, id, userId)) {
       Income income = optional.get();
 
       income.setDescription(incomeForm.getDescription());
@@ -118,4 +112,54 @@ public class IncomeService {
     return incomeRepository.getTotalValueByMonthAndYearAndUserId(year, month, userId);
   }
 
+  /**
+   * Verifica se o usuário já possui outra receita com a mesma descrição no mesmo
+   * mês
+   * e ano.
+   * 
+   * @param incomeRepository
+   * @param userId
+   * @return false, se não existir uma receita com a mesma descrição em um mesmo
+   *         mês e ano.
+   * @throws ResponseStatusException se existir receita.
+   */
+  public boolean alreadyExist(IncomeForm incomeForm, Long userId) {
+    LocalDate date = LocalDate.parse(incomeForm.getDate(), Formatter.dateFormatter);
+    Optional<Income> optional = incomeRepository.findByDescriptionAndMonthAndYearAndUserId(incomeForm.getDescription(),
+        date.getMonthValue(),
+        date.getYear(), userId);
+    if (optional.isPresent()) {
+      String message = "Uma receita com essa descrição já existe em " + date.getMonth().name().toLowerCase() + " "
+          + date.getYear();
+      throw new ResponseStatusException(
+          HttpStatus.CONFLICT, message, null);
+    }
+    return false;
+  }
+
+  /**
+   * Verifica se o usuário já possui outra receita com a mesma descrição no mesmo
+   * mês e
+   * ano da respectiva receita e com id diferente do mesmo.
+   * 
+   * @param incomeRepository
+   * @param id
+   * @param userId
+   * @return false, se não existir uma receita com a mesma descrição em um mesmo
+   *         mês e ano.
+   * @throws ResponseStatusException se existir receita.
+   */
+  public boolean alreadyExist(IncomeForm incomeForm, Long incomeId, Long userId) {
+    LocalDate date = LocalDate.parse(incomeForm.getDate(), Formatter.dateFormatter);
+    Optional<Income> optional = incomeRepository.findByDescriptionAndMonthAndYearAndUserIdAndNotId(
+        incomeForm.getDescription(),
+        date.getMonthValue(), date.getYear(), userId, incomeId);
+    if (optional.isPresent()) {
+      String message = "Descrição de receita duplicada para " + date.getMonth().name().toLowerCase() + " "
+          + date.getYear();
+      throw new ResponseStatusException(
+          HttpStatus.CONFLICT, message, null);
+    }
+    return false;
+  }
 }

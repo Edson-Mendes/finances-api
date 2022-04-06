@@ -1,4 +1,4 @@
-package br.com.emendes.financesapi.config.validation.error_dto;
+package br.com.emendes.financesapi.controller.dto.error;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
