@@ -1,5 +1,6 @@
 package br.com.emendes.financesapi.controller;
 
+import java.net.URI;
 import java.net.URISyntaxException;
 
 import javax.validation.Valid;
@@ -19,8 +20,8 @@ import br.com.emendes.financesapi.controller.dto.TokenDto;
 import br.com.emendes.financesapi.controller.dto.UserDto;
 import br.com.emendes.financesapi.controller.form.LoginForm;
 import br.com.emendes.financesapi.controller.form.SignupForm;
-import br.com.emendes.financesapi.service.SignupService;
 import br.com.emendes.financesapi.service.TokenService;
+import br.com.emendes.financesapi.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -38,7 +39,7 @@ public class AuthenticationController {
   private TokenService tokenService;
 
   @Autowired
-  private SignupService signupService;
+  private UserService userService;
 
   @Operation(summary = "Logar um usuário")
   @ApiResponses(value = {
@@ -66,7 +67,9 @@ public class AuthenticationController {
   @PostMapping("/signup")
   public ResponseEntity<UserDto> register(@RequestBody @Valid SignupForm signupForm, UriComponentsBuilder uriBuilder)
       throws URISyntaxException {
-    return signupService.createAccount(signupForm, uriBuilder);
+        UserDto userDto = userService.createAccount(signupForm);
+        URI uri = uriBuilder.path("/user/{id}").buildAndExpand(userDto.getId()).toUri();
+        return ResponseEntity.created(uri).body(userDto);
   }
 
 }

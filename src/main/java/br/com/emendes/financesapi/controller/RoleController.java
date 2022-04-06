@@ -3,6 +3,7 @@ package br.com.emendes.financesapi.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,7 +33,8 @@ public class RoleController {
   })
   @GetMapping
   public ResponseEntity<List<RoleDto>> readAll() {
-    return roleService.readAll();
+    List<RoleDto> rolesDto = roleService.readAll();
+    return ResponseEntity.ok(rolesDto);
   }
 
   @Operation(summary = "Buscar role por id", security = { @SecurityRequirement(name = "bearer-key") })
@@ -44,7 +46,11 @@ public class RoleController {
   })
   @GetMapping("/{id}")
   public ResponseEntity<RoleDto> readById(@PathVariable Long id) {
-    return roleService.readById(id);
+    RoleDto roleDto = roleService.readById(id);
+    return ResponseEntity
+        .status(HttpStatus.OK)
+        .header("Content-Type", "application/json;charset=UTF-8")
+        .body(roleDto);
   }
 
 }

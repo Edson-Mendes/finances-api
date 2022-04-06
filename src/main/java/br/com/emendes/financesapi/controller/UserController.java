@@ -47,7 +47,8 @@ public class UserController {
   @GetMapping
   public ResponseEntity<Page<UserDto>> read(
       @PageableDefault(sort = "id", direction = Direction.ASC, page = 0, size = 10) Pageable pageable) {
-    return userService.read(pageable);
+    Page<UserDto> usersDto = userService.read(pageable);
+    return ResponseEntity.ok(usersDto);
   }
 
   @Operation(summary = "Deletar usuário por id", security = { @SecurityRequirement(name = "bearer-key") })

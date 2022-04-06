@@ -1,5 +1,7 @@
 package br.com.emendes.financesapi.controller;
 
+import java.net.URI;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
@@ -10,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -59,7 +62,9 @@ public class IncomeController {
   public ResponseEntity<IncomeDto> create(@Valid @RequestBody IncomeForm form, UriComponentsBuilder uriBuilder,
       HttpServletRequest request) {
     Long userId = tokenService.getUserId(request);
-    return incomeService.create(form, userId, uriBuilder);
+    IncomeDto incomeDto = incomeService.create(form, userId);
+    URI uri = uriBuilder.path("/despesas/{id}").buildAndExpand(incomeDto.getId()).toUri();
+    return ResponseEntity.created(uri).body(incomeDto);
   }
 
   @Operation(summary = "Buscar todas as receitas do usuário, opcional buscar por descrição", security = {
@@ -76,11 +81,18 @@ public class IncomeController {
       @RequestParam(required = false) String description,
       @ParameterObject() @PageableDefault(sort = "date", direction = Direction.DESC, page = 0, size = 10) Pageable pageable,
       HttpServletRequest request) {
+
     Long userId = tokenService.getUserId(request);
+    Page<IncomeDto> incomesDto;
     if (description == null) {
-      return incomeService.readAllByUser(userId, pageable);
+      incomesDto = incomeService.readAllByUser(userId, pageable);
+    } else {
+      incomesDto = incomeService.readByDescriptionAndUser(description, userId, pageable);
     }
-    return incomeService.readByDescriptionAndUser(description, userId, pageable);
+
+    return ResponseEntity.status(HttpStatus.OK)
+        .header("Content-Type", "application/json;charset=UTF-8")
+        .body(incomesDto);
   }
 
   @Operation(summary = "Buscar receita por id", security = { @SecurityRequirement(name = "bearer-key") })
@@ -93,7 +105,11 @@ public class IncomeController {
   @GetMapping("/{id}")
   public ResponseEntity<IncomeDto> readById(@PathVariable Long id, HttpServletRequest request) {
     Long userId = tokenService.getUserId(request);
-    return incomeService.readByIdAndUser(id, userId);
+    IncomeDto incomeDto = incomeService.readByIdAndUser(id, userId);
+
+    return ResponseEntity.status(HttpStatus.OK)
+        .header("Content-Type", "application/json;charset=UTF-8")
+        .body(incomeDto);
   }
 
   @Operation(summary = "Buscar receitas do usuário por ano e mês", security = {
@@ -112,7 +128,11 @@ public class IncomeController {
       @ParameterObject() @PageableDefault(sort = "date", direction = Direction.DESC, page = 0, size = 10) Pageable pageable,
       HttpServletRequest request) {
     Long userId = tokenService.getUserId(request);
-    return incomeService.readByYearAndMonthAndUser(year, month, userId, pageable);
+    Page<IncomeDto> incomesDto = incomeService.readByYearAndMonthAndUser(year, month, userId, pageable);
+
+    return ResponseEntity.status(HttpStatus.OK)
+        .header("Content-Type", "application/json;charset=UTF-8")
+        .body(incomesDto);
   }
 
   @Operation(summary = "Atualizar receita por id", security = { @SecurityRequirement(name = "bearer-key") })
@@ -131,7 +151,10 @@ public class IncomeController {
   public ResponseEntity<IncomeDto> update(@PathVariable Long id, @Valid @RequestBody IncomeForm incomeForm,
       HttpServletRequest request) {
     Long userId = tokenService.getUserId(request);
-    return incomeService.update(id, incomeForm, userId);
+    IncomeDto incomeDto = incomeService.update(id, incomeForm, userId);
+
+    return ResponseEntity.status(HttpStatus.OK).header("Content-Type", "application/json;charset=UTF-8")
+        .body(incomeDto);
   }
 
   @Operation(summary = "Deletar receita por id", security = { @SecurityRequirement(name = "bearer-key") })

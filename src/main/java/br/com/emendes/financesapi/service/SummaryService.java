@@ -8,7 +8,6 @@ import java.util.Optional;
 import javax.persistence.NoResultException;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import br.com.emendes.financesapi.controller.dto.SummaryDto;
@@ -24,7 +23,7 @@ public class SummaryService {
   @Autowired
   private IncomeService incomeService;
 
-  public ResponseEntity<SummaryDto> monthSummary(Integer year, Integer month, Long userId) {
+  public SummaryDto monthSummary(Integer year, Integer month, Long userId) {
       Optional<BigDecimal> incomeTotalValue = incomeService.getTotalValueByMonthAndYearAndUserId(year, month, userId);
       Optional<BigDecimal> expenseTotalValue = expenseService.getTotalValueByMonthAndYearAndUserId(year, month, userId);
       if(incomeTotalValue.isPresent() || expenseTotalValue.isPresent()){
@@ -32,7 +31,7 @@ public class SummaryService {
             incomeTotalValue.orElse(BigDecimal.ZERO), 
             expenseTotalValue.orElse(BigDecimal.ZERO), 
             expenseTotalValue.isPresent() ? getTotalByCategory(year, month, userId) : ValueByCategory.listWithZero());
-        return ResponseEntity.ok(summaryDto);
+        return summaryDto;
       }
       throw new NoResultException("Não há receitas e despesas para o ano " + year + " e mês " + month);
   }

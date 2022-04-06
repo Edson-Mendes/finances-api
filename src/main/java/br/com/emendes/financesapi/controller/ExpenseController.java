@@ -1,5 +1,7 @@
 package br.com.emendes.financesapi.controller;
 
+import java.net.URI;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
@@ -10,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -60,7 +63,10 @@ public class ExpenseController {
       UriComponentsBuilder uriBuilder,
       HttpServletRequest request) {
     Long userId = tokenService.getUserId(request);
-    return expenseService.create(form, userId, uriBuilder);
+
+    ExpenseDto expenseDto = expenseService.create(form, userId);
+    URI uri = uriBuilder.path("/despesas/{id}").buildAndExpand(expenseDto.getId()).toUri();
+    return ResponseEntity.created(uri).body(expenseDto);
   }
 
   @Operation(summary = "Buscar todas as despesas do usuário, opcional buscar por descrição", security = {
@@ -76,12 +82,18 @@ public class ExpenseController {
   public ResponseEntity<Page<ExpenseDto>> read(@RequestParam(required = false) String description,
       @ParameterObject @PageableDefault(sort = "date", direction = Direction.DESC, page = 0, size = 10) Pageable pageable,
       HttpServletRequest request) {
+
     Long userId = tokenService.getUserId(request);
+    Page<ExpenseDto> expensesDto;
+
     if (description == null) {
-      return expenseService.readAllByUser(userId, pageable);
+      expensesDto = expenseService.readAllByUser(userId, pageable);
     } else {
-      return expenseService.readByDescriptionAndUser(description, userId, pageable);
+      expensesDto = expenseService.readByDescriptionAndUser(description, userId, pageable);
     }
+    return ResponseEntity.status(HttpStatus.OK)
+        .header("Content-Type", "application/json;charset=UTF-8")
+        .body(expensesDto);
   }
 
   @Operation(summary = "Buscar despesa por id", security = { @SecurityRequirement(name = "bearer-key") })
@@ -94,7 +106,11 @@ public class ExpenseController {
   @GetMapping("/{id}")
   public ResponseEntity<ExpenseDto> readById(@PathVariable Long id, HttpServletRequest request) {
     Long userId = tokenService.getUserId(request);
-    return expenseService.readByIdAndUser(id, userId);
+    ExpenseDto expenseDto = expenseService.readByIdAndUser(id, userId);
+
+    return ResponseEntity.status(HttpStatus.OK)
+        .header("Content-Type", "application/json;charset=UTF-8")
+        .body(expenseDto);
   }
 
   @Operation(summary = "Buscar despesas do usuário por ano e mês", security = {
@@ -113,7 +129,11 @@ public class ExpenseController {
       @ParameterObject @PageableDefault(sort = "date", direction = Direction.DESC, page = 0, size = 10) Pageable pageable,
       HttpServletRequest request) {
     Long userId = tokenService.getUserId(request);
-    return expenseService.readByYearAndMonthAndUser(year, month, userId, pageable);
+    Page<ExpenseDto> expensesDto = expenseService.readByYearAndMonthAndUser(year, month, userId, pageable);
+
+    return ResponseEntity.status(HttpStatus.OK)
+        .header("Content-Type", "application/json;charset=UTF-8")
+        .body(expensesDto);
   }
 
   @Operation(summary = "Atualizar despesa por id", security = { @SecurityRequirement(name = "bearer-key") })
@@ -132,7 +152,11 @@ public class ExpenseController {
   public ResponseEntity<ExpenseDto> update(@PathVariable Long id, @Valid @RequestBody ExpenseForm expenseForm,
       HttpServletRequest request) {
     Long userId = tokenService.getUserId(request);
-    return expenseService.update(id, expenseForm, userId);
+    ExpenseDto expenseDto = expenseService.update(id, expenseForm, userId);
+
+    return ResponseEntity.status(HttpStatus.OK)
+        .header("Content-Type", "application/json;charset=UTF-8")
+        .body(expenseDto);
   }
 
   @Operation(summary = "Deletar despesa por id", security = { @SecurityRequirement(name = "bearer-key") })

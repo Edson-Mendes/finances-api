@@ -1,7 +1,6 @@
 package br.com.emendes.financesapi.service;
 
 import java.math.BigDecimal;
-import java.net.URI;
 import java.time.LocalDate;
 import java.util.Optional;
 
@@ -11,10 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import br.com.emendes.financesapi.controller.dto.ExpenseDto;
 import br.com.emendes.financesapi.controller.form.ExpenseForm;
@@ -29,52 +26,45 @@ public class ExpenseService {
   @Autowired
   private ExpenseRepository expenseRepository;
 
-  public ResponseEntity<ExpenseDto> create(ExpenseForm expenseForm, Long userId, UriComponentsBuilder uriBuilder) {
+  public ExpenseDto create(ExpenseForm expenseForm, Long userId) {
     alreadyExist(expenseForm, userId);
 
     Expense expense = expenseForm.convert(userId);
     expenseRepository.save(expense);
 
-    URI uri = uriBuilder.path("/despesas/{id}").buildAndExpand(expense.getId()).toUri();
-    return ResponseEntity.created(uri).body(new ExpenseDto(expense));
+    return new ExpenseDto(expense);
   }
 
-  public ResponseEntity<Page<ExpenseDto>> readAllByUser(Long userId, Pageable pageable) {
+  public Page<ExpenseDto> readAllByUser(Long userId, Pageable pageable) {
     Page<Expense> expenses = expenseRepository.findByUserId(userId, pageable);
     if (expenses.getTotalElements() == 0) {
       throw new NoResultException("O usuário não possui despesas");
     }
     Page<ExpenseDto> expensesDto = ExpenseDto.convert(expenses);
 
-    return ResponseEntity.status(HttpStatus.OK)
-        .header("Content-Type", "application/json;charset=UTF-8")
-        .body(expensesDto);
+    return expensesDto;
   }
 
-  public ResponseEntity<Page<ExpenseDto>> readByDescriptionAndUser(String description, Long userId, Pageable pageable) {
+  public Page<ExpenseDto> readByDescriptionAndUser(String description, Long userId, Pageable pageable) {
     Page<Expense> expenses = expenseRepository.findByDescriptionAndUserId(description, userId, pageable);
     if (expenses.getTotalElements() == 0) {
       throw new NoResultException("O usuário não possui despesas com descrição similar a " + description);
     }
 
     Page<ExpenseDto> expensesDto = ExpenseDto.convert(expenses);
-    return ResponseEntity.status(HttpStatus.OK)
-        .header("Content-Type", "application/json;charset=UTF-8")
-        .body(expensesDto);
+    return expensesDto;
   }
 
-  public ResponseEntity<ExpenseDto> readByIdAndUser(Long id, Long userId) {
+  public ExpenseDto readByIdAndUser(Long id, Long userId) {
     Optional<Expense> optional = expenseRepository.findByIdAndUserId(id, userId);
     if (optional.isEmpty()) {
       throw new NoResultException("Nenhuma despesa com esse id para esse usuário");
     }
     ExpenseDto expenseDto = new ExpenseDto(optional.get());
-    return ResponseEntity.status(HttpStatus.OK)
-        .header("Content-Type", "application/json;charset=UTF-8")
-        .body(expenseDto);
+    return expenseDto;
   }
 
-  public ResponseEntity<Page<ExpenseDto>> readByYearAndMonthAndUser(
+  public Page<ExpenseDto> readByYearAndMonthAndUser(
       Integer year,
       Integer month,
       Long userId,
@@ -85,20 +75,16 @@ public class ExpenseService {
       throw new NoResultException("Não há despesas para o ano " + year + " e mês " + month);
     }
     Page<ExpenseDto> expensesDto = ExpenseDto.convert(expenses);
-    return ResponseEntity.status(HttpStatus.OK)
-        .header("Content-Type", "application/json;charset=UTF-8")
-        .body(expensesDto);
+    return expensesDto;
   }
 
-  public ResponseEntity<ExpenseDto> update(Long id, ExpenseForm expenseForm, Long userId) {
+  public ExpenseDto update(Long id, ExpenseForm expenseForm, Long userId) {
     Optional<Expense> optional = expenseRepository.findByIdAndUserId(id, userId);
     if (optional.isPresent() && !alreadyExist(expenseForm, id, userId)) {
       Expense expense = optional.get();
       expense.setParams(expenseForm);
 
-      return ResponseEntity.status(HttpStatus.OK)
-          .header("Content-Type", "application/json;charset=UTF-8")
-          .body(new ExpenseDto(expense));
+      return new ExpenseDto(expense);
     }
 
     throw new NoResultException("Nenhuma despesa com esse id para esse usuário");
