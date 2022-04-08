@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,7 +37,7 @@ public class UserController {
   private UserService userService;
 
   @Autowired
-  TokenService tokenService;
+  private TokenService tokenService;
 
   @Operation(summary = "Buscar todos os usuários", security = { @SecurityRequirement(name = "bearer-key") })
   @ApiResponses(value = {
@@ -53,14 +54,15 @@ public class UserController {
 
   @Operation(summary = "Deletar usuário por id", security = { @SecurityRequirement(name = "bearer-key") })
   @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "Usuário deletado com sucesso"),
+      @ApiResponse(responseCode = "204", description = "Usuário deletado com sucesso"),
       @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
       @ApiResponse(responseCode = "403", description = "Forbidden, usuário não tem permissão de acesso", content = @Content),
       @ApiResponse(responseCode = "404", description = "Usuário não encontrado", content = @Content)
   })
   @DeleteMapping("/{id}")
-  public void delete(@PathVariable Long id) {
+  public ResponseEntity<Void> delete(@PathVariable Long id) {
     userService.delete(id);
+    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
 
   @Operation(summary = "Atualizar senha do usuário", security = { @SecurityRequirement(name = "bearer-key") })
@@ -69,7 +71,7 @@ public class UserController {
       @ApiResponse(responseCode = "400", description = "Algum parâmetro do corpo da requisição inválido"),
       @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
   })
-  @PutMapping("/change-password")
+  @PutMapping("/password")
   @Transactional
   public void changePassword(@Valid @RequestBody ChangePasswordForm changeForm, HttpServletRequest request) {
     Long userId = tokenService.getUserId(request);

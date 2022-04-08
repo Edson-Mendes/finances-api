@@ -70,7 +70,7 @@ public class UserControllerTests {
 
     Map<String, Object> params = Map.of("newPassword", newPassword, "confirm", confirm);
 
-    mock.put("/user/change-password", params, tokenUser, 200);
+    mock.put("/user/password", params, tokenUser, 200);
   }
 
   @Test
@@ -80,7 +80,7 @@ public class UserControllerTests {
     String confirm = "222222222";
 
     Map<String, Object> params = Map.of("newPassword", newPassword, "confirm", confirm);
-    MvcResult result = mock.put("/user/change-password", params, tokenUser, 400);
+    MvcResult result = mock.put("/user/password", params, tokenUser, 400);
     ErrorDto errorDto = DtoFromMvcResult.errorDto(result);
 
     Assertions.assertEquals("as senhas não correspondem!", errorDto.getMessage());
@@ -127,6 +127,6 @@ public class UserControllerTests {
   @Order(7)
   public void deveriaDevolver200AoAdminDeletarUsuario() {
     Long id = 2l;
-    mock.delete("/user/" + id, tokenAdmin, 200);
+    mock.delete("/user/" + id, tokenAdmin, 204);
   }
 }

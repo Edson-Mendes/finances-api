@@ -9,11 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
-import br.com.emendes.financesapi.config.validation.exception.DataConflictException;
 import br.com.emendes.financesapi.controller.dto.RoleDto;
 import br.com.emendes.financesapi.controller.form.RoleForm;
 import br.com.emendes.financesapi.model.Role;
 import br.com.emendes.financesapi.repository.RoleRepository;
+import br.com.emendes.financesapi.validation.exception.DataConflictException;
 
 @Service
 public class RoleService {
@@ -27,7 +27,7 @@ public class RoleService {
       roleRepository.save(role);
       RoleDto roleDto = new RoleDto(role);
       return roleDto;
-      
+
     } catch (DataIntegrityViolationException e) {
       throw new DataConflictException("já existe role com esse nome");
     }
@@ -42,10 +42,10 @@ public class RoleService {
 
   public RoleDto readById(Long id) {
     Optional<Role> optionalRole = roleRepository.findById(id);
-    if (optionalRole.isEmpty()) {
+
+    return new RoleDto(optionalRole.orElseThrow(() -> {
       throw new NoResultException("não existe role com id: " + id);
-    }
-    return new RoleDto(optionalRole.get());
+    }));
   }
 
   public void deleteById(Long id) {

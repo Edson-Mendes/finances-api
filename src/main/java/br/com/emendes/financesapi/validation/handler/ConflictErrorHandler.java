@@ -1,4 +1,4 @@
-package br.com.emendes.financesapi.config.validation.error_handler;
+package br.com.emendes.financesapi.validation.handler;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.server.ResponseStatusException;
 
-import br.com.emendes.financesapi.config.validation.exception.DataConflictException;
 import br.com.emendes.financesapi.controller.dto.error.ErrorDto;
+import br.com.emendes.financesapi.validation.exception.DataConflictException;
 
 @RestControllerAdvice
 public class ConflictErrorHandler {
@@ -24,7 +24,7 @@ public class ConflictErrorHandler {
     return conflictReturn(errorDto);
   }
 
-  private ResponseEntity<ErrorDto> conflictReturn(ErrorDto errorDto){
+  private ResponseEntity<ErrorDto> conflictReturn(ErrorDto errorDto) {
     return ResponseEntity
         .status(HttpStatus.CONFLICT)
         .header("Content-Type", "application/json;charset=UTF-8")

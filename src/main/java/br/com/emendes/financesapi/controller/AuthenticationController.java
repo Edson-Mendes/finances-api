@@ -59,7 +59,7 @@ public class AuthenticationController {
 
   @Operation(summary = "Cadastrar um usuário")
   @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "Cadastrado com sucesso", content = {
+      @ApiResponse(responseCode = "201", description = "Cadastrado com sucesso", content = {
           @Content(mediaType = "application/json", schema = @Schema(implementation = UserDto.class)) }),
       @ApiResponse(responseCode = "400", description = "Bad request - Algum parâmetro do corpo da requisição inválido", content = @Content),
       @ApiResponse(responseCode = "409", description = "Email inserido já está em uso", content = @Content)
@@ -67,9 +67,9 @@ public class AuthenticationController {
   @PostMapping("/signup")
   public ResponseEntity<UserDto> register(@RequestBody @Valid SignupForm signupForm, UriComponentsBuilder uriBuilder)
       throws URISyntaxException {
-        UserDto userDto = userService.createAccount(signupForm);
-        URI uri = uriBuilder.path("/user/{id}").buildAndExpand(userDto.getId()).toUri();
-        return ResponseEntity.created(uri).body(userDto);
+    UserDto userDto = userService.createAccount(signupForm);
+    URI uri = uriBuilder.path("/user/{id}").buildAndExpand(userDto.getId()).toUri();
+    return ResponseEntity.created(uri).body(userDto);
   }
 
 }

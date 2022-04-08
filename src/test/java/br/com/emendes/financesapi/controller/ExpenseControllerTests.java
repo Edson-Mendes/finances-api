@@ -272,7 +272,7 @@ public class ExpenseControllerTests {
 
     Long id = listExpenseDto.get(0).getId();
 
-    mock.delete("/despesas/" + id, tokenLorem, 200);
+    mock.delete("/despesas/" + id, tokenLorem, 204);
   }
 
   @Test

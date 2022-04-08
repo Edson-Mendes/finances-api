@@ -161,15 +161,16 @@ public class ExpenseController {
 
   @Operation(summary = "Deletar despesa por id", security = { @SecurityRequirement(name = "bearer-key") })
   @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "Deletado com sucesso"),
+      @ApiResponse(responseCode = "204", description = "Deletado com sucesso"),
       @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
       @ApiResponse(responseCode = "404", description = "Despesa não encontrada", content = {
           @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDto.class)) }),
   })
   @DeleteMapping("/{id}")
-  public void delete(@PathVariable Long id, HttpServletRequest request) {
+  public ResponseEntity<Void> delete(@PathVariable Long id, HttpServletRequest request) {
     Long userId = tokenService.getUserId(request);
     expenseService.delete(id, userId);
+    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
 
 }

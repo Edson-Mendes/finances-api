@@ -54,11 +54,10 @@ public class IncomeService {
 
   public IncomeDto readByIdAndUser(Long incomeId, Long userId) {
     Optional<Income> optional = incomeRepository.findByIdAndUserId(incomeId, userId);
-    if (optional.isEmpty()) {
+    IncomeDto incomeDto = new IncomeDto(optional.orElseThrow(() -> {
       throw new NoResultException("Nenhuma receita com esse id para esse usuário");
-    }
-    IncomeDto incomeDto = new IncomeDto(optional.get());
-    
+    }));
+
     return incomeDto;
   }
 
@@ -69,7 +68,7 @@ public class IncomeService {
       throw new NoResultException("Não há receitas para o ano " + year + " e mês " + month);
     }
     Page<IncomeDto> incomesDto = IncomeDto.convert(incomes);
-    
+
     return incomesDto;
   }
 

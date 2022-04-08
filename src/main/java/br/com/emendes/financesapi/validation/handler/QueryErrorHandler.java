@@ -1,4 +1,4 @@
-package br.com.emendes.financesapi.config.validation.error_handler;
+package br.com.emendes.financesapi.validation.handler;
 
 import org.hibernate.QueryException;
 import org.springframework.data.mapping.PropertyReferenceException;

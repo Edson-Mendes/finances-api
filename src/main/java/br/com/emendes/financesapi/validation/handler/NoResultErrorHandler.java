@@ -1,4 +1,4 @@
-package br.com.emendes.financesapi.config.validation.error_handler;
+package br.com.emendes.financesapi.validation.handler;
 
 import javax.persistence.NoResultException;
 
@@ -11,9 +11,9 @@ import br.com.emendes.financesapi.controller.dto.error.ErrorDto;
 
 @RestControllerAdvice
 public class NoResultErrorHandler {
-  
+
   @ExceptionHandler(NoResultException.class)
-  public ResponseEntity<ErrorDto> handle(NoResultException exception){
+  public ResponseEntity<ErrorDto> handle(NoResultException exception) {
     ErrorDto errorDto = new ErrorDto("Not Found", exception.getMessage());
     return ResponseEntity
         .status(HttpStatus.NOT_FOUND)

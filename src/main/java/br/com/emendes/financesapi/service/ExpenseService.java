@@ -57,10 +57,10 @@ public class ExpenseService {
 
   public ExpenseDto readByIdAndUser(Long id, Long userId) {
     Optional<Expense> optional = expenseRepository.findByIdAndUserId(id, userId);
-    if (optional.isEmpty()) {
+    ExpenseDto expenseDto = new ExpenseDto(optional.orElseThrow(() -> {
       throw new NoResultException("Nenhuma despesa com esse id para esse usuário");
-    }
-    ExpenseDto expenseDto = new ExpenseDto(optional.get());
+    }));
+
     return expenseDto;
   }
 
@@ -91,6 +91,8 @@ public class ExpenseService {
   }
 
   public void delete(Long id, Long userId) {
+    // TODO: Talvez chamar o delete por id e userId direto e lançar uma exception se
+    // não for possível.
     Optional<Expense> optional = expenseRepository.findByIdAndUserId(id, userId);
     if (optional.isEmpty()) {
       throw new NoResultException("Nenhuma despesa com esse id para esse usuário");

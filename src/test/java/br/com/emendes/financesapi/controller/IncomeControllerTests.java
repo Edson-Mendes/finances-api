@@ -234,7 +234,7 @@ public class IncomeControllerTests {
     List<IncomeDto> listIncomeDto = DtoFromMvcResult.listIncomeDto(result);
 
     Long id = listIncomeDto.get(1).getId();
-    mock.delete("/receitas/" + id, tokenLorem, 200);
+    mock.delete("/receitas/" + id, tokenLorem, 204);
   }
 
   @Test

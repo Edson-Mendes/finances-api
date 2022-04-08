@@ -9,13 +9,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import br.com.emendes.financesapi.config.validation.exception.DataConflictException;
-import br.com.emendes.financesapi.config.validation.exception.PasswordsDoNotMatchException;
 import br.com.emendes.financesapi.controller.dto.UserDto;
 import br.com.emendes.financesapi.controller.form.ChangePasswordForm;
 import br.com.emendes.financesapi.controller.form.SignupForm;
 import br.com.emendes.financesapi.model.User;
 import br.com.emendes.financesapi.repository.UserRepository;
+import br.com.emendes.financesapi.validation.exception.DataConflictException;
+import br.com.emendes.financesapi.validation.exception.PasswordsDoNotMatchException;
 
 @Service
 public class UserService {
@@ -29,7 +29,7 @@ public class UserService {
       try {
         userRepository.save(user);
         return new UserDto(user);
-        
+
       } catch (DataIntegrityViolationException e) {
         throw new DataConflictException("Email inserido já está em uso!");
       }
@@ -43,7 +43,7 @@ public class UserService {
     return usersDto;
   }
 
-  public User readById(Long userId){
+  public User readById(Long userId) {
     return userRepository.findById(userId).orElse(null);
   }
 

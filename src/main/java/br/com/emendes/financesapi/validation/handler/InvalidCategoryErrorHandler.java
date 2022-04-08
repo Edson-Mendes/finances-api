@@ -1,4 +1,4 @@
-package br.com.emendes.financesapi.config.validation.error_handler;
+package br.com.emendes.financesapi.validation.handler;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 

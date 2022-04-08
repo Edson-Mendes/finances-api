@@ -12,7 +12,7 @@ import br.com.emendes.financesapi.model.User;
 import br.com.emendes.financesapi.repository.UserRepository;
 
 @Service
-public class AuthenticationService implements UserDetailsService{
+public class AuthenticationService implements UserDetailsService {
 
   @Autowired
   private UserRepository userRepository;
@@ -20,10 +20,10 @@ public class AuthenticationService implements UserDetailsService{
   @Override
   public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
     Optional<User> user = userRepository.findByEmail(email);
-    if(user.isPresent()){
-      return user.get();
-    }
-    throw new UsernameNotFoundException("Dados inválidos!");
+
+    return user.orElseThrow(() -> {
+      throw new UsernameNotFoundException("Dados inválidos!");
+    });
   }
-  
+
 }

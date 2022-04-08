@@ -4,7 +4,7 @@ import javax.validation.constraints.NotBlank;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import br.com.emendes.financesapi.config.validation.annotation.ValidPassword;
+import br.com.emendes.financesapi.validation.annotation.ValidPassword;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 public class ChangePasswordForm {
@@ -34,11 +34,11 @@ public class ChangePasswordForm {
     this.confirm = confirm;
   }
 
-  public boolean passwordMatch(){
+  public boolean passwordMatch() {
     return this.newPassword.equals(this.confirm);
   }
 
-  public String generateNewPasswordEncoded(){
+  public String generateNewPasswordEncoded() {
     return new BCryptPasswordEncoder().encode(newPassword);
   }
 }

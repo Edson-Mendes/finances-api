@@ -46,7 +46,7 @@ public class IncomeController {
   private IncomeService incomeService;
 
   @Autowired
-  TokenService tokenService;
+  private TokenService tokenService;
 
   @Operation(summary = "Salvar uma receita", security = { @SecurityRequirement(name = "bearer-key") })
   @ApiResponses(value = {
@@ -62,6 +62,7 @@ public class IncomeController {
   public ResponseEntity<IncomeDto> create(@Valid @RequestBody IncomeForm form, UriComponentsBuilder uriBuilder,
       HttpServletRequest request) {
     Long userId = tokenService.getUserId(request);
+
     IncomeDto incomeDto = incomeService.create(form, userId);
     URI uri = uriBuilder.path("/despesas/{id}").buildAndExpand(incomeDto.getId()).toUri();
     return ResponseEntity.created(uri).body(incomeDto);
@@ -81,8 +82,8 @@ public class IncomeController {
       @RequestParam(required = false) String description,
       @ParameterObject() @PageableDefault(sort = "date", direction = Direction.DESC, page = 0, size = 10) Pageable pageable,
       HttpServletRequest request) {
-
     Long userId = tokenService.getUserId(request);
+
     Page<IncomeDto> incomesDto;
     if (description == null) {
       incomesDto = incomeService.readAllByUser(userId, pageable);
@@ -105,8 +106,8 @@ public class IncomeController {
   @GetMapping("/{id}")
   public ResponseEntity<IncomeDto> readById(@PathVariable Long id, HttpServletRequest request) {
     Long userId = tokenService.getUserId(request);
-    IncomeDto incomeDto = incomeService.readByIdAndUser(id, userId);
 
+    IncomeDto incomeDto = incomeService.readByIdAndUser(id, userId);
     return ResponseEntity.status(HttpStatus.OK)
         .header("Content-Type", "application/json;charset=UTF-8")
         .body(incomeDto);
@@ -128,8 +129,8 @@ public class IncomeController {
       @ParameterObject() @PageableDefault(sort = "date", direction = Direction.DESC, page = 0, size = 10) Pageable pageable,
       HttpServletRequest request) {
     Long userId = tokenService.getUserId(request);
-    Page<IncomeDto> incomesDto = incomeService.readByYearAndMonthAndUser(year, month, userId, pageable);
 
+    Page<IncomeDto> incomesDto = incomeService.readByYearAndMonthAndUser(year, month, userId, pageable);
     return ResponseEntity.status(HttpStatus.OK)
         .header("Content-Type", "application/json;charset=UTF-8")
         .body(incomesDto);
@@ -151,23 +152,25 @@ public class IncomeController {
   public ResponseEntity<IncomeDto> update(@PathVariable Long id, @Valid @RequestBody IncomeForm incomeForm,
       HttpServletRequest request) {
     Long userId = tokenService.getUserId(request);
-    IncomeDto incomeDto = incomeService.update(id, incomeForm, userId);
 
+    IncomeDto incomeDto = incomeService.update(id, incomeForm, userId);
     return ResponseEntity.status(HttpStatus.OK).header("Content-Type", "application/json;charset=UTF-8")
         .body(incomeDto);
   }
 
   @Operation(summary = "Deletar receita por id", security = { @SecurityRequirement(name = "bearer-key") })
   @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "Deletado com sucesso"),
+      @ApiResponse(responseCode = "204", description = "Deletado com sucesso"),
       @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
       @ApiResponse(responseCode = "404", description = "Receita não encontrada", content = {
           @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDto.class)) }),
   })
   @DeleteMapping("/{id}")
-  public void delete(@PathVariable Long id, HttpServletRequest request) {
+  public ResponseEntity<Void> delete(@PathVariable Long id, HttpServletRequest request) {
     Long userId = tokenService.getUserId(request);
     incomeService.delete(id, userId);
+
+    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
 
 }

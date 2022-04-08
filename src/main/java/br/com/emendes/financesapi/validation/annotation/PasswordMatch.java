@@ -1,4 +1,4 @@
-package br.com.emendes.financesapi.config.validation.annotation;
+package br.com.emendes.financesapi.validation.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -10,6 +10,7 @@ import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
 import br.com.emendes.financesapi.controller.form.SignupForm;
+
 // TODO: Pensar em como fazer valer para os campos de password e confirm.
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
@@ -32,7 +33,7 @@ class PassValidator implements ConstraintValidator<PasswordMatch, SignupForm> {
     String pass = signForm.getPassword();
     String confirm = signForm.getConfirm();
 
-    if(pass.equals(confirm)){
+    if (pass.equals(confirm)) {
       return true;
     }
 

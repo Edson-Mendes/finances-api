@@ -1,4 +1,4 @@
-package br.com.emendes.financesapi.config.validation.error_handler;
+package br.com.emendes.financesapi.validation.handler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,9 +20,9 @@ public class ValidationErrorHandler {
 
   @Autowired
   private MessageSource messageSource;
-  
+
   @ExceptionHandler(MethodArgumentNotValidException.class)
-  public ResponseEntity<List<FormErrorDto>> handle(MethodArgumentNotValidException exception){
+  public ResponseEntity<List<FormErrorDto>> handle(MethodArgumentNotValidException exception) {
 
     List<FormErrorDto> listErrorDto = new ArrayList<>();
     List<FieldError> fieldErrors = exception.getBindingResult().getFieldErrors();
