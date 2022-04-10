@@ -26,6 +26,9 @@ class PasswordValidator implements ConstraintValidator<ValidPassword, String> {
 
   @Override
   public boolean isValid(String password, ConstraintValidatorContext context) {
+    if (password == null) {
+      return false;
+    }
     if (isNotSizeEnough(password)) {
       context.buildConstraintViolationWithTemplate("deve ter de 8 a 30 caracteres.")
           .addConstraintViolation();

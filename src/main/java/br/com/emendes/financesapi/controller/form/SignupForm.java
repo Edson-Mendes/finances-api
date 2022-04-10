@@ -2,6 +2,7 @@ package br.com.emendes.financesapi.controller.form;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 import br.com.emendes.financesapi.model.User;
 import br.com.emendes.financesapi.validation.annotation.ValidPassword;
@@ -18,9 +19,9 @@ public class SignupForm {
   private String email;
 
   @ValidPassword
-  @NotBlank
   private String password;
 
+  @NotNull
   @NotBlank
   private String confirm;
 
