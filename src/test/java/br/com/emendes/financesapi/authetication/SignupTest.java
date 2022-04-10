@@ -127,7 +127,7 @@ public class SignupTest {
         Map.of("name", name, "email", email, "password", password, "confirm", confirm), "", 400);
     List<FormErrorDto> listFormErrorDto = DtoFromMvcResult.formErrorDto(result);
 
-    FormErrorDto formErrorExpected = new FormErrorDto("password", "não deve estar em branco");
+    FormErrorDto formErrorExpected = new FormErrorDto("password", "Senha inválida");
     Assertions.assertTrue(listFormErrorDto.contains(formErrorExpected));
   }
 

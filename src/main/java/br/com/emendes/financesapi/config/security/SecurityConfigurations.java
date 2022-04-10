@@ -23,7 +23,7 @@ import br.com.emendes.financesapi.service.UserService;
 
 @EnableWebSecurity
 @Configuration
-@Profile("dev")
+@Profile(value = { "dev", "prod" })
 public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
 
   @Autowired
