@@ -13,10 +13,11 @@ public class SwaggerConfigurations {
 
   @Bean
   public OpenAPI financesApi() {
+
     return new OpenAPI()
         .info(new Info().title("Finances API")
             .description("Application for financial control")
-            .version("0.0.1-SNAPSHOT"))
+            .version("1.0.0"))
         .components(new Components()
             .addSecuritySchemes("bearer-key",
                 new SecurityScheme().type(SecurityScheme.Type.HTTP).scheme("bearer").bearerFormat("JWT")));

@@ -17,22 +17,22 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 public class ExpenseForm {
 
-  @Schema(example = "Aluguel")
+  @Schema(example = "Mercado")
   @NotBlank
   private String description;
 
-  @Schema(pattern = "dd/MM/yyyy", type = "string", example = "08/01/2022")
+  @Schema(pattern = "dd/MM/yyyy", type = "string", example = "17/01/2022")
   @NotNull
   @DateValidation
   private String date;
 
-  @Schema(example = "1200.00")
+  @Schema(example = "271.94")
   @NotNull
   @Positive
   @Digits(integer = 6, fraction = 2)
   private BigDecimal value;
 
-  @Schema(example = "MORADIA")
+  @Schema(example = "ALIMENTACAO")
   private Category category;
 
   public String getDescription() {

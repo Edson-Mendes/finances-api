@@ -23,8 +23,8 @@ import br.com.emendes.financesapi.service.UserService;
 
 @EnableWebSecurity
 @Configuration
-@Profile("test")
-public class TestSecurityConfigurations extends WebSecurityConfigurerAdapter {
+@Profile("dev")
+public class DevSecurityConfigurations extends WebSecurityConfigurerAdapter {
 
   @Autowired
   private AuthenticationService authenticationService;
@@ -53,15 +53,15 @@ public class TestSecurityConfigurations extends WebSecurityConfigurerAdapter {
     http.authorizeRequests()
         .antMatchers(HttpMethod.POST, "/auth/signin").permitAll()
         .antMatchers(HttpMethod.POST, "/auth/signup").permitAll()
-        .antMatchers(HttpMethod.POST, "/roles").hasRole("ADMIN")
         .antMatchers(HttpMethod.GET, "/roles").hasRole("ADMIN")
         .antMatchers(HttpMethod.GET, "/roles/*").hasRole("ADMIN")
-        .antMatchers(HttpMethod.DELETE, "/roles/*").hasRole("ADMIN")
         .antMatchers(HttpMethod.GET, "/users").hasRole("ADMIN")
         .antMatchers(HttpMethod.DELETE, "/users/*").hasRole("ADMIN")
+        .antMatchers("/h2-console/**").permitAll()
         .anyRequest().authenticated()
         .and().csrf().disable()
-        .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+        .headers().frameOptions().disable()
+        .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         .and().addFilterBefore(new AuthenticationByTokenFilter(tokenService,
             userService),
             UsernamePasswordAuthenticationFilter.class)
@@ -71,7 +71,9 @@ public class TestSecurityConfigurations extends WebSecurityConfigurerAdapter {
   // Configurações de recursos estáticos(js, css, img, etc)
   @Override
   public void configure(WebSecurity web) throws Exception {
-
+    web.ignoring()
+        .antMatchers("/swagger-ui/index.html", "/**.html", "/api-docs/**", "/webjars/**", "/configuration/**",
+            "/swagger-resources/**", "/swagger-ui/**");
   }
 
 }

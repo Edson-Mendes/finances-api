@@ -64,27 +64,27 @@ public class RoleControllerTests {
   @Test
   @Order(1)
   public void deveriaDevolver403QuandoUserBuscarRoles() {
-    mock.get("/role", tokenUser, 403);
+    mock.get("/roles", tokenUser, 403);
   }
 
   @Test
   @Order(2)
   public void deveriaDevolver200AoBuscarTodosOsRoles() {
-    mock.get("/role", tokenAdmin, 200);
+    mock.get("/roles", tokenAdmin, 200);
   }
 
   @Test
   @Order(3)
   public void deveriaDevolver403QuandoUserBuscarRolePorId() {
     Long id = 1l;
-    mock.get("/role/" + id, tokenUser, 403);
+    mock.get("/roles/" + id, tokenUser, 403);
   }
 
   @Test
   @Order(4)
   public void deveriaDevolver200ERoleDtoAoBuscarRolePorId() {
     Long id = 1l;
-    MvcResult result = mock.get("/role/" + id, tokenAdmin, 200);
+    MvcResult result = mock.get("/roles/" + id, tokenAdmin, 200);
     RoleDto roleDto = DtoFromMvcResult.roleDto(result);
 
     Assertions.assertEquals("ROLE_USER", roleDto.getName());

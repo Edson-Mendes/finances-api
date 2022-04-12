@@ -31,7 +31,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/users")
 public class UserController {
 
   @Autowired
@@ -40,7 +40,8 @@ public class UserController {
   @Autowired
   private TokenService tokenService;
 
-  @Operation(summary = "Buscar todos os usuários", security = { @SecurityRequirement(name = "bearer-key") })
+  @Operation(summary = "Buscar todos os usuários", tags = { "Usuários" }, security = {
+      @SecurityRequirement(name = "bearer-key") })
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "Encontrou os usuários"),
       @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
@@ -53,7 +54,8 @@ public class UserController {
     return ResponseEntity.ok(usersDto);
   }
 
-  @Operation(summary = "Deletar usuário por id", security = { @SecurityRequirement(name = "bearer-key") })
+  @Operation(summary = "Deletar usuário por id", tags = { "Usuários" }, security = {
+      @SecurityRequirement(name = "bearer-key") })
   @ApiResponses(value = {
       @ApiResponse(responseCode = "204", description = "Usuário deletado com sucesso"),
       @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
@@ -66,9 +68,10 @@ public class UserController {
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
 
-  @Operation(summary = "Atualizar senha do usuário", security = { @SecurityRequirement(name = "bearer-key") })
+  @Operation(summary = "Atualizar senha do usuário", tags = { "Usuários" }, security = {
+      @SecurityRequirement(name = "bearer-key") })
   @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "Encontrou os usuários"),
+      @ApiResponse(responseCode = "200", description = "Senha atualizada com sucesso"),
       @ApiResponse(responseCode = "400", description = "Algum parâmetro do corpo da requisição inválido"),
       @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
   })

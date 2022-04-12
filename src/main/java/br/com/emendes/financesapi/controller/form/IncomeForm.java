@@ -25,7 +25,7 @@ public class IncomeForm {
   @DateValidation
   private String date;
 
-  @Schema(example = "3500.00")
+  @Schema(example = "3240.59")
   @NotNull
   @Positive
   @Digits(integer = 6, fraction = 2)

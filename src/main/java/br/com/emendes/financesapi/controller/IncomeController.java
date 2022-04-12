@@ -48,7 +48,8 @@ public class IncomeController {
   @Autowired
   private TokenService tokenService;
 
-  @Operation(summary = "Salvar uma receita", security = { @SecurityRequirement(name = "bearer-key") })
+  @Operation(summary = "Salvar uma receita", tags = { "Receitas" }, security = {
+      @SecurityRequirement(name = "bearer-key") })
   @ApiResponses(value = {
       @ApiResponse(responseCode = "201", description = "Receita salva", content = {
           @Content(mediaType = "application/json", schema = @Schema(implementation = IncomeDto.class)) }),
@@ -68,8 +69,9 @@ public class IncomeController {
     return ResponseEntity.created(uri).body(incomeDto);
   }
 
-  @Operation(summary = "Buscar todas as receitas do usuário, opcional buscar por descrição", security = {
-      @SecurityRequirement(name = "bearer-key") })
+  @Operation(summary = "Buscar todas as receitas do usuário, opcional buscar por descrição", tags = {
+      "Receitas" }, security = {
+          @SecurityRequirement(name = "bearer-key") })
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "Encontrou receitas"),
       @ApiResponse(responseCode = "400", description = "Bad request - Algum parâmetro da requisição inválido", content = @Content),
@@ -96,7 +98,8 @@ public class IncomeController {
         .body(incomesDto);
   }
 
-  @Operation(summary = "Buscar receita por id", security = { @SecurityRequirement(name = "bearer-key") })
+  @Operation(summary = "Buscar receita por id", tags = { "Receitas" }, security = {
+      @SecurityRequirement(name = "bearer-key") })
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "Encontrou a receita"),
       @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
@@ -113,7 +116,7 @@ public class IncomeController {
         .body(incomeDto);
   }
 
-  @Operation(summary = "Buscar receitas do usuário por ano e mês", security = {
+  @Operation(summary = "Buscar receitas do usuário por ano e mês", tags = { "Receitas" }, security = {
       @SecurityRequirement(name = "bearer-key") })
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "Encontrou receitas"),
@@ -136,7 +139,8 @@ public class IncomeController {
         .body(incomesDto);
   }
 
-  @Operation(summary = "Atualizar receita por id", security = { @SecurityRequirement(name = "bearer-key") })
+  @Operation(summary = "Atualizar receita por id", tags = { "Receitas" }, security = {
+      @SecurityRequirement(name = "bearer-key") })
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "Atualizado com sucesso"),
       @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
@@ -158,7 +162,8 @@ public class IncomeController {
         .body(incomeDto);
   }
 
-  @Operation(summary = "Deletar receita por id", security = { @SecurityRequirement(name = "bearer-key") })
+  @Operation(summary = "Deletar receita por id", tags = { "Receitas" }, security = {
+      @SecurityRequirement(name = "bearer-key") })
   @ApiResponses(value = {
       @ApiResponse(responseCode = "204", description = "Deletado com sucesso"),
       @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),

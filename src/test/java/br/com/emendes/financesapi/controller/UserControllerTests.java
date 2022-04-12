@@ -70,7 +70,7 @@ public class UserControllerTests {
 
     Map<String, Object> params = Map.of("newPassword", newPassword, "confirm", confirm);
 
-    mock.put("/user/password", params, tokenUser, 200);
+    mock.put("/users/password", params, tokenUser, 200);
   }
 
   @Test
@@ -80,7 +80,7 @@ public class UserControllerTests {
     String confirm = "222222222";
 
     Map<String, Object> params = Map.of("newPassword", newPassword, "confirm", confirm);
-    MvcResult result = mock.put("/user/password", params, tokenUser, 400);
+    MvcResult result = mock.put("/users/password", params, tokenUser, 400);
     ErrorDto errorDto = DtoFromMvcResult.errorDto(result);
 
     Assertions.assertEquals("as senhas não correspondem!", errorDto.getMessage());
@@ -90,19 +90,19 @@ public class UserControllerTests {
   @Order(3)
   public void deveriaDevolver403QuandoRole_UserDeletarUsuario() {
     Long id = 1l;
-    mock.delete("/user/" + id, tokenUser, 403);
+    mock.delete("/users/" + id, tokenUser, 403);
   }
 
   @Test
   @Order(4)
   public void deveriaDevolver403QuandoRole_UserBuscarTodosOsUsuarios() {
-    mock.get("/user", tokenUser, 403);
+    mock.get("/users", tokenUser, 403);
   }
 
   @Test
   @Order(5)
   public void deveriaDevolverUmaListaDeUsuarios() {
-    MvcResult result = mock.get("/user?page=0&size=20", tokenAdmin, 200);
+    MvcResult result = mock.get("/users?page=0&size=20", tokenAdmin, 200);
     List<UserDto> listUserDto = DtoFromMvcResult.listUserDto(result);
 
     UserDto userCommon = new UserDto(2l, "User Common", "commonuser@email.com");
@@ -116,7 +116,7 @@ public class UserControllerTests {
   @Order(6)
   public void deveriaDevolver404EErrorDtoAoDeletarUsuarioInexistente() {
     Long id = 100l;
-    MvcResult result = mock.delete("/user/" + id, tokenAdmin, 404);
+    MvcResult result = mock.delete("/users/" + id, tokenAdmin, 404);
 
     ErrorDto errorDto = DtoFromMvcResult.errorDto(result);
     Assertions.assertEquals("Not Found", errorDto.getError());
@@ -127,6 +127,6 @@ public class UserControllerTests {
   @Order(7)
   public void deveriaDevolver200AoAdminDeletarUsuario() {
     Long id = 2l;
-    mock.delete("/user/" + id, tokenAdmin, 204);
+    mock.delete("/users/" + id, tokenAdmin, 204);
   }
 }

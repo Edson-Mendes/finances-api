@@ -23,8 +23,8 @@ import br.com.emendes.financesapi.service.UserService;
 
 @EnableWebSecurity
 @Configuration
-@Profile(value = { "dev", "prod" })
-public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
+@Profile("prod")
+public class ProdSecurityConfigurations extends WebSecurityConfigurerAdapter {
 
   @Autowired
   private AuthenticationService authenticationService;
@@ -53,15 +53,13 @@ public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
     http.authorizeRequests()
         .antMatchers(HttpMethod.POST, "/auth/signin").permitAll()
         .antMatchers(HttpMethod.POST, "/auth/signup").permitAll()
-        .antMatchers(HttpMethod.GET, "/role").hasRole("ADMIN")
-        .antMatchers(HttpMethod.GET, "/role/*").hasRole("ADMIN")
-        .antMatchers(HttpMethod.GET, "/user").hasRole("ADMIN")
-        .antMatchers(HttpMethod.DELETE, "/user/*").hasRole("ADMIN")
-        .antMatchers("/h2-console/**").permitAll()
+        .antMatchers(HttpMethod.GET, "/roles").hasRole("ADMIN")
+        .antMatchers(HttpMethod.GET, "/roles/*").hasRole("ADMIN")
+        .antMatchers(HttpMethod.GET, "/users").hasRole("ADMIN")
+        .antMatchers(HttpMethod.DELETE, "/users/*").hasRole("ADMIN")
         .anyRequest().authenticated()
         .and().csrf().disable()
-        .headers().frameOptions().disable()
-        .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+        .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         .and().addFilterBefore(new AuthenticationByTokenFilter(tokenService,
             userService),
             UsernamePasswordAuthenticationFilter.class)

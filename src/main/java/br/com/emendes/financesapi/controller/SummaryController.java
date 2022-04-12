@@ -30,7 +30,7 @@ public class SummaryController {
   @Autowired
   private TokenService tokenService;
 
-  @Operation(summary = "Buscar resumo de um mês em determinado ano", security = {
+  @Operation(summary = "Buscar resumo de um mês em determinado ano", tags = { "Resumo" }, security = {
       @SecurityRequirement(name = "bearer-key") })
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "Encontrou resumo"),
