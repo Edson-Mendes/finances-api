@@ -29,6 +29,10 @@ public class User implements UserDetails {
   private String email;
   private String password;
 
+  @ManyToMany(fetch = FetchType.EAGER)
+  @OnDelete(action = OnDeleteAction.CASCADE)
+  private List<Role> roles = new ArrayList<>();
+
   public User() {
   }
 
@@ -43,9 +47,13 @@ public class User implements UserDetails {
     this.id = id;
   }
 
-  @ManyToMany(fetch = FetchType.EAGER)
-  @OnDelete(action = OnDeleteAction.CASCADE)
-  private List<Role> roles = new ArrayList<>();
+  public User(Long id, String name, String email, String password, List<Role> roles) {
+    this.id = id;
+    this.name = name;
+    this.email = email;
+    this.password = password;
+    this.roles = roles;
+  }
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {

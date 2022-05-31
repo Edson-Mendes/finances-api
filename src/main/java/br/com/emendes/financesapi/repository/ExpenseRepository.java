@@ -16,11 +16,13 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
 
   Page<Expense> findByUserId(Long userId, Pageable pageable);
 
+  // FIXME: Refatorar essa busca
   @Query("SELECT e FROM Expense e WHERE e.description = :description AND " +
       "MONTH(e.date) = :month AND YEAR(e.date) = :year AND e.user.id = :userId")
   Optional<Expense> findByDescriptionAndMonthAndYearAndUserId(@Param("description") String description,
       @Param("month") Integer month, @Param("year") Integer year, @Param("userId") Long userId);
 
+  // FIXME: Refatorar essa busca
   @Query("SELECT e FROM Expense e WHERE e.description = :description AND " +
       "MONTH(e.date) = :month AND YEAR(e.date) = :year AND e.user.id = :userId AND e.id != :id")
   Optional<Expense> findByDescriptionAndMonthAndYearAndUserIdAndNotId(@Param("description") String description,

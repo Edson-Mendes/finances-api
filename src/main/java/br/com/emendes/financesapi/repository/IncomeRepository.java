@@ -18,6 +18,7 @@ public interface IncomeRepository extends JpaRepository<Income, Long> {
   @Query("SELECT i FROM Income i WHERE i.user.id = :userId")
   Page<Income> findByUserId(@Param("userId") Long userid, Pageable pageable);
 
+  // FIXME: Refatorar essa busca
   @Query("SELECT i FROM Income i WHERE i.description = :description AND " +
       "MONTH(i.date) = :month AND YEAR(i.date) = :year AND i.user.id = :userId")
   Optional<Income> findByDescriptionAndMonthAndYearAndUserId(
@@ -26,6 +27,7 @@ public interface IncomeRepository extends JpaRepository<Income, Long> {
       @Param("year") Integer year,
       @Param("userId") Long userId);
 
+  // FIXME: Refatorar essa busca
   @Query("SELECT i FROM Income i WHERE i.description = :description AND "
       + "MONTH(i.date) = :month AND YEAR(i.date) = :year AND i.user.id = :userId AND i.id != :id")
   Optional<Income> findByDescriptionAndMonthAndYearAndUserIdAndNotId(
