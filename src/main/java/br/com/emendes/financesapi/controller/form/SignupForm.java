@@ -25,6 +25,16 @@ public class SignupForm {
   @NotBlank
   private String confirm;
 
+  public SignupForm() {
+  }
+
+  public SignupForm(String name, String email, String password, String confirm) {
+    this.name = name;
+    this.email = email;
+    this.password = password;
+    this.confirm = confirm;
+  }
+
   public String getName() {
     return name;
   }

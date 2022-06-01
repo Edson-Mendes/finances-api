@@ -8,12 +8,11 @@ import br.com.emendes.financesapi.model.User;
 import br.com.emendes.financesapi.model.enumerator.Category;
 
 public class ExpenseCreator {
-  public static Expense validExpenseWithoutId() {
+  public static Expense validExpenseWithoutId(User user) {
     String description = "Gasolina";
     BigDecimal value = new BigDecimal("250.00");
     LocalDate date = LocalDate.parse("2022-01-17");
     Category category = Category.TRANSPORTE;
-    User user = new User(2l);
 
     return new Expense(description, value, date, category, user);
   }
@@ -35,5 +34,18 @@ public class ExpenseCreator {
     Category category = Category.TRANSPORTE;
 
     return new Expense(description, value, date, category, user);
+  }
+
+  public static Expense expenseWithAllArgs() {
+    Long id = 1000l;
+    String description = "Gasolina";
+    BigDecimal value = new BigDecimal("250.00");
+    LocalDate date = LocalDate.parse("2022-01-17");
+    Category category = Category.TRANSPORTE;
+    User user = new User(2l);
+
+    Expense expense = new Expense(description, value, date, category, user);
+    expense.setId(id);
+    return expense;
   }
 }

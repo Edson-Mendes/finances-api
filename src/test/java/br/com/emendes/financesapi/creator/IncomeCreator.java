@@ -12,18 +12,36 @@ public class IncomeCreator {
     String description = "Sálario";
     BigDecimal value = new BigDecimal("2500.00");
     LocalDate date = LocalDate.parse("2022-01-05");
-    User user = new User(2l);
 
-    return new Income(description, value, date, user);
+    return new Income(description, value, date, null);
   }
 
   public static Income validIncome() {
     String description = "Venda Livros";
     BigDecimal value = new BigDecimal("150.00");
     LocalDate date = LocalDate.parse("2022-01-12");
-    User user = new User(2l);
+
+    return new Income(description, value, date, null);
+  }
+
+  public static Income validIncomeWithUser(User user) {
+    String description = "Sálario";
+    BigDecimal value = new BigDecimal("2500.00");
+    LocalDate date = LocalDate.parse("2022-01-05");
 
     return new Income(description, value, date, user);
+  }
+
+  public static Income incomeWithAllArgs() {
+    Long id = 1000l;
+    String description = "Sálario";
+    BigDecimal value = new BigDecimal("2500.00");
+    LocalDate date = LocalDate.parse("2022-01-05");
+    User user = new User(2l);
+
+    Income income = new Income(description, value, date, user);
+    income.setId(id);
+    return income;
   }
 
 }

@@ -27,9 +27,7 @@ public class UserService {
     if (signupForm.passwordMatch()) {
       User user = signupForm.toUser();
       try {
-        userRepository.save(user);
-        return new UserDto(user);
-
+        return new UserDto(userRepository.save(user));
       } catch (DataIntegrityViolationException e) {
         throw new DataConflictException("Email inserido já está em uso!");
       }
@@ -63,4 +61,5 @@ public class UserService {
       throw new PasswordsDoNotMatchException("as senhas não correspondem!");
     }
   }
+
 }

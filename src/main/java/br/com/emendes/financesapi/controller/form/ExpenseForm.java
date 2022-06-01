@@ -35,6 +35,16 @@ public class ExpenseForm {
   @Schema(example = "ALIMENTACAO")
   private Category category;
 
+  public ExpenseForm() {
+  }
+
+  public ExpenseForm(String description, String date, BigDecimal value, Category category) {
+    this.description = description;
+    this.date = date;
+    this.value = value;
+    this.category = category;
+  }
+
   public String getDescription() {
     return description;
   }
@@ -68,13 +78,17 @@ public class ExpenseForm {
   }
 
   public Expense convert(Long userId) {
-    LocalDate date = LocalDate.parse(this.date, Formatter.dateFormatter);
+    LocalDate date = parseDateToLocalDate();
     if (category == null) {
       category = Category.OUTRAS;
     }
     User user = new User(userId);
     Expense expense = new Expense(description, value, date, category, user);
     return expense;
+  }
+
+  public LocalDate parseDateToLocalDate() {
+    return LocalDate.parse(this.date, Formatter.dateFormatter);
   }
 
 }

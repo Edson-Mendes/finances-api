@@ -121,7 +121,7 @@ public class ExpenseService {
    * @throws ResponseStatusException se existir despesa.
    */
   private boolean alreadyExist(ExpenseForm form, Long userId) {
-    LocalDate date = LocalDate.parse(form.getDate(), Formatter.dateFormatter);
+    LocalDate date = form.parseDateToLocalDate();
     Optional<Expense> optional = expenseRepository.findByDescriptionAndMonthAndYearAndUserId(
         form.getDescription(),
         date.getMonthValue(),

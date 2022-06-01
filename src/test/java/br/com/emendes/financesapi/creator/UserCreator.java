@@ -30,4 +30,32 @@ public class UserCreator {
     return new User(name, email, password);
   }
 
+  // TODO: Talvez não seja usado
+  public static User validUserForExpenseServiceTest() {
+    String name = "Amet xpto";
+    String email = "ametxpto@email.com";
+    String password = "123456";
+
+    return new User(name, email, password);
+  }
+
+  public static User userToBeSavedForUserServiceTests() {
+    String name = "Ipsum Dolor";
+    String email = "ipsum@email.com";
+    String password = "123456";
+
+    return new User(name, email, password);
+  }
+
+  public static User userSavedForUserServiceTests() {
+    String name = "Ipsum Dolor";
+    String email = "ipsum@email.com";
+    String password = "123456";
+
+    User user = new User(name, email, password);
+    user.setId(10000l);
+
+    return user;
+  }
+
 }

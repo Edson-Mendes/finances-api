@@ -41,7 +41,7 @@ public class ExpenseRepositoryTests {
   @Test
   @DisplayName("Save must persist Expense when successful")
   void save_PersistExpense_WhenSuccessful() {
-    Expense expenseToBeSaved = ExpenseCreator.validExpenseWithoutId();
+    Expense expenseToBeSaved = ExpenseCreator.validExpenseWithoutId(user);
 
     Expense expenseSaved = this.expenseRepository.save(expenseToBeSaved);
 
@@ -53,7 +53,7 @@ public class ExpenseRepositoryTests {
   @Test
   @DisplayName("Save must update Expense when successful")
   void save_UpdatesExpense_WhenSuccessful() {
-    Expense expenseToBeSaved = ExpenseCreator.validExpenseWithoutId();
+    Expense expenseToBeSaved = ExpenseCreator.validExpenseWithoutId(user);
     Expense expenseSaved = this.expenseRepository.save(expenseToBeSaved);
 
     expenseSaved.setDescription("Combustível");
@@ -71,7 +71,7 @@ public class ExpenseRepositoryTests {
   @Test
   @DisplayName("DeleteById must remove Expense when successful")
   void deleteById_RemovesExpense_WhenSuccessful() {
-    Expense expenseToBeSaved = ExpenseCreator.validExpenseWithoutId();
+    Expense expenseToBeSaved = ExpenseCreator.validExpenseWithoutId(user);
 
     Expense expenseSaved = this.expenseRepository.save(expenseToBeSaved);
     Long id = expenseSaved.getId();
@@ -87,7 +87,7 @@ public class ExpenseRepositoryTests {
   @DisplayName("findByUserId must returns page of Expense when successful")
   void findByUserId_ReturnsPageOfExpense_WhenSuccessful() {
     Expense expenseToBeSaved = ExpenseCreator.validExpense();
-
+    expenseToBeSaved.setUser(this.user);
     Expense expenseSaved = this.expenseRepository.save(expenseToBeSaved);
 
     Long userId = expenseSaved.getUser().getId();
@@ -154,7 +154,7 @@ public class ExpenseRepositoryTests {
   @Test
   @DisplayName("findByDescriptionAndUserId must returns empty page of Expense when userId don't exists")
   void findByDescriptionAndUserId_ReturnsEmptyPageOfExpense_WhenUserIdDontExists() {
-    Expense expenseToBeSaved = ExpenseCreator.validExpenseWithoutId();
+    Expense expenseToBeSaved = ExpenseCreator.validExpenseWithoutId(user);
     this.expenseRepository.save(expenseToBeSaved);
 
     String description = "lina";
@@ -186,7 +186,7 @@ public class ExpenseRepositoryTests {
   @Test
   @DisplayName("findByYearAndMonthAndUserId must returns empty page of Expense when userId don't exists")
   void findByYearAndMonthAndUserId_ReturnsEmptyPageOfExpense_WhenUserIdDontExists() {
-    Expense expenseToBeSaved = ExpenseCreator.validExpenseWithoutId();
+    Expense expenseToBeSaved = ExpenseCreator.validExpenseWithoutId(user);
     Expense expenseSaved = this.expenseRepository.save(expenseToBeSaved);
 
     Integer year = expenseSaved.getDate().getYear();
@@ -202,7 +202,7 @@ public class ExpenseRepositoryTests {
   @Test
   @DisplayName("findByYearAndMonthAndUserId must returns empty page of Expense when year don't exists")
   void findByYearAndMonthAndUserId_ReturnsEmptyPageOfExpense_WhenYearDontExists() {
-    Expense expenseToBeSaved = ExpenseCreator.validExpenseWithoutId();
+    Expense expenseToBeSaved = ExpenseCreator.validExpenseWithoutId(user);
     Expense expenseSaved = this.expenseRepository.save(expenseToBeSaved);
 
     Integer year = 3000;
@@ -218,7 +218,7 @@ public class ExpenseRepositoryTests {
   @Test
   @DisplayName("findByYearAndMonthAndUserId must returns empty page of Expense when month don't exists")
   void findByYearAndMonthAndUserId_ReturnsEmptyPageOfExpense_WhenMonthDontExists() {
-    Expense expenseToBeSaved = ExpenseCreator.validExpenseWithoutId();
+    Expense expenseToBeSaved = ExpenseCreator.validExpenseWithoutId(user);
     Expense expenseSaved = this.expenseRepository.save(expenseToBeSaved);
 
     Integer year = expenseSaved.getDate().getYear();

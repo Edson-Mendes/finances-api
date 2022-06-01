@@ -86,8 +86,7 @@ public class IncomeRepositoryTests {
   @Test
   @DisplayName("findByUserId must returns page of Income when successful")
   void findByUserId_ReturnsPageOfIncome_WhenSuccessful() {
-    Income incomeToBeSaved = IncomeCreator.validIncome();
-
+    Income incomeToBeSaved = IncomeCreator.validIncomeWithUser(this.user);
     Income incomeSaved = this.incomeRepository.save(incomeToBeSaved);
 
     Long userId = incomeSaved.getUser().getId();
@@ -126,7 +125,7 @@ public class IncomeRepositoryTests {
   @Test
   @DisplayName("findByDescriptionAndUserId must returns page of Income when successful")
   void findByDescriptionAndUserId_ReturnsPageOfIncome_WhenSuccessful() {
-    Income incomeToBeSaved = IncomeCreator.validIncomeWithoutId();
+    Income incomeToBeSaved = IncomeCreator.validIncomeWithUser(this.user);
     this.incomeRepository.save(incomeToBeSaved);
 
     String description = "ario";
@@ -169,7 +168,7 @@ public class IncomeRepositoryTests {
   @Test
   @DisplayName("findByYearAndMonthAndUserId must returns page of Income when successful")
   void findByYearAndMonthAndUserId_ReturnsPageOfIncome_WhenSuccessful() {
-    Income incomeToBeSaved = IncomeCreator.validIncomeWithoutId();
+    Income incomeToBeSaved = IncomeCreator.validIncomeWithUser(this.user);
     Income incomeSaved = this.incomeRepository.save(incomeToBeSaved);
 
     Integer year = incomeSaved.getDate().getYear();
@@ -202,7 +201,7 @@ public class IncomeRepositoryTests {
   @Test
   @DisplayName("findByYearAndMonthAndUserId must returns empty page of Income when year don't exists")
   void findByYearAndMonthAndUserId_ReturnsEmptyPageOfIncome_WhenYearDontExists() {
-    Income incomeToBeSaved = IncomeCreator.validIncomeWithoutId();
+    Income incomeToBeSaved = IncomeCreator.validIncomeWithUser(this.user);
     Income incomeSaved = this.incomeRepository.save(incomeToBeSaved);
 
     Integer year = 3000;
@@ -218,7 +217,7 @@ public class IncomeRepositoryTests {
   @Test
   @DisplayName("findByYearAndMonthAndUserId must returns empty page of Income when month don't exists")
   void findByYearAndMonthAndUserId_ReturnsEmptyPageOfIncome_WhenMonthDontExists() {
-    Income incomeToBeSaved = IncomeCreator.validIncomeWithoutId();
+    Income incomeToBeSaved = IncomeCreator.validIncomeWithUser(this.user);
     Income incomeSaved = this.incomeRepository.save(incomeToBeSaved);
 
     Integer year = incomeSaved.getDate().getYear();

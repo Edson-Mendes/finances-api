@@ -31,6 +31,15 @@ public class IncomeForm {
   @Digits(integer = 6, fraction = 2)
   private BigDecimal value;
 
+  public IncomeForm() {
+  }
+
+  public IncomeForm(String description, String date, BigDecimal value) {
+    this.description = description;
+    this.date = date;
+    this.value = value;
+  }
+
   public String getDescription() {
     return description;
   }
@@ -56,10 +65,14 @@ public class IncomeForm {
   }
 
   public Income convert(Long userId) {
-    LocalDate date = LocalDate.parse(this.date, Formatter.dateFormatter);
+    LocalDate date = parseDateToLocalDate();
     User user = new User(userId);
     Income income = new Income(description, value, date, user);
     return income;
+  }
+
+  public LocalDate parseDateToLocalDate() {
+    return LocalDate.parse(this.date, Formatter.dateFormatter);
   }
 
 }

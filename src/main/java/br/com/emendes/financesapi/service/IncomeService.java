@@ -112,7 +112,7 @@ public class IncomeService {
    * @throws ResponseStatusException se existir receita.
    */
   public boolean alreadyExist(IncomeForm incomeForm, Long userId) {
-    LocalDate date = LocalDate.parse(incomeForm.getDate(), Formatter.dateFormatter);
+    LocalDate date = incomeForm.parseDateToLocalDate();
     Optional<Income> optional = incomeRepository.findByDescriptionAndMonthAndYearAndUserId(incomeForm.getDescription(),
         date.getMonthValue(),
         date.getYear(), userId);
