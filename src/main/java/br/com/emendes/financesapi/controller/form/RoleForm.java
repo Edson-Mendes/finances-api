@@ -6,10 +6,17 @@ import javax.validation.constraints.Pattern;
 import br.com.emendes.financesapi.model.Role;
 
 public class RoleForm {
-  
+
   @NotBlank
   @Pattern(regexp = "ROLE_[A-Z]{1,}", message = "deve iniciar com \'ROLE_\' e continuar em letras maiúsculas")
   private String name;
+
+  public RoleForm() {
+  }
+
+  public RoleForm(String name) {
+    this.name = name;
+  }
 
   public String getName() {
     return name;
@@ -19,7 +26,7 @@ public class RoleForm {
     this.name = name;
   }
 
-  public Role toRole(){
+  public Role toRole() {
     Role role = new Role(name);
     return role;
   }

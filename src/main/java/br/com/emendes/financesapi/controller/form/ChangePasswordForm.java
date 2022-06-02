@@ -18,6 +18,14 @@ public class ChangePasswordForm {
   @NotBlank
   private String confirm;
 
+  public ChangePasswordForm() {
+  }
+
+  public ChangePasswordForm(String newPassword, String confirm) {
+    this.newPassword = newPassword;
+    this.confirm = confirm;
+  }
+
   public void setNewPassword(String newPassword) {
     this.newPassword = newPassword;
   }

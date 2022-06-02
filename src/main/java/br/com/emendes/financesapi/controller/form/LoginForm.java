@@ -14,6 +14,14 @@ public class LoginForm {
   @NotBlank
   private String password;
 
+  public LoginForm() {
+  }
+
+  public LoginForm(String email, String password) {
+    this.email = email;
+    this.password = password;
+  }
+
   public void setEmail(String email) {
     this.email = email;
   }
