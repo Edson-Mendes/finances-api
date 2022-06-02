@@ -1,311 +1,168 @@
 package br.com.emendes.financesapi.controller;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
-import org.junit.jupiter.api.Order;
+import javax.servlet.http.HttpServletRequest;
+
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.TestInstance.Lifecycle;
-import org.junit.jupiter.api.TestMethodOrder;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MvcResult;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
+import org.mockito.BDDMockito;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import br.com.emendes.financesapi.controller.dto.IncomeDto;
-import br.com.emendes.financesapi.controller.dto.error.ErrorDto;
-import br.com.emendes.financesapi.util.CustomMockMvc;
-import br.com.emendes.financesapi.util.Formatter;
-import br.com.emendes.financesapi.util.DtoFromMvcResult;
+import br.com.emendes.financesapi.controller.form.IncomeForm;
+import br.com.emendes.financesapi.creator.IncomeDtoCreator;
+import br.com.emendes.financesapi.creator.IncomeFormCreator;
+import br.com.emendes.financesapi.service.IncomeService;
+import br.com.emendes.financesapi.service.TokenService;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-@TestInstance(Lifecycle.PER_CLASS)
-@TestMethodOrder(OrderAnnotation.class)
-@ActiveProfiles("test")
+@ExtendWith(SpringExtension.class)
+@DisplayName("Tests for IncomeController")
 public class IncomeControllerTests {
 
-  @Autowired
-  private CustomMockMvc mock;
+  @InjectMocks
+  private IncomeController incomeController;
 
-  private String tokenLorem;
+  @Mock
+  private IncomeService incomeServiceMock;
 
-  private String tokenIpsum;
+  @Mock
+  private TokenService tokenServiceMock;
 
-  @BeforeAll
-  public void addUsuarioLorem() {
-    String name = "Lorem Sit";
-    String email = "lorem.s@email.com";
-    String password = "111111111";
-    String confirm = "111111111";
+  private final UriComponentsBuilder URI_BUILDER = UriComponentsBuilder.fromHttpUrl("http://localhost:8080");
+  private final HttpServletRequest REQUEST_MOCK = Mockito.mock(HttpServletRequest.class);
+  private final IncomeForm INCOME_FORM = IncomeFormCreator.validIncomeForm();
+  private final Pageable PAGEABLE = PageRequest.of(0, 10, Direction.DESC, "date");
 
-    Map<String, Object> paramsSignup = Map.of("name", name, "email", email, "password", password, "confirm", confirm);
-    Map<String, Object> paramsSignin = Map.of("email", email, "password", password);
+  @BeforeEach
+  public void setUp() {
+    Long userId = 100l;
+    IncomeDto incomeDto = IncomeDtoCreator.validIncomeDto();
+    Page<IncomeDto> pageIncomeDto = new PageImpl<>(List.of(incomeDto));
 
-    mock.post("/auth/signup", paramsSignup, "", 201);
-    MvcResult result = mock.post("/auth/signin", paramsSignin, "", 200);
+    BDDMockito.when(tokenServiceMock.getUserId(ArgumentMatchers.any(HttpServletRequest.class)))
+        .thenReturn(userId);
 
-    tokenLorem = DtoFromMvcResult.tokenDto(result).generateTypeWithToken();
-  }
+    BDDMockito.when(incomeServiceMock.create(
+        ArgumentMatchers.any(IncomeForm.class),
+        ArgumentMatchers.eq(userId)))
+        .thenReturn(incomeDto);
 
-  @BeforeAll
-  public void addUsuarioIpsum() {
-    String name = "Ipsum Sit";
-    String email = "ipsum.s@email.com";
-    String password = "222222222";
-    String confirm = "222222222";
+    BDDMockito.when(incomeServiceMock.readAllByUser(userId, PAGEABLE))
+        .thenReturn(pageIncomeDto);
 
-    Map<String, Object> paramsSignup = Map.of("name", name, "email", email, "password", password, "confirm", confirm);
-    Map<String, Object> paramsSignin = Map.of("email", email, "password", password);
+    BDDMockito.when(incomeServiceMock.readByDescriptionAndUser("ario", userId, PAGEABLE))
+        .thenReturn(pageIncomeDto);
 
-    mock.post("/auth/signup", paramsSignup, "", 201);
-    MvcResult result = mock.post("/auth/signin", paramsSignin, "", 200);
+    BDDMockito.when(incomeServiceMock.readByIdAndUser(incomeDto.getId(), userId))
+        .thenReturn(incomeDto);
 
-    tokenIpsum = DtoFromMvcResult.tokenDto(result).generateTypeWithToken();
-  }
+    BDDMockito.when(incomeServiceMock.update(incomeDto.getId(), INCOME_FORM, userId))
+        .thenReturn(incomeDto);
 
-  @Test
-  @Order(1)
-  public void deveriaDevolver201AoCriarReceita() {
-    String description = "Salário";
-    BigDecimal value = new BigDecimal(2500.00);
-    String date = "05/01/2022";
-
-    Map<String, Object> params = Map.of("description", description, "value", value, "date", date);
-
-    mock.post("/receitas", params, tokenLorem, 201);
+    BDDMockito.doNothing().when(incomeServiceMock).delete(incomeDto.getId(), userId);
   }
 
   @Test
-  @Order(2)
-  public void deveriaDevolver400AoCriarSemAlgumParametroObrigatorio() {
+  @DisplayName("create must returns ResponseEntity<IncomeDto> when create successfully")
+  void create_ReturnsResponseEntityIncomeDto_WhenSuccessful() {
+    IncomeForm form = INCOME_FORM;
 
-    String description = "Venda do PS5";
-    BigDecimal value = BigDecimal.valueOf(2885.00);
-    String date = "22/01/2022";
+    ResponseEntity<IncomeDto> response = incomeController.create(form, URI_BUILDER, REQUEST_MOCK);
 
-    mock.post("/receitas", Map.of("value", value, "date", date), tokenLorem, 400);
-    mock.post("/receitas", Map.of("description", description, "date", date), tokenLorem, 400);
-    mock.post("/receitas", Map.of("description", description, "value", value), tokenLorem, 400);
-    mock.post("/receitas", Map.of("value", value), tokenLorem, 400);
-    mock.post("/receitas", Map.of("description", description), tokenLorem, 400);
-    mock.post("/receitas", Map.of("date", date), tokenLorem, 400);
-    mock.post("/receitas", Map.of(), tokenLorem, 400);
+    Assertions.assertThat(response.getStatusCodeValue()).isEqualTo(201);
+    Assertions.assertThat(response.getBody().getDescription()).isEqualTo(form.getDescription());
+    Assertions.assertThat(response.getBody().getValue()).isEqualTo(form.getValue());
   }
 
   @Test
-  @Order(3)
-  public void deveriaDevolver200AoBuscarTodasAsReceitas() {
-    mock.get("/receitas", tokenLorem, 200);
+  @DisplayName("read must returns ResponseEntity<Page<IncomeDto>> when read successfully")
+  void read_ReturnsResponseEntityPageIncomeDto_WhenReadSuccessful() {
+    String description = null;
+
+    ResponseEntity<Page<IncomeDto>> response = incomeController.read(description, PAGEABLE, REQUEST_MOCK);
+
+    Assertions.assertThat(response.getStatusCodeValue()).isEqualTo(200);
+    Assertions.assertThat(
+        response.getBody()
+            .getContent()
+            .get(0)
+            .getDescription())
+        .isEqualTo("Sálario");
+    Assertions.assertThat(
+        response.getBody()
+            .getContent()
+            .get(0)
+            .getValue())
+        .isEqualTo(new BigDecimal("2500.00"));
   }
 
   @Test
-  @Order(4)
-  public void deveriaDevolver409AoCadastrarDescricaoDuplicadaEmMesmoMesEAno() {
+  @DisplayName("read must returns ResponseEntity<Page<IncomeDto>> when read with description successfully")
+  void read_ReturnsResponseEntityPageIncomeDto_WhenReadWithDescriptionSuccessful() {
+    String description = "ario";
 
-    String description = "Lotofácil";
-    BigDecimal value = BigDecimal.valueOf(500.00);
-    String date = "08/01/2022";
+    ResponseEntity<Page<IncomeDto>> response = incomeController.read(description, PAGEABLE, REQUEST_MOCK);
 
-    Map<String, Object> params = Map.of("description", description, "value", value, "date", date);
-
-    mock.post("/receitas", params, tokenLorem, 201);
-    mock.post("/receitas", params, tokenLorem, 409);
-
+    Assertions.assertThat(response.getStatusCodeValue()).isEqualTo(200);
+    Assertions.assertThat(
+        response.getBody()
+            .getContent()
+            .get(0)
+            .getDescription())
+        .isEqualTo("Sálario");
+    Assertions.assertThat(
+        response.getBody()
+            .getContent()
+            .get(0)
+            .getValue())
+        .isEqualTo(new BigDecimal("2500.00"));
   }
 
   @Test
-  @Order(5)
-  public void deveriaDevolver201AoCadastrarDescricaoEmMesDiferentes() {
+  @DisplayName("readById must returns ResponseEntity<IncomeDto> when read with description successfully")
+  void readById_ReturnsResponseEntityIncomeDto_WhenReadWithDescriptionSuccessful() {
+    IncomeDto incomeDto = IncomeDtoCreator.validIncomeDto();
+    ResponseEntity<IncomeDto> response = incomeController.readById(incomeDto.getId(), REQUEST_MOCK);
 
-    String description = "Trabalho por fora";
-    BigDecimal value = BigDecimal.valueOf(300.00);
-    String date = "18/01/2022";
-
-    Map<String, Object> params1 = Map.of("description", description, "value", value, "date", date);
-
-    String newDate = "18/02/2022";
-    Map<String, Object> params2 = Map.of("description", description, "value", value, "date", newDate);
-
-    mock.post("/receitas", params1, tokenLorem, 201);
-    mock.post("/receitas", params2, tokenLorem, 201);
-
+    Assertions.assertThat(response.getStatusCodeValue()).isEqualTo(200);
+    Assertions.assertThat(response.getBody().getId()).isEqualTo(incomeDto.getId());
+    Assertions.assertThat(response.getBody().getDescription()).isEqualTo(incomeDto.getDescription());
   }
 
   @Test
-  @Order(6)
-  public void deveriaDevolver200AoBuscarPorIdExistente() {
-    MvcResult result = mock.get("/receitas", tokenLorem, 200);
-    List<IncomeDto> listIncomeDto = DtoFromMvcResult.listIncomeDto(result);
+  @DisplayName("update must returns ResponseEntity<IncomeDto> when successful")
+  void update_ReturnsResponseEntityIncomeDto_WhenSuccessful() {
+    IncomeDto incomeDto = IncomeDtoCreator.validIncomeDto();
+    ResponseEntity<IncomeDto> response = incomeController.update(incomeDto.getId(), INCOME_FORM, REQUEST_MOCK);
 
-    Long id = listIncomeDto.get(0).getId();
-
-    mock.get("/receitas/" + id, tokenLorem, 200);
+    Assertions.assertThat(response.getStatusCodeValue()).isEqualTo(200);
+    Assertions.assertThat(response.getBody().getId()).isEqualTo(incomeDto.getId());
+    Assertions.assertThat(response.getBody().getDescription()).isEqualTo(incomeDto.getDescription());
   }
 
   @Test
-  @Order(7)
-  public void deveriaDevolver200AoBuscarPorAnoEMesExistentes() {
-    mock.get("/receitas/2022/01", tokenLorem, 200);
-  }
+  @DisplayName("delete must return ResponseEntity NoContent when successful")
+  void delete_ReturnsResponseEntityNoContent_WhenSuccessful() {
+    IncomeDto incomeDto = IncomeDtoCreator.validIncomeDto();
+    ResponseEntity<Void> response = incomeController.delete(incomeDto.getId(), REQUEST_MOCK);
 
-  @Test
-  @Order(8)
-  public void deveriaDevolver404AoBuscarPorAnoEMesInexistentes() {
-    mock.get("/receitas/2022/03", tokenLorem, 404);
-  }
-
-  @Test
-  @Order(9)
-  public void deveriaDevolver404AoBuscarPorIdInexistentes() {
-    mock.get("/receitas/999", tokenLorem, 404);
-  }
-
-  @Test
-  @Order(10)
-  public void deveriaDevolver200AoBuscarPorDescricaoExistente() {
-    mock.get("/receitas?description=sal", tokenLorem, 200);
-  }
-
-  @Test
-  @Order(11)
-  public void deveriaDevolver404AoBuscarPorDescricaoInexistente() {
-    mock.get("/receitas?description=salllllll", tokenLorem, 404);
-  }
-
-  @Test
-  @Order(12)
-  public void deveriaDevolver200AoAtualizarReceitaCorretamente() {
-    MvcResult result = mock.get("/receitas", tokenLorem, 200);
-    List<IncomeDto> listIncomeDto = DtoFromMvcResult.listIncomeDto(result);
-
-    Long id = listIncomeDto.get(0).getId();
-
-    String description = "Salário 1";
-    BigDecimal value = BigDecimal.valueOf(2500.00);
-    String date = "08/01/2022";
-
-    Map<String, Object> params = Map.of("description", description, "value", value, "date", date);
-
-    mock.put("/receitas/" + id, params, tokenLorem, 200);
-  }
-
-  @Test
-  @Order(13)
-  public void deveriaDevolver404AoAtualizarReceitaComIdInexistente() {
-    int id = 1000;
-    String description = "Salário 1";
-    BigDecimal value = BigDecimal.valueOf(2500.00);
-    String date = "08/01/2022";
-
-    Map<String, Object> params = Map.of("description", description, "value", value, "date", date);
-
-    mock.put("/receitas/" + id, params, tokenLorem, 404);
-  }
-
-  @Test
-  @Order(14)
-  public void deveriaDevolver400AoAtualizarReceitaSemAlgumParametroObrigatorio() {
-    String description = "Venda do PS5";
-    BigDecimal value = BigDecimal.valueOf(2885.00);
-    String date = "22/01/2022";
-
-    mock.put("/receitas/1", Map.of("value", value, "date", date), tokenLorem, 400);
-    mock.put("/receitas/1", Map.of("description", description, "date", date), tokenLorem, 400);
-    mock.put("/receitas/1", Map.of("description", description, "value", value), tokenLorem, 400);
-    mock.put("/receitas/1", Map.of("value", value), tokenLorem, 400);
-    mock.put("/receitas/1", Map.of("description", description), tokenLorem, 400);
-    mock.put("/receitas/1", Map.of("date", date), tokenLorem, 400);
-    mock.put("/receitas/1", Map.of(), tokenLorem, 400);
-  }
-
-  @Test
-  @Order(15)
-  public void deveriaDevolver200AoDeletarUmaReceitaComIdExistente() {
-    MvcResult result = mock.get("/receitas", tokenLorem, 200);
-    List<IncomeDto> listIncomeDto = DtoFromMvcResult.listIncomeDto(result);
-
-    Long id = listIncomeDto.get(1).getId();
-    mock.delete("/receitas/" + id, tokenLorem, 204);
-  }
-
-  @Test
-  @Order(16)
-  public void deveriaDevolver404AoDeletarUmaReceitaComIdInexistente() {
-    int id = 1000;
-    mock.delete("/receitas/" + id, tokenLorem, 404);
-  }
-
-  @Test
-  @Order(17)
-  public void deveriaDevolverSomenteAsReceitasDeIpsum() {
-
-    String description1 = "Salário";
-    BigDecimal value1 = new BigDecimal("2500.0");
-    String date1 = "08/01/2022";
-
-    String description2 = "Venda do PC";
-    BigDecimal value2 = new BigDecimal("1200.0");
-    String date2 = "22/01/2022";
-
-    Map<String, Object> params1 = Map.of("description", description1, "value", value1, "date", date1);
-    Map<String, Object> params2 = Map.of("description", description2, "value", value2, "date", date2);
-
-    mock.post("/receitas", params1, tokenIpsum, 201);
-    mock.post("/receitas", params2, tokenIpsum, 201);
-
-    MvcResult result = mock.get("/receitas", tokenIpsum, 200);
-    List<IncomeDto> listIncomeDto = DtoFromMvcResult.listIncomeDto(result);
-
-    List<IncomeDto> listExpected = new ArrayList<>();
-
-    IncomeDto incomeDto1 = new IncomeDto(5l, description1, LocalDate.parse(date1, Formatter.dateFormatter), value1);
-    IncomeDto incomeDto2 = new IncomeDto(6l, description2, LocalDate.parse(date2, Formatter.dateFormatter), value2);
-
-    listExpected.add(incomeDto2);
-    listExpected.add(incomeDto1);
-
-    Assertions.assertEquals(listExpected.size(), listIncomeDto.size());
-    Assertions.assertEquals(listExpected, listIncomeDto);
-  }
-
-  @Test
-  @Order(18)
-  public void deveriaDevolver404AoTentarAtualizarReceitaDeOutroUsuario() {
-    int id = 1;
-    String description = "Salário 1";
-    BigDecimal value = BigDecimal.valueOf(2500.00);
-    String date = "08/01/2022";
-
-    Map<String, Object> params = Map.of("description", description, "value", value, "date", date);
-
-    MvcResult result = mock.put("/receitas/" + id, params, tokenIpsum, 404);
-
-    ErrorDto errorDto = DtoFromMvcResult.errorDto(result);
-
-    Assertions.assertEquals("Not Found", errorDto.getError());
-    Assertions.assertEquals("Nenhuma receita com esse id para esse usuário", errorDto.getMessage());
-  }
-
-  @Test
-  @Order(19)
-  public void deveriaDevolver404AoTentarDeletarReceitaDeOutroUsuario() {
-    Long id = 1l;
-
-    MvcResult result = mock.delete("/receitas/" + id, tokenIpsum, 404);
-
-    ErrorDto errorDto = DtoFromMvcResult.errorDto(result);
-
-    Assertions.assertEquals("Not Found", errorDto.getError());
-    Assertions.assertEquals("Nenhuma receita com esse id para esse usuário", errorDto.getMessage());
+    Assertions.assertThat(response.getStatusCodeValue()).isEqualTo(204);
   }
 
 }

@@ -1,93 +1,63 @@
 package br.com.emendes.financesapi.controller;
 
-import java.util.Map;
+import java.util.List;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
-import org.junit.jupiter.api.Order;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.TestInstance.Lifecycle;
-import org.junit.jupiter.api.TestMethodOrder;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MvcResult;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.BDDMockito;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import br.com.emendes.financesapi.controller.dto.RoleDto;
-import br.com.emendes.financesapi.util.CustomMockMvc;
-import br.com.emendes.financesapi.util.DtoFromMvcResult;
+import br.com.emendes.financesapi.service.RoleService;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-@TestInstance(Lifecycle.PER_CLASS)
-@TestMethodOrder(OrderAnnotation.class)
-@ActiveProfiles("test")
+@ExtendWith(SpringExtension.class)
+@DisplayName("Tests for RoleController")
 public class RoleControllerTests {
 
-  @Autowired
-  private CustomMockMvc mock;
+  @InjectMocks
+  private RoleController roleController;
 
-  private String tokenAdmin;
+  @Mock
+  private RoleService roleServiceMock;
 
-  private String tokenUser;
+  private final RoleDto ROLE_USER = new RoleDto(1l, "ROLE_USER");
+  private final RoleDto ROLE_ADMIN = new RoleDto(2l, "ROLE_ADMIN");
+  private final RoleDto ROLE_MANAGER = new RoleDto(3l, "ROLE_MANAGER");
 
-  @BeforeAll
-  public void generateTokenUser() {
-    String name = "User Common";
-    String email = "user@email.com";
-    String password = "111111111";
-    String confirm = "111111111";
+  @BeforeEach
+  public void setUp() {
+    BDDMockito.when(roleServiceMock.readAll())
+        .thenReturn(List.of(ROLE_USER, ROLE_ADMIN, ROLE_MANAGER));
 
-    Map<String, Object> paramsSignup = Map.of("name", name, "email", email, "password", password, "confirm", confirm);
-    Map<String, Object> paramsSignin = Map.of("email", email, "password", password);
-
-    mock.post("/auth/signup", paramsSignup, "", 201);
-    MvcResult result = mock.post("/auth/signin", paramsSignin, "", 200);
-
-    tokenUser = DtoFromMvcResult.tokenDto(result).generateTypeWithToken();
-  }
-
-  @BeforeAll
-  public void generateTokenAdmin() {
-    String email = "admin@email.com";
-    String password = "123456";
-
-    Map<String, Object> paramsSignin = Map.of("email", email, "password", password);
-    MvcResult result = mock.post("/auth/signin", paramsSignin, "", 200);
-
-    tokenAdmin = DtoFromMvcResult.tokenDto(result).generateTypeWithToken();
+    BDDMockito.when(roleServiceMock.readById(2l))
+        .thenReturn(ROLE_ADMIN);
   }
 
   @Test
-  @Order(1)
-  public void deveriaDevolver403QuandoUserBuscarRoles() {
-    mock.get("/roles", tokenUser, 403);
+  @DisplayName("readAll must return ResponseEntity<List<RoleDto>> when successful")
+  void readAll_ReturnsResponseEntityListRoleDto_WhenSuccessful() {
+
+    ResponseEntity<List<RoleDto>> response = roleController.readAll();
+
+    Assertions.assertThat(response.getStatusCodeValue()).isEqualTo(200);
+    Assertions.assertThat(response.getBody()).hasSize(3);
   }
 
   @Test
-  @Order(2)
-  public void deveriaDevolver200AoBuscarTodosOsRoles() {
-    mock.get("/roles", tokenAdmin, 200);
-  }
+  @DisplayName("readById must return ResponseEntity<RoleDto> when successful")
+  void readById_ReturnsResponseEntityRoleDto_WhenSuccessful() {
 
-  @Test
-  @Order(3)
-  public void deveriaDevolver403QuandoUserBuscarRolePorId() {
-    Long id = 1l;
-    mock.get("/roles/" + id, tokenUser, 403);
-  }
+    ResponseEntity<RoleDto> response = roleController.readById(2l);
 
-  @Test
-  @Order(4)
-  public void deveriaDevolver200ERoleDtoAoBuscarRolePorId() {
-    Long id = 1l;
-    MvcResult result = mock.get("/roles/" + id, tokenAdmin, 200);
-    RoleDto roleDto = DtoFromMvcResult.roleDto(result);
-
-    Assertions.assertEquals("ROLE_USER", roleDto.getName());
+    Assertions.assertThat(response.getStatusCodeValue()).isEqualTo(200);
+    Assertions.assertThat(response.getBody().getId()).isEqualTo(ROLE_ADMIN.getId());
+    Assertions.assertThat(response.getBody().getName()).isEqualTo(ROLE_ADMIN.getName());
   }
 
 }

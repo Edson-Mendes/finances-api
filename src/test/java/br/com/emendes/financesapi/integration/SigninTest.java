@@ -1,4 +1,4 @@
-package br.com.emendes.financesapi.authetication;
+package br.com.emendes.financesapi.integration;
 
 import java.util.List;
 import java.util.Map;
