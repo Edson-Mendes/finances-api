@@ -28,7 +28,7 @@ import br.com.emendes.financesapi.util.DtoFromMvcResult;
 @TestInstance(Lifecycle.PER_CLASS)
 @TestMethodOrder(OrderAnnotation.class)
 @ActiveProfiles("test")
-public class SigninTest {
+public class SigninIT {
 
   @Autowired
   private CustomMockMvc mock;

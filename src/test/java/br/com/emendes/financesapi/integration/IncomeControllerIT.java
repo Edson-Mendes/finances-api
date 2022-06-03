@@ -31,7 +31,7 @@ import br.com.emendes.financesapi.util.DtoFromMvcResult;
 @TestInstance(Lifecycle.PER_CLASS)
 @TestMethodOrder(OrderAnnotation.class)
 @ActiveProfiles("test")
-public class IncomeControllerTests {
+public class IncomeControllerIT {
 
   @Autowired
   private CustomMockMvc mock;

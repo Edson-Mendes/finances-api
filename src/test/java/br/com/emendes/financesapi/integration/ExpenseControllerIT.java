@@ -32,7 +32,7 @@ import br.com.emendes.financesapi.util.Formatter;
 @TestInstance(Lifecycle.PER_CLASS)
 @TestMethodOrder(OrderAnnotation.class)
 @ActiveProfiles("test")
-public class ExpenseControllerTests {
+public class ExpenseControllerIT {
 
   @Autowired
   private CustomMockMvc mock;
