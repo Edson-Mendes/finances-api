@@ -49,11 +49,14 @@ O projeto foi proposto pela Alura no Challenge Backend 2ª edição.
 - `OpenAPI 3 (Swagger)`
 - `JWT`
 - `JUnit 5`
+- `Mockito`
 - `Docker`
 - `Heroku`
 
 ## :hammer_and_wrench: Deploy
 O deploy da aplicação foi realizado no *Heroku*, você pode testar/brincar/usar [aqui](https://apifinances.herokuapp.com/swagger-ui/index.html#/)
+
+OBS: As aplicações que usam conta gratuita do heroku *adormecem* se ficarem inativas, então pode ser que a primeira requisição demore um pouco, apenas seja paciente :wink:.
 
 ## :card_file_box: Documentação
 Documentação feita com Springdoc openapi, gerando [Swagger UI](https://apifinances.herokuapp.com/swagger-ui/index.html#/) e [Api docs](https://apifinances.herokuapp.com/api-docs)
