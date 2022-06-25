@@ -1,10 +1,13 @@
-package br.com.emendes.financesapi.service;
+package br.com.emendes.financesapi.unit.service;
 
 import java.math.BigDecimal;
 import java.util.Optional;
 
 import javax.persistence.NoResultException;
 
+import br.com.emendes.financesapi.service.ExpenseService;
+import br.com.emendes.financesapi.service.IncomeService;
+import br.com.emendes.financesapi.service.SummaryService;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

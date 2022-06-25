@@ -1,8 +1,10 @@
-package br.com.emendes.financesapi.repository;
+package br.com.emendes.financesapi.unit.repository;
 
 import java.time.LocalDate;
 import java.util.Optional;
 
+import br.com.emendes.financesapi.repository.IncomeRepository;
+import br.com.emendes.financesapi.repository.UserRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;

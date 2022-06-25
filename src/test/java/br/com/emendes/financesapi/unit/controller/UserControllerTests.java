@@ -1,7 +1,8 @@
-package br.com.emendes.financesapi.controller;
+package br.com.emendes.financesapi.unit.controller;
 
 import java.util.List;
 
+import br.com.emendes.financesapi.controller.UserController;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

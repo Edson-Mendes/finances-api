@@ -1,7 +1,8 @@
-package br.com.emendes.financesapi.repository;
+package br.com.emendes.financesapi.unit.repository;
 
 import java.util.Optional;
 
+import br.com.emendes.financesapi.repository.UserRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

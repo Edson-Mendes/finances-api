@@ -1,10 +1,11 @@
-package br.com.emendes.financesapi.controller;
+package br.com.emendes.financesapi.unit.controller;
 
 import java.math.BigDecimal;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import br.com.emendes.financesapi.controller.IncomeController;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

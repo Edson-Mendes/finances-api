@@ -1,10 +1,11 @@
-package br.com.emendes.financesapi.service;
+package br.com.emendes.financesapi.unit.service;
 
 import java.util.List;
 import java.util.Optional;
 
 import javax.persistence.NoResultException;
 
+import br.com.emendes.financesapi.service.RoleService;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
