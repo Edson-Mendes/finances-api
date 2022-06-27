@@ -26,6 +26,7 @@ public class ExpenseService {
   @Autowired
   private ExpenseRepository expenseRepository;
 
+//  TODO: Usar Principal para o usuário atual.
   public ExpenseDto create(ExpenseForm expenseForm, Long userId) {
     alreadyExist(expenseForm, userId);
 
@@ -36,50 +37,41 @@ public class ExpenseService {
   }
 
   public Page<ExpenseDto> readAllByUser(Long userId, Pageable pageable) {
-    Page<Expense> expenses = expenseRepository.findByUserId(userId, pageable);
-    if (expenses.getTotalElements() == 0) {
+    Page<Expense> expenses = expenseRepository.findAllByUser(pageable);
+    if (expenses.isEmpty()) {
       throw new NoResultException("O usuário não possui despesas");
     }
-    Page<ExpenseDto> expensesDto = ExpenseDto.convert(expenses);
-
-    return expensesDto;
+    return ExpenseDto.convert(expenses);
   }
 
   public Page<ExpenseDto> readByDescriptionAndUser(String description, Long userId, Pageable pageable) {
-    Page<Expense> expenses = expenseRepository.findByDescriptionAndUserId(description, userId, pageable);
-    if (expenses.getTotalElements() == 0) {
+    Page<Expense> expenses = expenseRepository.findByDescriptionAndUser(description, pageable);
+    if (expenses.isEmpty()) {
       throw new NoResultException("O usuário não possui despesas com descrição similar a " + description);
     }
-
-    Page<ExpenseDto> expensesDto = ExpenseDto.convert(expenses);
-    return expensesDto;
+    return ExpenseDto.convert(expenses);
   }
 
   public ExpenseDto readByIdAndUser(Long id, Long userId) {
-    Optional<Expense> optional = expenseRepository.findByIdAndUserId(id, userId);
-    ExpenseDto expenseDto = new ExpenseDto(optional.orElseThrow(() -> {
-      throw new NoResultException("Nenhuma despesa com esse id para esse usuário");
+    Optional<Expense> optional = expenseRepository.findByIdAndUser(id);
+    return new ExpenseDto(optional.orElseThrow(() -> {
+      throw new NoResultException(String.format("Nenhuma despesa com id = %d para esse usuário", id));
     }));
-
-    return expenseDto;
   }
 
   public Page<ExpenseDto> readByYearAndMonthAndUser(
-      Integer year,
-      Integer month,
-      Long userId,
-      Pageable pageable) {
-    Page<Expense> expenses = expenseRepository.findByYearAndMonthAndUserId(year, month, userId, pageable);
+      Integer year, Integer month,
+      Long userId, Pageable pageable) {
+    Page<Expense> expenses = expenseRepository.findByYearAndMonthAndUser(year, month, pageable);
 
-    if (expenses.getTotalElements() == 0) {
-      throw new NoResultException("Não há despesas para o ano " + year + " e mês " + month);
+    if (expenses.isEmpty()) {
+      throw new NoResultException(String.format("Não há despesas para o ano %d e mês %d", year, month));
     }
-    Page<ExpenseDto> expensesDto = ExpenseDto.convert(expenses);
-    return expensesDto;
+    return ExpenseDto.convert(expenses);
   }
 
   public ExpenseDto update(Long id, ExpenseForm expenseForm, Long userId) {
-    Optional<Expense> optional = expenseRepository.findByIdAndUserId(id, userId);
+    Optional<Expense> optional = expenseRepository.findByIdAndUser(id);
     if (optional.isPresent() && !alreadyExist(expenseForm, id, userId)) {
       Expense expense = optional.get();
       expense.setParams(expenseForm);
@@ -93,7 +85,7 @@ public class ExpenseService {
   public void delete(Long id, Long userId) {
     // TODO: Talvez chamar o delete por id e userId direto e lançar uma exception se
     // não for possível.
-    Optional<Expense> optional = expenseRepository.findByIdAndUserId(id, userId);
+    Optional<Expense> optional = expenseRepository.findByIdAndUser(id);
     if (optional.isEmpty()) {
       throw new NoResultException("Nenhuma despesa com esse id para esse usuário");
     }
@@ -101,11 +93,11 @@ public class ExpenseService {
   }
 
   public Optional<BigDecimal> getTotalValueByMonthAndYearAndUserId(Integer year, Integer month, Long userId) {
-    return expenseRepository.getTotalValueByMonthAndYearAndUserId(year, month, userId);
+    return expenseRepository.getTotalValueByMonthAndYearAndUser(year, month);
   }
 
   public BigDecimal getTotalByCategoryOnYearAndMonth(Category category, Integer year, Integer month, Long userId) {
-    return expenseRepository.getTotalByCategoryOnYearAndMonth(category, year, month, userId).orElse(BigDecimal.ZERO);
+    return expenseRepository.getTotalByCategoryOnYearAndMonth(category, year, month).orElse(BigDecimal.ZERO);
   }
 
   /**
@@ -113,8 +105,8 @@ public class ExpenseService {
    * mês e ano da respectiva despesa.
    * Forma que encontrei que impedir despesas com descrição duplicada no mesmo mês
    * e ano
-   * 
-   * @param expenseRepository
+   *
+   * @param form
    * @param userId
    * @return false, se não existir uma despesa com a mesma descrição em um mesmo
    *         mês e ano.
@@ -122,11 +114,10 @@ public class ExpenseService {
    */
   private boolean alreadyExist(ExpenseForm form, Long userId) {
     LocalDate date = form.parseDateToLocalDate();
-    Optional<Expense> optional = expenseRepository.findByDescriptionAndMonthAndYearAndUserId(
+    Optional<Expense> optional = expenseRepository.findByDescriptionAndMonthAndYearAndUser(
         form.getDescription(),
         date.getMonthValue(),
-        date.getYear(),
-        userId);
+        date.getYear());
     if (optional.isPresent()) {
       String message = "Uma despesa com essa descrição já existe em " + date.getMonth().name().toLowerCase() + " "
           + date.getYear();
@@ -141,8 +132,8 @@ public class ExpenseService {
    * mês e
    * ano da respectiva despesa.
    * e com id diferente do atual.
-   * 
-   * @param expenseRepository
+   *
+   * @param form
    * @param id
    * @param userId
    * @return false, se não existir uma despesa com a mesma descrição em um mesmo
@@ -151,11 +142,10 @@ public class ExpenseService {
    */
   private boolean alreadyExist(ExpenseForm form, Long id, Long userId) {
     LocalDate date = LocalDate.parse(form.getDate(), Formatter.dateFormatter);
-    Optional<Expense> optional = expenseRepository.findByDescriptionAndMonthAndYearAndUserIdAndNotId(
+    Optional<Expense> optional = expenseRepository.findByDescriptionAndMonthAndYearAndNotIdAndUser(
         form.getDescription(),
         date.getMonthValue(),
         date.getYear(),
-        userId,
         id);
     if (optional.isPresent()) {
       String message = "Descrição de despesa duplicada para " + date.getMonth().name().toLowerCase() + " "
