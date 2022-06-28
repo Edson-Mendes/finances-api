@@ -6,10 +6,12 @@ import java.util.Optional;
 
 import javax.persistence.NoResultException;
 
+import br.com.emendes.financesapi.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -26,9 +28,10 @@ public class ExpenseService {
   @Autowired
   private ExpenseRepository expenseRepository;
 
-//  TODO: Usar Principal para o usuário atual.
-  public ExpenseDto create(ExpenseForm expenseForm, Long userId) {
-    alreadyExist(expenseForm, userId);
+  public ExpenseDto create(ExpenseForm expenseForm) {
+    alreadyExist(expenseForm);
+
+    Long userId = ( (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
 
     Expense expense = expenseForm.convert(userId);
     expenseRepository.save(expense);
@@ -36,7 +39,7 @@ public class ExpenseService {
     return new ExpenseDto(expense);
   }
 
-  public Page<ExpenseDto> readAllByUser(Long userId, Pageable pageable) {
+  public Page<ExpenseDto> readAllByUser(Pageable pageable) {
     Page<Expense> expenses = expenseRepository.findAllByUser(pageable);
     if (expenses.isEmpty()) {
       throw new NoResultException("O usuário não possui despesas");
@@ -44,7 +47,7 @@ public class ExpenseService {
     return ExpenseDto.convert(expenses);
   }
 
-  public Page<ExpenseDto> readByDescriptionAndUser(String description, Long userId, Pageable pageable) {
+  public Page<ExpenseDto> readByDescriptionAndUser(String description, Pageable pageable) {
     Page<Expense> expenses = expenseRepository.findByDescriptionAndUser(description, pageable);
     if (expenses.isEmpty()) {
       throw new NoResultException("O usuário não possui despesas com descrição similar a " + description);
@@ -52,7 +55,7 @@ public class ExpenseService {
     return ExpenseDto.convert(expenses);
   }
 
-  public ExpenseDto readByIdAndUser(Long id, Long userId) {
+  public ExpenseDto readByIdAndUser(Long id) {
     Optional<Expense> optional = expenseRepository.findByIdAndUser(id);
     return new ExpenseDto(optional.orElseThrow(() -> {
       throw new NoResultException(String.format("Nenhuma despesa com id = %d para esse usuário", id));
@@ -60,8 +63,7 @@ public class ExpenseService {
   }
 
   public Page<ExpenseDto> readByYearAndMonthAndUser(
-      Integer year, Integer month,
-      Long userId, Pageable pageable) {
+      Integer year, Integer month, Pageable pageable) {
     Page<Expense> expenses = expenseRepository.findByYearAndMonthAndUser(year, month, pageable);
 
     if (expenses.isEmpty()) {
@@ -70,9 +72,9 @@ public class ExpenseService {
     return ExpenseDto.convert(expenses);
   }
 
-  public ExpenseDto update(Long id, ExpenseForm expenseForm, Long userId) {
+  public ExpenseDto update(Long id, ExpenseForm expenseForm) {
     Optional<Expense> optional = expenseRepository.findByIdAndUser(id);
-    if (optional.isPresent() && !alreadyExist(expenseForm, id, userId)) {
+    if (optional.isPresent() && !alreadyExist(expenseForm, id)) {
       Expense expense = optional.get();
       expense.setParams(expenseForm);
 
@@ -82,7 +84,7 @@ public class ExpenseService {
     throw new NoResultException("Nenhuma despesa com esse id para esse usuário");
   }
 
-  public void delete(Long id, Long userId) {
+  public void delete(Long id) {
     // TODO: Talvez chamar o delete por id e userId direto e lançar uma exception se
     // não for possível.
     Optional<Expense> optional = expenseRepository.findByIdAndUser(id);
@@ -92,11 +94,11 @@ public class ExpenseService {
     expenseRepository.deleteById(id);
   }
 
-  public Optional<BigDecimal> getTotalValueByMonthAndYearAndUserId(Integer year, Integer month, Long userId) {
+  public Optional<BigDecimal> getTotalValueByMonthAndYearAndUser(Integer year, Integer month) {
     return expenseRepository.getTotalValueByMonthAndYearAndUser(year, month);
   }
 
-  public BigDecimal getTotalByCategoryOnYearAndMonth(Category category, Integer year, Integer month, Long userId) {
+  public BigDecimal getTotalByCategoryOnYearAndMonth(Category category, Integer year, Integer month) {
     return expenseRepository.getTotalByCategoryOnYearAndMonth(category, year, month).orElse(BigDecimal.ZERO);
   }
 
@@ -107,12 +109,12 @@ public class ExpenseService {
    * e ano
    *
    * @param form
-   * @param userId
    * @return false, se não existir uma despesa com a mesma descrição em um mesmo
    *         mês e ano.
    * @throws ResponseStatusException se existir despesa.
    */
-  private boolean alreadyExist(ExpenseForm form, Long userId) {
+//  TODO: Melhorar o nome desse método para ficar mais claro.
+  private boolean alreadyExist(ExpenseForm form) {
     LocalDate date = form.parseDateToLocalDate();
     Optional<Expense> optional = expenseRepository.findByDescriptionAndMonthAndYearAndUser(
         form.getDescription(),
@@ -135,12 +137,12 @@ public class ExpenseService {
    *
    * @param form
    * @param id
-   * @param userId
    * @return false, se não existir uma despesa com a mesma descrição em um mesmo
    *         mês e ano.
    * @throws ResponseStatusException se existir despesa.
    */
-  private boolean alreadyExist(ExpenseForm form, Long id, Long userId) {
+  //  TODO: Melhorar o nome desse método para ficar mais claro.
+  private boolean alreadyExist(ExpenseForm form, Long id) {
     LocalDate date = LocalDate.parse(form.getDate(), Formatter.dateFormatter);
     Optional<Expense> optional = expenseRepository.findByDescriptionAndMonthAndYearAndNotIdAndUser(
         form.getDescription(),

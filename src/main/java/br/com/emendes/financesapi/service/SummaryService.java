@@ -25,21 +25,20 @@ public class SummaryService {
 
   public SummaryDto monthSummary(Integer year, Integer month, Long userId) {
       Optional<BigDecimal> incomeTotalValue = incomeService.getTotalValueByMonthAndYearAndUserId(year, month, userId);
-      Optional<BigDecimal> expenseTotalValue = expenseService.getTotalValueByMonthAndYearAndUserId(year, month, userId);
+      Optional<BigDecimal> expenseTotalValue = expenseService.getTotalValueByMonthAndYearAndUser(year, month);
       if(incomeTotalValue.isPresent() || expenseTotalValue.isPresent()){
-        SummaryDto summaryDto = new SummaryDto(
+        return new SummaryDto(
             incomeTotalValue.orElse(BigDecimal.ZERO), 
             expenseTotalValue.orElse(BigDecimal.ZERO), 
-            expenseTotalValue.isPresent() ? getTotalByCategory(year, month, userId) : ValueByCategory.listWithZero());
-        return summaryDto;
+            expenseTotalValue.isPresent() ? getTotalByCategory(year, month) : ValueByCategory.listWithZero());
       }
       throw new NoResultException("Não há receitas e despesas para o ano " + year + " e mês " + month);
   }
 
-  private List<ValueByCategory> getTotalByCategory(Integer year, Integer month, Long userId) {
+  private List<ValueByCategory> getTotalByCategory(Integer year, Integer month) {
     List<ValueByCategory> totalByCategory = new ArrayList<>();
     for (Category category : Category.values()) {
-      BigDecimal total = expenseService.getTotalByCategoryOnYearAndMonth(category, year, month, userId);
+      BigDecimal total = expenseService.getTotalByCategoryOnYearAndMonth(category, year, month);
       totalByCategory.add(new ValueByCategory(category, total));
     }
     return totalByCategory;
