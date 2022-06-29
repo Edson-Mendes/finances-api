@@ -25,8 +25,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import br.com.emendes.financesapi.controller.dto.UserDto;
 import br.com.emendes.financesapi.controller.form.SignupForm;
-import br.com.emendes.financesapi.creator.SignupFormCreator;
-import br.com.emendes.financesapi.creator.UserCreator;
+import br.com.emendes.financesapi.util.creator.SignupFormCreator;
+import br.com.emendes.financesapi.util.creator.UserCreator;
 import br.com.emendes.financesapi.model.User;
 import br.com.emendes.financesapi.repository.UserRepository;
 import br.com.emendes.financesapi.validation.exception.DataConflictException;

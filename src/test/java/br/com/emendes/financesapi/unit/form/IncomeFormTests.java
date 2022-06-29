@@ -12,7 +12,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import br.com.emendes.financesapi.controller.form.IncomeForm;
-import br.com.emendes.financesapi.creator.IncomeFormCreator;
+import br.com.emendes.financesapi.util.creator.IncomeFormCreator;
 
 @DisplayName("Tests for IncomeForm")
 public class IncomeFormTests {

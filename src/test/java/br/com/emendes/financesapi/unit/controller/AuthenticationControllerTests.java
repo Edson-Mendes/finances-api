@@ -16,7 +16,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import br.com.emendes.financesapi.controller.dto.TokenDto;
 import br.com.emendes.financesapi.controller.form.LoginForm;
-import br.com.emendes.financesapi.creator.LoginFormCreator;
+import br.com.emendes.financesapi.util.creator.LoginFormCreator;
 import br.com.emendes.financesapi.service.TokenService;
 
 @ExtendWith(SpringExtension.class)

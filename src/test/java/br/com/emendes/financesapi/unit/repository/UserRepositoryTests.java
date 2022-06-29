@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
-import br.com.emendes.financesapi.creator.UserCreator;
+import br.com.emendes.financesapi.util.creator.UserCreator;
 import br.com.emendes.financesapi.model.User;
 
 @DataJpaTest

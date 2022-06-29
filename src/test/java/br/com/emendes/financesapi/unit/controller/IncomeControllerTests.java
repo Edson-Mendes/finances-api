@@ -27,8 +27,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import br.com.emendes.financesapi.controller.dto.IncomeDto;
 import br.com.emendes.financesapi.controller.form.IncomeForm;
-import br.com.emendes.financesapi.creator.IncomeDtoCreator;
-import br.com.emendes.financesapi.creator.IncomeFormCreator;
+import br.com.emendes.financesapi.util.creator.IncomeDtoCreator;
+import br.com.emendes.financesapi.util.creator.IncomeFormCreator;
 import br.com.emendes.financesapi.service.IncomeService;
 import br.com.emendes.financesapi.service.TokenService;
 

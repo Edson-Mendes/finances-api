@@ -1,4 +1,4 @@
-package br.com.emendes.financesapi.creator;
+package br.com.emendes.financesapi.util.creator;
 
 import br.com.emendes.financesapi.model.Role;
 

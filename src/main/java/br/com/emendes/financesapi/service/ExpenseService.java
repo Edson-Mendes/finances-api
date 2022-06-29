@@ -31,7 +31,7 @@ public class ExpenseService {
   public ExpenseDto create(ExpenseForm expenseForm) {
     alreadyExist(expenseForm);
 
-    Long userId = ( (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
+    Long userId = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
 
     Expense expense = expenseForm.convert(userId);
     expenseRepository.save(expense);
@@ -56,10 +56,7 @@ public class ExpenseService {
   }
 
   public ExpenseDto readByIdAndUser(Long id) {
-    Optional<Expense> optional = expenseRepository.findByIdAndUser(id);
-    return new ExpenseDto(optional.orElseThrow(() -> {
-      throw new NoResultException(String.format("Nenhuma despesa com id = %d para esse usuário", id));
-    }));
+    return new ExpenseDto(findByIdAndUser(id));
   }
 
   public Page<ExpenseDto> readByYearAndMonthAndUser(
@@ -73,24 +70,16 @@ public class ExpenseService {
   }
 
   public ExpenseDto update(Long id, ExpenseForm expenseForm) {
-    Optional<Expense> optional = expenseRepository.findByIdAndUser(id);
-    if (optional.isPresent() && !alreadyExist(expenseForm, id)) {
-      Expense expense = optional.get();
-      expense.setParams(expenseForm);
+    Expense expenseToBeUpdated = findByIdAndUser(id);
+    alreadyExist(expenseForm, id);
 
-      return new ExpenseDto(expense);
-    }
+    expenseToBeUpdated.setParams(expenseForm);
+    return new ExpenseDto(expenseToBeUpdated);
 
-    throw new NoResultException("Nenhuma despesa com esse id para esse usuário");
   }
 
-  public void delete(Long id) {
-    // TODO: Talvez chamar o delete por id e userId direto e lançar uma exception se
-    // não for possível.
-    Optional<Expense> optional = expenseRepository.findByIdAndUser(id);
-    if (optional.isEmpty()) {
-      throw new NoResultException("Nenhuma despesa com esse id para esse usuário");
-    }
+  public void deleteById(Long id) {
+    findByIdAndUser(id);
     expenseRepository.deleteById(id);
   }
 
@@ -102,6 +91,13 @@ public class ExpenseService {
     return expenseRepository.getTotalByCategoryOnYearAndMonth(category, year, month).orElse(BigDecimal.ZERO);
   }
 
+  private Expense findByIdAndUser(Long id) {
+    Optional<Expense> optionalExpense = expenseRepository.findByIdAndUser(id);
+
+    return optionalExpense.orElseThrow(
+        () -> new NoResultException(String.format("Nenhuma despesa com id = %d para esse usuário", id)));
+  }
+
   /**
    * Verifica se o usuário já possui outra despesa com a mesma descrição no mesmo
    * mês e ano da respectiva despesa.
@@ -110,10 +106,10 @@ public class ExpenseService {
    *
    * @param form
    * @return false, se não existir uma despesa com a mesma descrição em um mesmo
-   *         mês e ano.
+   * mês e ano.
    * @throws ResponseStatusException se existir despesa.
    */
-//  TODO: Melhorar o nome desse método para ficar mais claro.
+//  TODO: Refatorar esse método
   private boolean alreadyExist(ExpenseForm form) {
     LocalDate date = form.parseDateToLocalDate();
     Optional<Expense> optional = expenseRepository.findByDescriptionAndMonthAndYearAndUser(
@@ -138,10 +134,10 @@ public class ExpenseService {
    * @param form
    * @param id
    * @return false, se não existir uma despesa com a mesma descrição em um mesmo
-   *         mês e ano.
+   * mês e ano.
    * @throws ResponseStatusException se existir despesa.
    */
-  //  TODO: Melhorar o nome desse método para ficar mais claro.
+  //  TODO: Refatorar esse método
   private boolean alreadyExist(ExpenseForm form, Long id) {
     LocalDate date = LocalDate.parse(form.getDate(), Formatter.dateFormatter);
     Optional<Expense> optional = expenseRepository.findByDescriptionAndMonthAndYearAndNotIdAndUser(

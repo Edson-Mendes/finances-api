@@ -1,6 +1,9 @@
-package br.com.emendes.financesapi.creator;
+package br.com.emendes.financesapi.util.creator;
 
+import br.com.emendes.financesapi.model.Role;
 import br.com.emendes.financesapi.model.User;
+
+import java.util.List;
 
 public class UserCreator {
 
@@ -56,6 +59,15 @@ public class UserCreator {
     user.setId(10000l);
 
     return user;
+  }
+
+  public static User userWithIdAndRoles(){
+    Long id = 100L;
+    String name = null;
+    String email = null;
+    String password = null;
+    List<Role> roles = List.of(RoleCreator.userRole());
+    return new User(id, name, email, password, roles);
   }
 
 }

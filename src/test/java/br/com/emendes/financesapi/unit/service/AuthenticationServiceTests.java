@@ -15,7 +15,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import br.com.emendes.financesapi.creator.UserCreator;
+import br.com.emendes.financesapi.util.creator.UserCreator;
 import br.com.emendes.financesapi.model.User;
 import br.com.emendes.financesapi.repository.UserRepository;
 

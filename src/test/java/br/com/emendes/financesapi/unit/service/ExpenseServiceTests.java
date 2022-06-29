@@ -1,11 +1,14 @@
 package br.com.emendes.financesapi.unit.service;
 
-import java.util.List;
-import java.util.Optional;
-
-import javax.persistence.NoResultException;
-
+import br.com.emendes.financesapi.controller.dto.ExpenseDto;
+import br.com.emendes.financesapi.controller.form.ExpenseForm;
+import br.com.emendes.financesapi.model.Expense;
+import br.com.emendes.financesapi.model.User;
+import br.com.emendes.financesapi.repository.ExpenseRepository;
 import br.com.emendes.financesapi.service.ExpenseService;
+import br.com.emendes.financesapi.util.creator.ExpenseCreator;
+import br.com.emendes.financesapi.util.creator.ExpenseFormCreator;
+import br.com.emendes.financesapi.util.creator.UserCreator;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -19,19 +22,20 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import br.com.emendes.financesapi.controller.dto.ExpenseDto;
-import br.com.emendes.financesapi.controller.form.ExpenseForm;
-import br.com.emendes.financesapi.creator.ExpenseCreator;
-import br.com.emendes.financesapi.creator.ExpenseFormCreator;
-import br.com.emendes.financesapi.model.Expense;
-import br.com.emendes.financesapi.model.User;
-import br.com.emendes.financesapi.repository.ExpenseRepository;
+import javax.persistence.NoResultException;
+import java.util.List;
+import java.util.Optional;
+
+import static org.mockito.Mockito.mock;
 
 @ExtendWith(SpringExtension.class)
 @DisplayName("Tests for ExpenseService")
-public class ExpenseServiceTests {
+class ExpenseServiceTests {
 
   @InjectMocks
   private ExpenseService expenseService;
@@ -39,61 +43,67 @@ public class ExpenseServiceTests {
   @Mock
   private ExpenseRepository expenseRepositoryMock;
 
-  private final Long USER_ID = 100l;
-  private final Long NON_EXISTING_USER_ID = 999l;
-  private final Long NON_EXISTING_EXPENSE_ID = 99999l;
+
+  private final Long NON_EXISTING_EXPENSE_ID = 99999L;
   private final Pageable PAGEABLE = PageRequest.of(0, 10, Direction.DESC, "date");
+  private final Authentication AUTHENTICATION = mock(Authentication.class);
+  private final SecurityContext SECURITY_CONTEXT = mock(SecurityContext.class);
 
   @BeforeEach
   public void setUp() {
+    final Long userId = 100L;
     ExpenseForm expenseForm = ExpenseFormCreator.validExpenseForm();
-    Expense expenseToBeSaved = ExpenseCreator.validExpenseWithUser(new User(USER_ID));
+    Expense expenseToBeSaved = ExpenseCreator.validExpenseWithUser(new User(userId));
     Expense expenseSaved = ExpenseCreator.expenseWithAllArgs();
 
     PageImpl<Expense> pageExpense = new PageImpl<>(List.of(expenseSaved));
 
-    BDDMockito.when(expenseRepositoryMock.findByDescriptionAndMonthAndYearAndUserId(
+    SecurityContextHolder.setContext(SECURITY_CONTEXT);
+
+    BDDMockito.when(expenseRepositoryMock.findByDescriptionAndMonthAndYearAndUser(
         expenseForm.getDescription(),
         expenseForm.parseDateToLocalDate().getMonthValue(),
-        expenseForm.parseDateToLocalDate().getYear(),
-        USER_ID)).thenReturn(Optional.empty());
+        expenseForm.parseDateToLocalDate().getYear())).thenReturn(Optional.empty());
 
     BDDMockito.when(expenseRepositoryMock.save(expenseToBeSaved))
         .thenReturn(expenseSaved);
 
-    BDDMockito.when(expenseRepositoryMock.findByUserId(USER_ID, PAGEABLE))
+    BDDMockito.when(expenseRepositoryMock.findAllByUser(PAGEABLE))
         .thenReturn(pageExpense);
 
-    BDDMockito.when(expenseRepositoryMock.findByUserId(NON_EXISTING_USER_ID, PAGEABLE))
-        .thenReturn(Page.empty(PAGEABLE));
-
-    BDDMockito.when(expenseRepositoryMock.findByDescriptionAndUserId("lina", USER_ID, PAGEABLE))
+    BDDMockito.when(expenseRepositoryMock.findByDescriptionAndUser("solina", PAGEABLE))
         .thenReturn(pageExpense);
 
-    BDDMockito.when(expenseRepositoryMock.findByDescriptionAndUserId("lina", NON_EXISTING_USER_ID, PAGEABLE))
+    BDDMockito.when(expenseRepositoryMock.findByDescriptionAndUser("lina", PAGEABLE))
         .thenReturn(Page.empty(PAGEABLE));
 
-    BDDMockito.when(expenseRepositoryMock.findByIdAndUserId(expenseSaved.getId(), USER_ID))
+    BDDMockito.when(expenseRepositoryMock.findByIdAndUser(expenseSaved.getId()))
         .thenReturn(Optional.of(expenseSaved));
 
-    BDDMockito.when(expenseRepositoryMock.findByIdAndUserId(NON_EXISTING_EXPENSE_ID, USER_ID))
+    BDDMockito.when(expenseRepositoryMock.findByIdAndUser(NON_EXISTING_EXPENSE_ID))
         .thenReturn(Optional.empty());
 
-    BDDMockito.when(expenseRepositoryMock.findByDescriptionAndMonthAndYearAndUserIdAndNotId(
+    BDDMockito.when(expenseRepositoryMock.findByDescriptionAndMonthAndYearAndNotIdAndUser(
         expenseForm.getDescription(),
         expenseForm.parseDateToLocalDate().getMonthValue(),
         expenseForm.parseDateToLocalDate().getYear(),
-        USER_ID,
         expenseSaved.getId())).thenReturn(Optional.empty());
+
+    BDDMockito.when(SECURITY_CONTEXT.getAuthentication()).thenReturn(AUTHENTICATION);
+    BDDMockito.when(SecurityContextHolder.getContext().getAuthentication().getPrincipal())
+        .thenReturn(UserCreator.userWithIdAndRoles());
+
+    BDDMockito.when(expenseRepositoryMock.findByYearAndMonthAndUser(2022, 1, PAGEABLE))
+        .thenReturn(pageExpense);
+    BDDMockito.when(expenseRepositoryMock.findByYearAndMonthAndUser(2000, 1, PAGEABLE))
+        .thenReturn(Page.empty(PAGEABLE));
   }
 
   @Test
   @DisplayName("Create must returns ExpenseDto when created successfully")
   void create_ReturnsExpenseDto_WhenSuccessful() {
     ExpenseForm expenseForm = ExpenseFormCreator.validExpenseForm();
-    Long userId = USER_ID;
-
-    ExpenseDto expenseDto = this.expenseService.create(expenseForm, userId);
+    ExpenseDto expenseDto = this.expenseService.create(expenseForm);
 
     Assertions.assertThat(expenseDto).isNotNull();
     Assertions.assertThat(expenseDto.getDescription()).isEqualTo(expenseForm.getDescription());
@@ -103,9 +113,8 @@ public class ExpenseServiceTests {
   @Test
   @DisplayName("readAllByUser must returns page of expenseDto when successful")
   void readAllByUser_ReturnsPageOfExpenseDto_WhenSuccessful() {
-    Long userId = USER_ID;
 
-    Page<ExpenseDto> pageExpenseDto = expenseService.readAllByUser(userId, PAGEABLE);
+    Page<ExpenseDto> pageExpenseDto = expenseService.readAllByUser(PAGEABLE);
 
     Assertions.assertThat(pageExpenseDto).isNotEmpty();
     Assertions.assertThat(pageExpenseDto.getNumberOfElements()).isEqualTo(1);
@@ -114,20 +123,20 @@ public class ExpenseServiceTests {
   @Test
   @DisplayName("readAllByUser must throws NoResultException when user don't have expenses")
   void readAllByUser_ThrowsNoResultException_WhenUserDontHaveExpenses() {
-    Long userId = NON_EXISTING_USER_ID;
+    BDDMockito.when(expenseRepositoryMock.findAllByUser(PAGEABLE))
+        .thenReturn(Page.empty(PAGEABLE));
 
     Assertions.assertThatExceptionOfType(NoResultException.class)
-        .isThrownBy(() -> expenseService.readAllByUser(userId, PAGEABLE))
+        .isThrownBy(() -> expenseService.readAllByUser(PAGEABLE))
         .withMessage("O usuário não possui despesas");
   }
 
   @Test
   @DisplayName("readByDescriptionAndUser must returns page of expenseDto when successful")
   void readByDescriptionAndUser_ReturnsPageOfExpenseDto_WhenSuccessful() {
-    Long userId = USER_ID;
-    String description = "lina";
+    String description = "solina";
 
-    Page<ExpenseDto> pageExpenseDto = expenseService.readByDescriptionAndUser(description, userId, PAGEABLE);
+    Page<ExpenseDto> pageExpenseDto = expenseService.readByDescriptionAndUser(description, PAGEABLE);
 
     Assertions.assertThat(pageExpenseDto).isNotEmpty();
     Assertions.assertThat(pageExpenseDto.getNumberOfElements()).isEqualTo(1);
@@ -136,21 +145,19 @@ public class ExpenseServiceTests {
   @Test
   @DisplayName("readByDescriptionAndUser must throws NoResultException when user don't have expenses")
   void readByDescriptionAndUser_ThrowsNoResultException_WhenUserDontHaveExpenses() {
-    Long userId = NON_EXISTING_USER_ID;
     String description = "lina";
 
     Assertions.assertThatExceptionOfType(NoResultException.class)
-        .isThrownBy(() -> expenseService.readByDescriptionAndUser(description, userId, PAGEABLE))
+        .isThrownBy(() -> expenseService.readByDescriptionAndUser(description, PAGEABLE))
         .withMessageContaining("O usuário não possui despesas com descrição similar a ");
   }
 
   @Test
   @DisplayName("readByIdAndUser must returns optional expenseDto when successful")
   void readByIdAndUser_ReturnsOptionalExpenseDto_WhenSuccessful() {
-    Long userId = USER_ID;
     Long id = ExpenseCreator.expenseWithAllArgs().getId();
 
-    ExpenseDto expenseDto = expenseService.readByIdAndUser(id, userId);
+    ExpenseDto expenseDto = expenseService.readByIdAndUser(id);
 
     Assertions.assertThat(expenseDto).isNotNull();
     Assertions.assertThat(expenseDto.getId()).isEqualTo(id);
@@ -159,12 +166,32 @@ public class ExpenseServiceTests {
   @Test
   @DisplayName("readByIdAndUser must throws NoResultException when expenseId don't exists")
   void readByIdAndUser_ThrowsNoResultException_WhenExpenseIdDontExists() {
-    Long userId = USER_ID;
-    Long id = NON_EXISTING_EXPENSE_ID;
+    Assertions.assertThatExceptionOfType(NoResultException.class)
+        .isThrownBy(() -> expenseService.readByIdAndUser(NON_EXISTING_EXPENSE_ID))
+        .withMessage(String.format("Nenhuma despesa com id = %d para esse usuário", NON_EXISTING_EXPENSE_ID));
+  }
+
+  @Test
+  @DisplayName("readByYearAndMonthAndUser must returns Page<ExpenseDto> when finded successful")
+  void readByYearAndMonthAndUser_ReturnsPageExpenseDto_WhenFindedSuccessful(){
+    Integer month = 1;
+    Integer year = 2022;
+
+    Page<ExpenseDto> pageExpenseDto = expenseService.readByYearAndMonthAndUser(year, month, PAGEABLE);
+
+    Assertions.assertThat(pageExpenseDto).isNotEmpty();
+    Assertions.assertThat(pageExpenseDto.getNumberOfElements()).isEqualTo(1);
+  }
+
+  @Test
+  @DisplayName("readByYearAndMonthAndUser must throws NoResultException when don't has expenses")
+  void readByYearAndMonthAndUser_ThrowsNoResultException_WhenDontHasExpenses(){
+    Integer month = 1;
+    Integer year = 2000;
 
     Assertions.assertThatExceptionOfType(NoResultException.class)
-        .isThrownBy(() -> expenseService.readByIdAndUser(id, userId))
-        .withMessage("Nenhuma despesa com esse id para esse usuário");
+        .isThrownBy(() -> expenseService.readByYearAndMonthAndUser(year, month, PAGEABLE))
+        .withMessage(String.format("Não há despesas para o ano %d e mês %d", year, month));
   }
 
   @Test
@@ -172,13 +199,30 @@ public class ExpenseServiceTests {
   void update_ReturnsExpenseDtoUpdated_WhenSuccessful() {
     Long id = ExpenseCreator.expenseWithAllArgs().getId();
     ExpenseForm expenseForm = ExpenseFormCreator.validExpenseForm();
-    Long userId = USER_ID;
 
-    ExpenseDto updateExpense = expenseService.update(id, expenseForm, userId);
+    ExpenseDto updateExpense = expenseService.update(id, expenseForm);
 
     Assertions.assertThat(updateExpense).isNotNull();
     Assertions.assertThat(updateExpense.getId()).isEqualTo(id);
     Assertions.assertThat(updateExpense.getDescription()).isEqualTo(expenseForm.getDescription());
+  }
+
+  @Test
+  @DisplayName("update must throws NoResultException when expense don't exists")
+  void update_ThrowsNoResultException_WhenExpenseDontExists() {
+    ExpenseForm expenseForm = ExpenseFormCreator.validExpenseForm();
+
+    Assertions.assertThatExceptionOfType(NoResultException.class)
+        .isThrownBy(() -> expenseService.update(NON_EXISTING_EXPENSE_ID, expenseForm))
+        .withMessage(String.format("Nenhuma despesa com id = %d para esse usuário", NON_EXISTING_EXPENSE_ID));
+  }
+
+  @Test
+  @DisplayName("readByYearAndMonthAndUser must throws NoResultException when don't has expenses")
+  void deleteById_ThrowsNoResultException_WhenExpenseDontExists(){
+    Assertions.assertThatExceptionOfType(NoResultException.class)
+        .isThrownBy(() -> expenseService.deleteById(NON_EXISTING_EXPENSE_ID))
+        .withMessage(String.format("Nenhuma despesa com id = %d para esse usuário", NON_EXISTING_EXPENSE_ID));
   }
 
 }

@@ -23,8 +23,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import br.com.emendes.financesapi.controller.dto.IncomeDto;
 import br.com.emendes.financesapi.controller.form.IncomeForm;
-import br.com.emendes.financesapi.creator.IncomeCreator;
-import br.com.emendes.financesapi.creator.IncomeFormCreator;
+import br.com.emendes.financesapi.util.creator.IncomeCreator;
+import br.com.emendes.financesapi.util.creator.IncomeFormCreator;
 import br.com.emendes.financesapi.model.Income;
 import br.com.emendes.financesapi.model.User;
 import br.com.emendes.financesapi.repository.IncomeRepository;

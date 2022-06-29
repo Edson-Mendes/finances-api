@@ -150,7 +150,7 @@ public class ExpenseController {
   })
   @DeleteMapping("/{id}")
   public ResponseEntity<Void> delete(@PathVariable Long id) {
-    expenseService.delete(id);
+    expenseService.deleteById(id);
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
 

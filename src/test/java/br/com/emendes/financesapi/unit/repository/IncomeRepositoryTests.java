@@ -18,8 +18,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
 
-import br.com.emendes.financesapi.creator.IncomeCreator;
-import br.com.emendes.financesapi.creator.UserCreator;
+import br.com.emendes.financesapi.util.creator.IncomeCreator;
+import br.com.emendes.financesapi.util.creator.UserCreator;
 import br.com.emendes.financesapi.model.Income;
 import br.com.emendes.financesapi.model.User;
 

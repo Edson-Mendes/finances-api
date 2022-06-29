@@ -19,7 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import br.com.emendes.financesapi.controller.dto.SummaryDto;
-import br.com.emendes.financesapi.creator.SummaryDtoCreator;
+import br.com.emendes.financesapi.util.creator.SummaryDtoCreator;
 import br.com.emendes.financesapi.service.SummaryService;
 import br.com.emendes.financesapi.service.TokenService;
 
