@@ -10,6 +10,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
+import br.com.emendes.financesapi.controller.form.IncomeForm;
+import br.com.emendes.financesapi.util.Formatter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -78,4 +80,9 @@ public class Income {
     this.date = date;
   }
 
+  public void setParams(IncomeForm incomeForm) {
+    this.description = incomeForm.getDescription();
+    this.date = LocalDate.parse(incomeForm.getDate(), Formatter.dateFormatter);
+    this.value = incomeForm.getValue();
+  }
 }

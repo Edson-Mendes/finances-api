@@ -6,6 +6,8 @@ import java.util.Optional;
 
 import javax.persistence.NoResultException;
 
+import br.com.emendes.financesapi.controller.dto.ExpenseDto;
+import br.com.emendes.financesapi.model.Expense;
 import br.com.emendes.financesapi.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -55,10 +57,7 @@ public class IncomeService {
   }
 
   public IncomeDto readByIdAndUser(Long incomeId) {
-    Optional<Income> optional = incomeRepository.findByIdAndUser(incomeId);
-    return new IncomeDto(optional.orElseThrow(() -> {
-      throw new NoResultException("Nenhuma receita com esse id para esse usuário");
-    }));
+    return new IncomeDto(findByIdAndUser(incomeId));
   }
 
   public Page<IncomeDto> readByYearAndMonthAndUser(Integer year, Integer month,
@@ -71,31 +70,27 @@ public class IncomeService {
   }
 
   public IncomeDto update(Long id, IncomeForm incomeForm) {
-    Optional<Income> optional = incomeRepository.findByIdAndUser(id);
-    if (optional.isPresent() && !alreadyExist(incomeForm, id)) {
-      Income income = optional.get();
+    Income incomeToBeUpdated = findByIdAndUser(id);
+    alreadyExist(incomeForm, id);
 
-      income.setDescription(incomeForm.getDescription());
-      income.setValue(incomeForm.getValue());
-      income.setDate(LocalDate.parse(incomeForm.getDate(), Formatter.dateFormatter));
-
-      return new IncomeDto(income);
-    }
-
-    throw new NoResultException("Nenhuma receita com esse id para esse usuário");
+    incomeToBeUpdated.setParams(incomeForm);
+    return new IncomeDto(incomeToBeUpdated);
   }
 
-  public void delete(Long id) {
-    Optional<Income> optional = incomeRepository.findByIdAndUser(id);
-    if (optional.isEmpty()) {
-      throw new NoResultException("Nenhuma receita com esse id para esse usuário");
-    }
-
+  public void deleteById(Long id) {
+    findByIdAndUser(id);
     incomeRepository.deleteById(id);
   }
 
   public Optional<BigDecimal> getTotalValueByMonthAndYearAndUserId(Integer year, Integer month) {
     return incomeRepository.getTotalValueByMonthAndYearAndUser(year, month);
+  }
+
+  private Income findByIdAndUser(Long id) {
+    Optional<Income> optionalExpense = incomeRepository.findByIdAndUser(id);
+
+    return optionalExpense.orElseThrow(
+        () -> new NoResultException(String.format("Nenhuma receita com id = %d para esse usuário", id)));
   }
 
   /**

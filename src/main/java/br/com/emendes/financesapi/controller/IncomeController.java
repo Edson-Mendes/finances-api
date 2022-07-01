@@ -147,7 +147,7 @@ public class IncomeController {
   })
   @DeleteMapping("/{id}")
   public ResponseEntity<Void> delete(@PathVariable Long id) {
-    incomeService.delete(id);
+    incomeService.deleteById(id);
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
 
