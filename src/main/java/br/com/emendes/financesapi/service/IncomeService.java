@@ -96,8 +96,8 @@ public class IncomeService {
     incomeRepository.deleteById(id);
   }
 
-  public Optional<BigDecimal> getTotalValueByMonthAndYearAndUserId(Integer year, Integer month, Long userId) {
-    return incomeRepository.getTotalValueByMonthAndYearAndUserId(year, month, userId);
+  public Optional<BigDecimal> getTotalValueByMonthAndYearAndUserId(Integer year, Integer month) {
+    return incomeRepository.getTotalValueByMonthAndYearAndUser(year, month);
   }
 
   /**
@@ -105,7 +105,7 @@ public class IncomeService {
    * mês
    * e ano.
    * 
-   * @param incomeRepository
+   * @param incomeForm
    * @param userId
    * @return false, se não existir uma receita com a mesma descrição em um mesmo
    *         mês e ano.

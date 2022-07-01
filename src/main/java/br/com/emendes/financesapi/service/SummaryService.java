@@ -23,8 +23,8 @@ public class SummaryService {
   @Autowired
   private IncomeService incomeService;
 
-  public SummaryDto monthSummary(Integer year, Integer month, Long userId) {
-      Optional<BigDecimal> incomeTotalValue = incomeService.getTotalValueByMonthAndYearAndUserId(year, month, userId);
+  public SummaryDto monthSummary(Integer year, Integer month) {
+      Optional<BigDecimal> incomeTotalValue = incomeService.getTotalValueByMonthAndYearAndUserId(year, month);
       Optional<BigDecimal> expenseTotalValue = expenseService.getTotalValueByMonthAndYearAndUser(year, month);
       if(incomeTotalValue.isPresent() || expenseTotalValue.isPresent()){
         return new SummaryDto(

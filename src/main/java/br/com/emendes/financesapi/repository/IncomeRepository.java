@@ -51,11 +51,10 @@ public interface IncomeRepository extends JpaRepository<Income, Long> {
       Pageable pageable);
 
   @Query("SELECT SUM(i.value) FROM Income i WHERE YEAR(i.date) = :year AND "
-      + "MONTH(i.date) = :month AND i.user.id = :userId")
-  Optional<BigDecimal> getTotalValueByMonthAndYearAndUserId(
+      + "MONTH(i.date) = :month AND i.user.id = ?#{ principal?.id }")
+  Optional<BigDecimal> getTotalValueByMonthAndYearAndUser(
       @Param("year") Integer year,
-      @Param("month") Integer month,
-      @Param("userId") Long userId);
+      @Param("month") Integer month);
 
   Optional<Income> findByIdAndUserId(Long id, Long userId);
 }

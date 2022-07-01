@@ -1,7 +1,5 @@
 package br.com.emendes.financesapi.controller;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,10 +40,8 @@ public class SummaryController {
   @GetMapping("/{year}/{month}")
   // TODO: Pensar em uma forma melhor para o resumo mensal.
   // Muitas chamadas ao banco de dados.
-  public ResponseEntity<SummaryDto> monthSummary(@PathVariable Integer year, @PathVariable Integer month,
-      HttpServletRequest request) {
-    Long userId = tokenService.getUserId(request);
-    SummaryDto summaryDto = summaryService.monthSummary(year, month, userId);
+  public ResponseEntity<SummaryDto> monthSummary(@PathVariable Integer year, @PathVariable Integer month) {
+    SummaryDto summaryDto = summaryService.monthSummary(year, month);
 
     return ResponseEntity.ok(summaryDto);
   }

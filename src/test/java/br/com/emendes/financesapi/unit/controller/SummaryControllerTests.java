@@ -36,7 +36,7 @@ public class SummaryControllerTests {
   @Mock
   private TokenService tokenServiceMock;
 
-  private final HttpServletRequest REQUEST_MOCK = Mockito.mock(HttpServletRequest.class);
+//  private final HttpServletRequest REQUEST_MOCK = Mockito.mock(HttpServletRequest.class);
 
   @BeforeEach
   public void setUp() {
@@ -45,7 +45,7 @@ public class SummaryControllerTests {
     BDDMockito.when(tokenServiceMock.getUserId(ArgumentMatchers.any(HttpServletRequest.class)))
         .thenReturn(100l);
 
-    BDDMockito.when(summaryServiceMock.monthSummary(2022, 1, 100l))
+    BDDMockito.when(summaryServiceMock.monthSummary(2022, 1))
         .thenReturn(summaryDto);
   }
 
@@ -55,7 +55,7 @@ public class SummaryControllerTests {
     Integer year = 2022;
     Integer month = 1;
 
-    ResponseEntity<SummaryDto> response = summaryController.monthSummary(year, month, REQUEST_MOCK);
+    ResponseEntity<SummaryDto> response = summaryController.monthSummary(year, month);
 
     Assertions.assertThat(response.getStatusCodeValue()).isEqualTo(200);
     Assertions.assertThat(response.getBody().getFinalBalance()).isEqualByComparingTo(new BigDecimal("500.00"));
