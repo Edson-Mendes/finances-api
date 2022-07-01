@@ -1,11 +1,16 @@
 package br.com.emendes.financesapi.controller;
 
-import java.net.URI;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.transaction.Transactional;
-import javax.validation.Valid;
-
+import br.com.emendes.financesapi.controller.dto.IncomeDto;
+import br.com.emendes.financesapi.controller.dto.error.ErrorDto;
+import br.com.emendes.financesapi.controller.dto.error.FormErrorDto;
+import br.com.emendes.financesapi.controller.form.IncomeForm;
+import br.com.emendes.financesapi.service.IncomeService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -14,29 +19,12 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import br.com.emendes.financesapi.controller.dto.IncomeDto;
-import br.com.emendes.financesapi.controller.dto.error.ErrorDto;
-import br.com.emendes.financesapi.controller.dto.error.FormErrorDto;
-import br.com.emendes.financesapi.controller.form.IncomeForm;
-import br.com.emendes.financesapi.service.IncomeService;
-import br.com.emendes.financesapi.service.TokenService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import javax.transaction.Transactional;
+import javax.validation.Valid;
+import java.net.URI;
 
 @RestController
 @RequestMapping("/receitas")
@@ -44,9 +32,8 @@ public class IncomeController {
 
   @Autowired
   private IncomeService incomeService;
-
-  @Autowired
-  private TokenService tokenService;
+  private final String headerName = "Content-Type";
+  private final String headerValue = "application/json;charset=UTF-8";
 
   @Operation(summary = "Salvar uma receita", tags = { "Receitas" }, security = {
       @SecurityRequirement(name = "bearer-key") })
@@ -60,11 +47,8 @@ public class IncomeController {
           @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDto.class)) }),
   })
   @PostMapping
-  public ResponseEntity<IncomeDto> create(@Valid @RequestBody IncomeForm form, UriComponentsBuilder uriBuilder,
-      HttpServletRequest request) {
-    Long userId = tokenService.getUserId(request);
-
-    IncomeDto incomeDto = incomeService.create(form, userId);
+  public ResponseEntity<IncomeDto> create(@Valid @RequestBody IncomeForm form, UriComponentsBuilder uriBuilder) {
+    IncomeDto incomeDto = incomeService.create(form);
     URI uri = uriBuilder.path("/despesas/{id}").buildAndExpand(incomeDto.getId()).toUri();
     return ResponseEntity.created(uri).body(incomeDto);
   }
@@ -82,19 +66,17 @@ public class IncomeController {
   @GetMapping
   public ResponseEntity<Page<IncomeDto>> read(
       @RequestParam(required = false) String description,
-      @ParameterObject() @PageableDefault(sort = "date", direction = Direction.DESC, page = 0, size = 10) Pageable pageable,
-      HttpServletRequest request) {
-    Long userId = tokenService.getUserId(request);
+      @ParameterObject() @PageableDefault(sort = "date", direction = Direction.DESC, page = 0, size = 10) Pageable pageable) {
 
     Page<IncomeDto> incomesDto;
     if (description == null) {
-      incomesDto = incomeService.readAllByUser(userId, pageable);
+      incomesDto = incomeService.readAllByUser(pageable);
     } else {
-      incomesDto = incomeService.readByDescriptionAndUser(description, userId, pageable);
+      incomesDto = incomeService.readByDescriptionAndUser(description, pageable);
     }
 
     return ResponseEntity.status(HttpStatus.OK)
-        .header("Content-Type", "application/json;charset=UTF-8")
+        .header(headerName, headerValue)
         .body(incomesDto);
   }
 
@@ -107,12 +89,10 @@ public class IncomeController {
           @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDto.class)) }),
   })
   @GetMapping("/{id}")
-  public ResponseEntity<IncomeDto> readById(@PathVariable Long id, HttpServletRequest request) {
-    Long userId = tokenService.getUserId(request);
-
-    IncomeDto incomeDto = incomeService.readByIdAndUser(id, userId);
+  public ResponseEntity<IncomeDto> readById(@PathVariable Long id) {
+    IncomeDto incomeDto = incomeService.readByIdAndUser(id);
     return ResponseEntity.status(HttpStatus.OK)
-        .header("Content-Type", "application/json;charset=UTF-8")
+        .header(headerName, headerValue)
         .body(incomeDto);
   }
 
@@ -129,13 +109,10 @@ public class IncomeController {
   public ResponseEntity<Page<IncomeDto>> readByYearAndMonth(
       @PathVariable Integer year,
       @PathVariable Integer month,
-      @ParameterObject() @PageableDefault(sort = "date", direction = Direction.DESC, page = 0, size = 10) Pageable pageable,
-      HttpServletRequest request) {
-    Long userId = tokenService.getUserId(request);
-
-    Page<IncomeDto> incomesDto = incomeService.readByYearAndMonthAndUser(year, month, userId, pageable);
+      @ParameterObject() @PageableDefault(sort = "date", direction = Direction.DESC, page = 0, size = 10) Pageable pageable) {
+    Page<IncomeDto> incomesDto = incomeService.readByYearAndMonthAndUser(year, month, pageable);
     return ResponseEntity.status(HttpStatus.OK)
-        .header("Content-Type", "application/json;charset=UTF-8")
+        .header(headerName, headerValue)
         .body(incomesDto);
   }
 
@@ -153,12 +130,10 @@ public class IncomeController {
   })
   @PutMapping("/{id}")
   @Transactional
-  public ResponseEntity<IncomeDto> update(@PathVariable Long id, @Valid @RequestBody IncomeForm incomeForm,
-      HttpServletRequest request) {
-    Long userId = tokenService.getUserId(request);
+  public ResponseEntity<IncomeDto> update(@PathVariable Long id, @Valid @RequestBody IncomeForm incomeForm) {
 
-    IncomeDto incomeDto = incomeService.update(id, incomeForm, userId);
-    return ResponseEntity.status(HttpStatus.OK).header("Content-Type", "application/json;charset=UTF-8")
+    IncomeDto incomeDto = incomeService.update(id, incomeForm);
+    return ResponseEntity.status(HttpStatus.OK).header(headerName, headerValue)
         .body(incomeDto);
   }
 
@@ -171,10 +146,8 @@ public class IncomeController {
           @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDto.class)) }),
   })
   @DeleteMapping("/{id}")
-  public ResponseEntity<Void> delete(@PathVariable Long id, HttpServletRequest request) {
-    Long userId = tokenService.getUserId(request);
-    incomeService.delete(id, userId);
-
+  public ResponseEntity<Void> delete(@PathVariable Long id) {
+    incomeService.delete(id);
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
 

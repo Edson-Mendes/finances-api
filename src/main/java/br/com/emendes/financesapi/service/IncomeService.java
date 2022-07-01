@@ -6,10 +6,12 @@ import java.util.Optional;
 
 import javax.persistence.NoResultException;
 
+import br.com.emendes.financesapi.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -25,56 +27,52 @@ public class IncomeService {
   @Autowired
   private IncomeRepository incomeRepository;
 
-  public IncomeDto create(IncomeForm incomeForm, Long userId) {
-    alreadyExist(incomeForm, userId);
+  public IncomeDto create(IncomeForm incomeForm) {
+    alreadyExist(incomeForm);
+
+    Long userId = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
     Income income = incomeForm.convert(userId);
     incomeRepository.save(income);
 
     return new IncomeDto(income);
   }
 
-  public Page<IncomeDto> readAllByUser(Long userid, Pageable pageable) {
-    Page<Income> incomes = incomeRepository.findByUserId(userid, pageable);
+  public Page<IncomeDto> readAllByUser(Pageable pageable) {
+    Page<Income> incomes = incomeRepository.findAllByUser(pageable);
 
-    if (incomes.getTotalElements() == 0) {
+    if (incomes.isEmpty()) {
       throw new NoResultException("O usuário não possui receitas");
     }
-    Page<IncomeDto> incomesDto = IncomeDto.convert(incomes);
-    return incomesDto;
+    return IncomeDto.convert(incomes);
   }
 
-  public Page<IncomeDto> readByDescriptionAndUser(String description, Long userid, Pageable pageable) {
-    Page<Income> incomes = incomeRepository.findByDescriptionAndUserId(description, userid, pageable);
-    if (incomes.getTotalElements() == 0) {
+  public Page<IncomeDto> readByDescriptionAndUser(String description, Pageable pageable) {
+    Page<Income> incomes = incomeRepository.findByDescriptionAndUser(description, pageable);
+    if (incomes.isEmpty()) {
       throw new NoResultException("O usuário não possui receitas com descrição similar a " + description);
     }
-    Page<IncomeDto> incomesDto = IncomeDto.convert(incomes);
-    return incomesDto;
+    return IncomeDto.convert(incomes);
   }
 
-  public IncomeDto readByIdAndUser(Long incomeId, Long userId) {
-    Optional<Income> optional = incomeRepository.findByIdAndUserId(incomeId, userId);
-    IncomeDto incomeDto = new IncomeDto(optional.orElseThrow(() -> {
+  public IncomeDto readByIdAndUser(Long incomeId) {
+    Optional<Income> optional = incomeRepository.findByIdAndUser(incomeId);
+    return new IncomeDto(optional.orElseThrow(() -> {
       throw new NoResultException("Nenhuma receita com esse id para esse usuário");
     }));
-
-    return incomeDto;
   }
 
-  public Page<IncomeDto> readByYearAndMonthAndUser(Integer year, Integer month, Long userId,
+  public Page<IncomeDto> readByYearAndMonthAndUser(Integer year, Integer month,
       Pageable pageable) {
-    Page<Income> incomes = incomeRepository.findByYearAndMonthAndUserId(year, month, userId, pageable);
+    Page<Income> incomes = incomeRepository.findByYearAndMonthAndUser(year, month, pageable);
     if (incomes.getTotalElements() == 0) {
       throw new NoResultException("Não há receitas para o ano " + year + " e mês " + month);
     }
-    Page<IncomeDto> incomesDto = IncomeDto.convert(incomes);
-
-    return incomesDto;
+    return IncomeDto.convert(incomes);
   }
 
-  public IncomeDto update(Long id, IncomeForm incomeForm, Long userId) {
-    Optional<Income> optional = incomeRepository.findByIdAndUserId(id, userId);
-    if (optional.isPresent() && !alreadyExist(incomeForm, id, userId)) {
+  public IncomeDto update(Long id, IncomeForm incomeForm) {
+    Optional<Income> optional = incomeRepository.findByIdAndUser(id);
+    if (optional.isPresent() && !alreadyExist(incomeForm, id)) {
       Income income = optional.get();
 
       income.setDescription(incomeForm.getDescription());
@@ -87,8 +85,8 @@ public class IncomeService {
     throw new NoResultException("Nenhuma receita com esse id para esse usuário");
   }
 
-  public void delete(Long id, Long userId) {
-    Optional<Income> optional = incomeRepository.findByIdAndUserId(id, userId);
+  public void delete(Long id) {
+    Optional<Income> optional = incomeRepository.findByIdAndUser(id);
     if (optional.isEmpty()) {
       throw new NoResultException("Nenhuma receita com esse id para esse usuário");
     }
@@ -106,16 +104,15 @@ public class IncomeService {
    * e ano.
    * 
    * @param incomeForm
-   * @param userId
    * @return false, se não existir uma receita com a mesma descrição em um mesmo
    *         mês e ano.
    * @throws ResponseStatusException se existir receita.
    */
-  public boolean alreadyExist(IncomeForm incomeForm, Long userId) {
+  public boolean alreadyExist(IncomeForm incomeForm) {
     LocalDate date = incomeForm.parseDateToLocalDate();
-    Optional<Income> optional = incomeRepository.findByDescriptionAndMonthAndYearAndUserId(incomeForm.getDescription(),
+    Optional<Income> optional = incomeRepository.findByDescriptionAndMonthAndYearAndUser(incomeForm.getDescription(),
         date.getMonthValue(),
-        date.getYear(), userId);
+        date.getYear());
     if (optional.isPresent()) {
       String message = "Uma receita com essa descrição já existe em " + date.getMonth().name().toLowerCase() + " "
           + date.getYear();
@@ -130,18 +127,17 @@ public class IncomeService {
    * mês e
    * ano da respectiva receita e com id diferente do mesmo.
    * 
-   * @param incomeRepository
-   * @param id
-   * @param userId
+   * @param incomeForm
+   * @param incomeId
    * @return false, se não existir uma receita com a mesma descrição em um mesmo
    *         mês e ano.
    * @throws ResponseStatusException se existir receita.
    */
-  public boolean alreadyExist(IncomeForm incomeForm, Long incomeId, Long userId) {
+  public boolean alreadyExist(IncomeForm incomeForm, Long incomeId) {
     LocalDate date = LocalDate.parse(incomeForm.getDate(), Formatter.dateFormatter);
-    Optional<Income> optional = incomeRepository.findByDescriptionAndMonthAndYearAndUserIdAndNotId(
+    Optional<Income> optional = incomeRepository.findByDescriptionAndMonthAndYearAndNotIdAndUser(
         incomeForm.getDescription(),
-        date.getMonthValue(), date.getYear(), userId, incomeId);
+        date.getMonthValue(), date.getYear(), incomeId);
     if (optional.isPresent()) {
       String message = "Descrição de receita duplicada para " + date.getMonth().name().toLowerCase() + " "
           + date.getYear();

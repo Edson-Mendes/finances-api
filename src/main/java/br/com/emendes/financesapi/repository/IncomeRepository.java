@@ -15,39 +15,35 @@ import br.com.emendes.financesapi.model.Income;
 @Repository
 public interface IncomeRepository extends JpaRepository<Income, Long> {
 
-  @Query("SELECT i FROM Income i WHERE i.user.id = :userId")
-  Page<Income> findByUserId(@Param("userId") Long userid, Pageable pageable);
+  @Query("SELECT i FROM Income i WHERE i.user.id = ?#{ principal?.id }")
+  Page<Income> findAllByUser(Pageable pageable);
 
   // FIXME: Refatorar essa busca
   @Query("SELECT i FROM Income i WHERE i.description = :description AND " +
-      "MONTH(i.date) = :month AND YEAR(i.date) = :year AND i.user.id = :userId")
-  Optional<Income> findByDescriptionAndMonthAndYearAndUserId(
+      "MONTH(i.date) = :month AND YEAR(i.date) = :year AND i.user.id = ?#{ principal?.id }")
+  Optional<Income> findByDescriptionAndMonthAndYearAndUser(
       @Param("description") String description,
       @Param("month") Integer month,
-      @Param("year") Integer year,
-      @Param("userId") Long userId);
+      @Param("year") Integer year);
 
   // FIXME: Refatorar essa busca
   @Query("SELECT i FROM Income i WHERE i.description = :description AND "
-      + "MONTH(i.date) = :month AND YEAR(i.date) = :year AND i.user.id = :userId AND i.id != :id")
-  Optional<Income> findByDescriptionAndMonthAndYearAndUserIdAndNotId(
+      + "MONTH(i.date) = :month AND YEAR(i.date) = :year AND i.id != :id AND i.user.id = ?#{ principal?.id }")
+  Optional<Income> findByDescriptionAndMonthAndYearAndNotIdAndUser(
       @Param("description") String description,
       @Param("month") Integer month,
       @Param("year") Integer year,
-      @Param("userId") Long userId,
       @Param("id") Long id);
 
-  @Query("SELECT i FROM Income i WHERE i.description LIKE %:description% AND i.user.id = :userId")
-  Page<Income> findByDescriptionAndUserId(
+  @Query("SELECT i FROM Income i WHERE i.description LIKE %:description% AND i.user.id = ?#{ principal?.id }")
+  Page<Income> findByDescriptionAndUser(
       @Param("description") String description,
-      @Param("userId") Long userid,
       Pageable pageable);
 
-  @Query("SELECT i FROM Income i WHERE YEAR(i.date) = :year AND MONTH(i.date) = :month AND i.user.id = :userId")
-  Page<Income> findByYearAndMonthAndUserId(
+  @Query("SELECT i FROM Income i WHERE YEAR(i.date) = :year AND MONTH(i.date) = :month AND i.user.id = ?#{ principal?.id }")
+  Page<Income> findByYearAndMonthAndUser(
       @Param("year") Integer year,
       @Param("month") Integer month,
-      @Param("userId") Long userid,
       Pageable pageable);
 
   @Query("SELECT SUM(i.value) FROM Income i WHERE YEAR(i.date) = :year AND "
@@ -56,5 +52,6 @@ public interface IncomeRepository extends JpaRepository<Income, Long> {
       @Param("year") Integer year,
       @Param("month") Integer month);
 
-  Optional<Income> findByIdAndUserId(Long id, Long userId);
+  @Query("SELECT i FROM Income i WHERE i.id = :id AND i.user.id = ?#{ principal?.id }")
+  Optional<Income> findByIdAndUser(Long id);
 }
