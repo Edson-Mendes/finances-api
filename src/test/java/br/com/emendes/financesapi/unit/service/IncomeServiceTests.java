@@ -26,6 +26,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.persistence.NoResultException;
 import java.util.List;
@@ -47,19 +48,19 @@ class IncomeServiceTests {
   private final Pageable PAGEABLE = PageRequest.of(0, 10, Direction.DESC, "date");
   private final Authentication AUTHENTICATION = mock(Authentication.class);
   private final SecurityContext SECURITY_CONTEXT = mock(SecurityContext.class);
+  private final IncomeForm INCOME_FORM = IncomeFormCreator.validIncomeForm();
   @BeforeEach
   public void setUp() {
-    IncomeForm incomeForm = IncomeFormCreator.validIncomeForm();
     Income incomeToBeSaved = IncomeCreator.validIncomeWithUser(new User(100L));
     Income incomeSaved = IncomeCreator.incomeWithAllArgs();
 
     PageImpl<Income> pageIncome = new PageImpl<>(List.of(incomeSaved));
     SecurityContextHolder.setContext(SECURITY_CONTEXT);
 
-    BDDMockito.when(incomeRepositoryMock.findByDescriptionAndMonthAndYearAndUser(
-        incomeForm.getDescription(),
-        incomeForm.parseDateToLocalDate().getMonthValue(),
-        incomeForm.parseDateToLocalDate().getYear())).thenReturn(Optional.empty());
+    BDDMockito.when(incomeRepositoryMock.existsByDescriptionAndMonthAndYearAndUser(
+        INCOME_FORM.getDescription(),
+        INCOME_FORM.parseDateToLocalDate().getMonthValue(),
+        INCOME_FORM.parseDateToLocalDate().getYear())).thenReturn(false);
 
     BDDMockito.when(incomeRepositoryMock.save(incomeToBeSaved))
         .thenReturn(incomeSaved);
@@ -79,11 +80,11 @@ class IncomeServiceTests {
     BDDMockito.when(incomeRepositoryMock.findByIdAndUser(NON_EXISTING_INCOME_ID))
         .thenReturn(Optional.empty());
 
-    BDDMockito.when(incomeRepositoryMock.findByDescriptionAndMonthAndYearAndNotIdAndUser(
-        incomeForm.getDescription(),
-        incomeForm.parseDateToLocalDate().getMonthValue(),
-        incomeForm.parseDateToLocalDate().getYear(),
-        incomeSaved.getId())).thenReturn(Optional.empty());
+    BDDMockito.when(incomeRepositoryMock.existsByDescriptionAndMonthAndYearAndNotIdAndUser(
+        INCOME_FORM.getDescription(),
+        INCOME_FORM.parseDateToLocalDate().getMonthValue(),
+        INCOME_FORM.parseDateToLocalDate().getYear(),
+        incomeSaved.getId())).thenReturn(false);
 
     BDDMockito.when(SECURITY_CONTEXT.getAuthentication()).thenReturn(AUTHENTICATION);
     BDDMockito.when(SecurityContextHolder.getContext().getAuthentication().getPrincipal())
@@ -105,6 +106,20 @@ class IncomeServiceTests {
     Assertions.assertThat(incomeDto).isNotNull();
     Assertions.assertThat(incomeDto.getDescription()).isEqualTo(incomeForm.getDescription());
     Assertions.assertThat(incomeDto.getValue()).isEqualTo(incomeForm.getValue());
+  }
+
+  @Test
+  @DisplayName("create must throws ResponseStatusException when user already has income with this description")
+  void create_MustThrowsResponseStatusException_WhenUserAlreadyHasIncomeWithThisDescription(){
+    BDDMockito.when(incomeRepositoryMock.existsByDescriptionAndMonthAndYearAndUser(
+        INCOME_FORM.getDescription(),
+        INCOME_FORM.parseDateToLocalDate().getMonthValue(),
+        INCOME_FORM.parseDateToLocalDate().getYear())).thenReturn(true);
+
+    IncomeForm incomeForm = IncomeFormCreator.validIncomeForm();
+    Assertions.assertThatExceptionOfType(ResponseStatusException.class)
+        .isThrownBy(() -> this.incomeService.create(incomeForm))
+        .withMessageContaining("Uma receita com essa descrição já existe em ");
   }
 
   @Test
@@ -203,6 +218,23 @@ class IncomeServiceTests {
     Assertions.assertThat(updateIncome).isNotNull();
     Assertions.assertThat(updateIncome.getId()).isEqualTo(id);
     Assertions.assertThat(updateIncome.getDescription()).isEqualTo(incomeForm.getDescription());
+  }
+
+  @Test
+  @DisplayName("update must throws ResponseStatusException when user already has another income with same description")
+  void update_MustThrowsResponseStatusException_WhenUserHasAnotherIncomeWithSameDescription() {
+    BDDMockito.when(incomeRepositoryMock.existsByDescriptionAndMonthAndYearAndNotIdAndUser(
+        INCOME_FORM.getDescription(),
+        INCOME_FORM.parseDateToLocalDate().getMonthValue(),
+        INCOME_FORM.parseDateToLocalDate().getYear(),
+        1000L)).thenReturn(true);
+
+    Long id = IncomeCreator.incomeWithAllArgs().getId();
+    IncomeForm incomeForm = IncomeFormCreator.validIncomeForm();
+
+    Assertions.assertThatExceptionOfType(ResponseStatusException.class)
+        .isThrownBy(() -> incomeService.update(id, incomeForm))
+        .withMessageContaining("Outra receita com essa descrição já existe em ");
   }
 
   @Test

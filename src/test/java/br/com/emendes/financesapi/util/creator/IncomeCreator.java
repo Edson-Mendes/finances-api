@@ -33,7 +33,7 @@ public class IncomeCreator {
   }
 
   public static Income incomeWithAllArgs() {
-    Long id = 1000l;
+    Long id = 1000L;
     String description = "Sálario";
     BigDecimal value = new BigDecimal("2500.00");
     LocalDate date = LocalDate.parse("2022-01-05");
