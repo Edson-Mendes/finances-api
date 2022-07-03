@@ -26,6 +26,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.persistence.NoResultException;
 import java.util.List;
@@ -48,11 +49,11 @@ class ExpenseServiceTests {
   private final Pageable PAGEABLE = PageRequest.of(0, 10, Direction.DESC, "date");
   private final Authentication AUTHENTICATION = mock(Authentication.class);
   private final SecurityContext SECURITY_CONTEXT = mock(SecurityContext.class);
+  private final ExpenseForm EXPENSE_FORM = ExpenseFormCreator.validExpenseForm();
 
   @BeforeEach
   public void setUp() {
     final Long userId = 100L;
-    ExpenseForm expenseForm = ExpenseFormCreator.validExpenseForm();
     Expense expenseToBeSaved = ExpenseCreator.validExpenseWithUser(new User(userId));
     Expense expenseSaved = ExpenseCreator.expenseWithAllArgs();
 
@@ -60,10 +61,10 @@ class ExpenseServiceTests {
 
     SecurityContextHolder.setContext(SECURITY_CONTEXT);
 
-    BDDMockito.when(expenseRepositoryMock.findByDescriptionAndMonthAndYearAndUser(
-        expenseForm.getDescription(),
-        expenseForm.parseDateToLocalDate().getMonthValue(),
-        expenseForm.parseDateToLocalDate().getYear())).thenReturn(Optional.empty());
+    BDDMockito.when(expenseRepositoryMock.existsByDescriptionAndMonthAndYearAndUser(
+        EXPENSE_FORM.getDescription(),
+        EXPENSE_FORM.parseDateToLocalDate().getMonthValue(),
+        EXPENSE_FORM.parseDateToLocalDate().getYear())).thenReturn(false);
 
     BDDMockito.when(expenseRepositoryMock.save(expenseToBeSaved))
         .thenReturn(expenseSaved);
@@ -83,11 +84,11 @@ class ExpenseServiceTests {
     BDDMockito.when(expenseRepositoryMock.findByIdAndUser(NON_EXISTING_EXPENSE_ID))
         .thenReturn(Optional.empty());
 
-    BDDMockito.when(expenseRepositoryMock.findByDescriptionAndMonthAndYearAndNotIdAndUser(
-        expenseForm.getDescription(),
-        expenseForm.parseDateToLocalDate().getMonthValue(),
-        expenseForm.parseDateToLocalDate().getYear(),
-        expenseSaved.getId())).thenReturn(Optional.empty());
+    BDDMockito.when(expenseRepositoryMock.existsByDescriptionAndMonthAndYearAndNotIdAndUser(
+        EXPENSE_FORM.getDescription(),
+        EXPENSE_FORM.parseDateToLocalDate().getMonthValue(),
+        EXPENSE_FORM.parseDateToLocalDate().getYear(),
+        expenseSaved.getId())).thenReturn(false);
 
     BDDMockito.when(SECURITY_CONTEXT.getAuthentication()).thenReturn(AUTHENTICATION);
     BDDMockito.when(SecurityContextHolder.getContext().getAuthentication().getPrincipal())
@@ -108,6 +109,20 @@ class ExpenseServiceTests {
     Assertions.assertThat(expenseDto).isNotNull();
     Assertions.assertThat(expenseDto.getDescription()).isEqualTo(expenseForm.getDescription());
     Assertions.assertThat(expenseDto.getValue()).isEqualTo(expenseForm.getValue());
+  }
+
+  @Test
+  @DisplayName("create must throws ResponseStatusException when user already has expense with this description")
+  void create_MustThrowsResponseStatusException_WhenUserAlreadyHasExpenseWithThisDescription(){
+    BDDMockito.when(expenseRepositoryMock.existsByDescriptionAndMonthAndYearAndUser(
+        EXPENSE_FORM.getDescription(),
+        EXPENSE_FORM.parseDateToLocalDate().getMonthValue(),
+        EXPENSE_FORM.parseDateToLocalDate().getYear())).thenReturn(true);
+
+    ExpenseForm expenseForm = ExpenseFormCreator.validExpenseForm();
+    Assertions.assertThatExceptionOfType(ResponseStatusException.class)
+        .isThrownBy(() -> this.expenseService.create(expenseForm))
+        .withMessageContaining("Uma despesa com essa descrição já existe em ");
   }
 
   @Test
@@ -208,6 +223,23 @@ class ExpenseServiceTests {
   }
 
   @Test
+  @DisplayName("update must throws ResponseStatusException when user already has another expense with same description")
+  void update_MustThrowsResponseStatusException_WhenUserHasAnotherExpenseWithSameDescription() {
+    BDDMockito.when(expenseRepositoryMock.existsByDescriptionAndMonthAndYearAndNotIdAndUser(
+        EXPENSE_FORM.getDescription(),
+        EXPENSE_FORM.parseDateToLocalDate().getMonthValue(),
+        EXPENSE_FORM.parseDateToLocalDate().getYear(),
+        1000L)).thenReturn(true);
+
+    Long id = ExpenseCreator.expenseWithAllArgs().getId();
+    ExpenseForm expenseForm = ExpenseFormCreator.validExpenseForm();
+
+    Assertions.assertThatExceptionOfType(ResponseStatusException.class)
+        .isThrownBy(() -> expenseService.update(id, expenseForm))
+        .withMessageContaining("Outra despesa com essa descrição já existe em ");
+  }
+
+  @Test
   @DisplayName("update must throws NoResultException when expense don't exists")
   void update_ThrowsNoResultException_WhenExpenseDontExists() {
     ExpenseForm expenseForm = ExpenseFormCreator.validExpenseForm();
@@ -216,6 +248,7 @@ class ExpenseServiceTests {
         .isThrownBy(() -> expenseService.update(NON_EXISTING_EXPENSE_ID, expenseForm))
         .withMessage(String.format("Nenhuma despesa com id = %d para esse usuário", NON_EXISTING_EXPENSE_ID));
   }
+
 
   @Test
   @DisplayName("readByYearAndMonthAndUser must throws NoResultException when don't has expenses")

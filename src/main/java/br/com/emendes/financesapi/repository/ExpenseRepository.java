@@ -17,18 +17,16 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
   @Query("SELECT e FROM Expense e WHERE e.user.id = ?#{ principal?.id }")
   Page<Expense> findAllByUser(Pageable pageable);
 
-  // FIXME: Refatorar essa busca
-  @Query("SELECT e FROM Expense e WHERE e.description = :description AND " +
+  @Query("SELECT count(e) > 0 FROM Expense e WHERE e.description = :description AND " +
       "MONTH(e.date) = :month AND YEAR(e.date) = :year AND e.user.id = ?#{ principal?.id }")
-  Optional<Expense> findByDescriptionAndMonthAndYearAndUser(
+  boolean existsByDescriptionAndMonthAndYearAndUser(
       @Param("description") String description,
       @Param("month") Integer month,
       @Param("year") Integer year);
 
-  // FIXME: Refatorar essa busca
-  @Query("SELECT e FROM Expense e WHERE e.description = :description AND " +
-      "MONTH(e.date) = :month AND YEAR(e.date) = :year AND e.user.id = ?#{ principal?.id } AND e.id != :id")
-  Optional<Expense> findByDescriptionAndMonthAndYearAndNotIdAndUser(
+  @Query("SELECT count(e) > 0 FROM Expense e WHERE e.description = :description AND "
+      + "MONTH(e.date) = :month AND YEAR(e.date) = :year AND e.id != :id AND e.user.id = ?#{ principal?.id }")
+  boolean existsByDescriptionAndMonthAndYearAndNotIdAndUser(
       @Param("description") String description,
       @Param("month") Integer month,
       @Param("year") Integer year,

@@ -29,7 +29,7 @@ public class ExpenseService {
   private ExpenseRepository expenseRepository;
 
   public ExpenseDto create(ExpenseForm expenseForm) {
-    alreadyExist(expenseForm);
+    existsIncomeWithSameDescriptionOnMonthYear(expenseForm);
 
     Long userId = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
 
@@ -71,7 +71,7 @@ public class ExpenseService {
 
   public ExpenseDto update(Long id, ExpenseForm expenseForm) {
     Expense expenseToBeUpdated = findByIdAndUser(id);
-    alreadyExist(expenseForm, id);
+    existsAnotherExpenseWithSameDescriptionOnMonthYear(expenseForm, id);
 
     expenseToBeUpdated.setParams(expenseForm);
     return new ExpenseDto(expenseToBeUpdated);
@@ -108,14 +108,13 @@ public class ExpenseService {
    * mês e ano.
    * @throws ResponseStatusException se existir despesa.
    */
-//  TODO: Refatorar esse método
-  private boolean alreadyExist(ExpenseForm form) {
+  private boolean existsIncomeWithSameDescriptionOnMonthYear(ExpenseForm form) {
     LocalDate date = form.parseDateToLocalDate();
-    Optional<Expense> optional = expenseRepository.findByDescriptionAndMonthAndYearAndUser(
+    boolean exists = expenseRepository.existsByDescriptionAndMonthAndYearAndUser(
         form.getDescription(),
         date.getMonthValue(),
         date.getYear());
-    if (optional.isPresent()) {
+    if (exists) {
       String message = "Uma despesa com essa descrição já existe em " + date.getMonth().name().toLowerCase() + " "
           + date.getYear();
       throw new ResponseStatusException(
@@ -136,16 +135,15 @@ public class ExpenseService {
    * mês e ano.
    * @throws ResponseStatusException se existir despesa.
    */
-  //  TODO: Refatorar esse método
-  private boolean alreadyExist(ExpenseForm form, Long id) {
+  private boolean existsAnotherExpenseWithSameDescriptionOnMonthYear(ExpenseForm form, Long id) {
     LocalDate date = LocalDate.parse(form.getDate(), Formatter.dateFormatter);
-    Optional<Expense> optional = expenseRepository.findByDescriptionAndMonthAndYearAndNotIdAndUser(
+    boolean exists = expenseRepository.existsByDescriptionAndMonthAndYearAndNotIdAndUser(
         form.getDescription(),
         date.getMonthValue(),
         date.getYear(),
         id);
-    if (optional.isPresent()) {
-      String message = "Descrição de despesa duplicada para " + date.getMonth().name().toLowerCase() + " "
+    if (exists) {
+      String message = "Outra despesa com essa descrição já existe em "  + date.getMonth().name().toLowerCase() + " "
           + date.getYear();
       throw new ResponseStatusException(
           HttpStatus.CONFLICT, message, null);
