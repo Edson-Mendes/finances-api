@@ -1,16 +1,15 @@
 package br.com.emendes.financesapi.repository;
 
-import java.math.BigDecimal;
-import java.util.Optional;
-
+import br.com.emendes.financesapi.controller.dto.ValueByCategoryDto;
+import br.com.emendes.financesapi.model.Expense;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import br.com.emendes.financesapi.model.Expense;
-import br.com.emendes.financesapi.model.enumerator.Category;
+import java.util.List;
+import java.util.Optional;
 
 public interface ExpenseRepository extends JpaRepository<Expense, Long> {
 
@@ -41,19 +40,13 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
       @Param("month") Integer month,
       Pageable pageable);
 
-  @Query("SELECT SUM(e.value) FROM Expense e WHERE YEAR(e.date) = :year AND MONTH(e.date) = :month AND e.user.id = ?#{ principal?.id }")
-  Optional<BigDecimal> getTotalValueByMonthAndYearAndUser(
-      @Param("year") Integer year,
-      @Param("month") Integer month);
-
-  @Query("SELECT SUM(value) FROM Expense e WHERE YEAR(e.date) = :year AND " +
-      "MONTH (e.date) = :month AND e.category = :category AND e.user.id = ?#{ principal?.id }")
-  Optional<BigDecimal> getTotalByCategoryOnYearAndMonth(
-      @Param("category") Category category,
-      @Param("year") Integer year,
-      @Param("month") Integer month);
-
   @Query("SELECT e FROM Expense e WHERE e.id = :id AND e.user.id = ?#{ principal?.id }")
   Optional<Expense> findByIdAndUser(@Param("id") Long id);
 
+  @Query("SELECT new br.com.emendes.financesapi.controller.dto.ValueByCategoryDto(e.category, SUM(e.value)) " +
+      "FROM Expense e " +
+      "WHERE YEAR(e.date) = :year AND MONTH(e.date) = :month " +
+      "AND e.user.id = ?#{ principal?.id } " +
+      "GROUP BY e.category")
+  List<ValueByCategoryDto> getValueByCategoryAndMonthAndYearAndUser(@Param("year") int year, @Param("month") int month);
 }

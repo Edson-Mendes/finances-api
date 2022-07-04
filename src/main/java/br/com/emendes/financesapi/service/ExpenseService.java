@@ -1,12 +1,12 @@
 package br.com.emendes.financesapi.service;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.Optional;
-
-import javax.persistence.NoResultException;
-
+import br.com.emendes.financesapi.controller.dto.ExpenseDto;
+import br.com.emendes.financesapi.controller.dto.ValueByCategoryDto;
+import br.com.emendes.financesapi.controller.form.ExpenseForm;
+import br.com.emendes.financesapi.model.Expense;
 import br.com.emendes.financesapi.model.User;
+import br.com.emendes.financesapi.repository.ExpenseRepository;
+import br.com.emendes.financesapi.util.Formatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,12 +15,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import br.com.emendes.financesapi.controller.dto.ExpenseDto;
-import br.com.emendes.financesapi.controller.form.ExpenseForm;
-import br.com.emendes.financesapi.model.Expense;
-import br.com.emendes.financesapi.model.enumerator.Category;
-import br.com.emendes.financesapi.repository.ExpenseRepository;
-import br.com.emendes.financesapi.util.Formatter;
+import javax.persistence.NoResultException;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ExpenseService {
@@ -82,14 +80,6 @@ public class ExpenseService {
     expenseRepository.deleteById(id);
   }
 
-  public Optional<BigDecimal> getTotalValueByMonthAndYearAndUser(Integer year, Integer month) {
-    return expenseRepository.getTotalValueByMonthAndYearAndUser(year, month);
-  }
-
-  public BigDecimal getTotalByCategoryOnYearAndMonth(Category category, Integer year, Integer month) {
-    return expenseRepository.getTotalByCategoryOnYearAndMonth(category, year, month).orElse(BigDecimal.ZERO);
-  }
-
   private Expense findByIdAndUser(Long id) {
     Optional<Expense> optionalExpense = expenseRepository.findByIdAndUser(id);
 
@@ -149,5 +139,9 @@ public class ExpenseService {
           HttpStatus.CONFLICT, message, null);
     }
     return false;
+  }
+
+  public List<ValueByCategoryDto> getValuesByCategoryOnMonthAndYearByUser(Integer year, Integer month) {
+    return expenseRepository.getValueByCategoryAndMonthAndYearAndUser(year, month);
   }
 }

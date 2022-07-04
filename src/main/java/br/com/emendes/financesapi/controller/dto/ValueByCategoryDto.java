@@ -7,7 +7,7 @@ import java.util.List;
 import br.com.emendes.financesapi.model.enumerator.Category;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-public class ValueByCategory {
+public class ValueByCategoryDto {
 
   @Schema(example = "MORADIA")
   private Category category;
@@ -15,8 +15,13 @@ public class ValueByCategory {
   @Schema(example = "3700.00")
   private BigDecimal value;
 
-  public ValueByCategory(Category category, BigDecimal value){
+  public ValueByCategoryDto(Category category, BigDecimal value){
     this.category = category;
+    this.value = value;
+  }
+
+  public ValueByCategoryDto(String category, BigDecimal value){
+    this.category = Category.valueOf(category);
     this.value = value;
   }
 
@@ -32,7 +37,7 @@ public class ValueByCategory {
   public boolean equals(Object obj) {
     if(this == obj) return true;
     if(obj == null || getClass() != obj.getClass()) return false;
-    ValueByCategory other = (ValueByCategory) obj;
+    ValueByCategoryDto other = (ValueByCategoryDto) obj;
     return category.equals(other.getCategory()) && value.equals(other.getValue());
   }
 
@@ -56,10 +61,10 @@ public class ValueByCategory {
   /**
    * @return Lista com todas as categorias com valor igual a zero.
    */
-  public static List<ValueByCategory> listWithZero(){
-    List<ValueByCategory> totalByCategory = new ArrayList<>();
+  public static List<ValueByCategoryDto> listWithZero(){
+    List<ValueByCategoryDto> totalByCategory = new ArrayList<>();
     for(Category category : Category.values()){
-      totalByCategory.add(new ValueByCategory(category, BigDecimal.ZERO));
+      totalByCategory.add(new ValueByCategoryDto(category, BigDecimal.ZERO));
     }
 
     return totalByCategory;

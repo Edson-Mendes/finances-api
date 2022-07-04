@@ -38,9 +38,7 @@ public class SummaryController {
           @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDto.class)) }),
   })
   @GetMapping("/{year}/{month}")
-  // TODO: Pensar em uma forma melhor para o resumo mensal.
-  // Muitas chamadas ao banco de dados.
-  public ResponseEntity<SummaryDto> monthSummary(@PathVariable Integer year, @PathVariable Integer month) {
+  public ResponseEntity<SummaryDto> monthSummary(@PathVariable int year, @PathVariable int month) {
     SummaryDto summaryDto = summaryService.monthSummary(year, month);
 
     return ResponseEntity.ok(summaryDto);

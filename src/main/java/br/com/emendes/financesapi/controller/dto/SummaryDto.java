@@ -17,13 +17,13 @@ public class SummaryDto {
   @Schema(example = "1300.00")
   private BigDecimal finalBalance = BigDecimal.ZERO;
   
-  private List<ValueByCategory> valuesByCategory = new ArrayList<>();
+  private List<ValueByCategoryDto> valuesByCategory = new ArrayList<>();
 
   public SummaryDto() {
   }
 
   public SummaryDto(BigDecimal incomeTotalValue, BigDecimal expenseTotalValue,
-      List<ValueByCategory> valuesByCategory) {
+      List<ValueByCategoryDto> valuesByCategory) {
     this.incomeTotalValue = incomeTotalValue;
     this.expenseTotalValue = expenseTotalValue;
     this.finalBalance = incomeTotalValue.subtract(expenseTotalValue);
@@ -42,7 +42,7 @@ public class SummaryDto {
     return expenseTotalValue;
   }
 
-  public List<ValueByCategory> getValuesByCategory() {
+  public List<ValueByCategoryDto> getValuesByCategory() {
     return valuesByCategory;
   }
 

@@ -82,8 +82,8 @@ public class IncomeService {
     incomeRepository.deleteById(id);
   }
 
-  public Optional<BigDecimal> getTotalValueByMonthAndYearAndUserId(Integer year, Integer month) {
-    return incomeRepository.getTotalValueByMonthAndYearAndUser(year, month);
+  public BigDecimal getTotalValueByMonthAndYearAndUserId(Integer year, Integer month) {
+    return incomeRepository.getTotalValueByMonthAndYearAndUser(year, month).orElse(BigDecimal.ZERO);
   }
 
   private Income findByIdAndUser(Long id) {

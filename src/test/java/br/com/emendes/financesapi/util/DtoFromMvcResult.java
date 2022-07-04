@@ -17,7 +17,7 @@ import br.com.emendes.financesapi.controller.dto.RoleDto;
 import br.com.emendes.financesapi.controller.dto.SummaryDto;
 import br.com.emendes.financesapi.controller.dto.TokenDto;
 import br.com.emendes.financesapi.controller.dto.UserDto;
-import br.com.emendes.financesapi.controller.dto.ValueByCategory;
+import br.com.emendes.financesapi.controller.dto.ValueByCategoryDto;
 import br.com.emendes.financesapi.controller.dto.error.ErrorDto;
 import br.com.emendes.financesapi.controller.dto.error.FormErrorDto;
 import br.com.emendes.financesapi.model.enumerator.Category;
@@ -120,9 +120,9 @@ public abstract class DtoFromMvcResult {
 
     List<String> categories = content.get("valuesByCategory").findValuesAsText("category");
     List<String> values = content.get("valuesByCategory").findValuesAsText("value");
-    List<ValueByCategory> valuesByCategory = new ArrayList<>();
+    List<ValueByCategoryDto> valuesByCategory = new ArrayList<>();
     for (int i = 0; i < categories.size(); i++) {
-      ValueByCategory valueByCategory = new ValueByCategory(Category.valueOf(categories.get(i)),
+      ValueByCategoryDto valueByCategory = new ValueByCategoryDto(Category.valueOf(categories.get(i)),
           new BigDecimal(values.get(i)));
       valuesByCategory.add(valueByCategory);
     }

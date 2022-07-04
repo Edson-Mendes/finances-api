@@ -20,7 +20,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MvcResult;
 
 import br.com.emendes.financesapi.controller.dto.SummaryDto;
-import br.com.emendes.financesapi.controller.dto.ValueByCategory;
+import br.com.emendes.financesapi.controller.dto.ValueByCategoryDto;
 import br.com.emendes.financesapi.model.enumerator.Category;
 import br.com.emendes.financesapi.util.CustomMockMvc;
 import br.com.emendes.financesapi.util.DtoFromMvcResult;
@@ -146,16 +146,16 @@ public class SummaryControllerIT {
     MvcResult result = mock.get("/resumo/" + year + "/" + month, tokenLorem, 200);
     SummaryDto summaryResponse = DtoFromMvcResult.summaryDto(result);
 
-    List<ValueByCategory> valuesByCategory = new ArrayList<>();
+    List<ValueByCategoryDto> valuesByCategory = new ArrayList<>();
 
-    valuesByCategory.add(new ValueByCategory(Category.ALIMENTACAO, new BigDecimal("700.0")));
-    valuesByCategory.add(new ValueByCategory(Category.SAUDE, new BigDecimal("150.0")));
-    valuesByCategory.add(new ValueByCategory(Category.MORADIA, new BigDecimal("1000.0")));
-    valuesByCategory.add(new ValueByCategory(Category.TRANSPORTE, new BigDecimal("0")));
-    valuesByCategory.add(new ValueByCategory(Category.EDUCACAO, new BigDecimal("0")));
-    valuesByCategory.add(new ValueByCategory(Category.LAZER, new BigDecimal("0")));
-    valuesByCategory.add(new ValueByCategory(Category.IMPREVISTOS, new BigDecimal("0")));
-    valuesByCategory.add(new ValueByCategory(Category.OUTRAS, new BigDecimal("0")));
+    valuesByCategory.add(new ValueByCategoryDto(Category.ALIMENTACAO, new BigDecimal("700.0")));
+    valuesByCategory.add(new ValueByCategoryDto(Category.SAUDE, new BigDecimal("150.0")));
+    valuesByCategory.add(new ValueByCategoryDto(Category.MORADIA, new BigDecimal("1000.0")));
+    valuesByCategory.add(new ValueByCategoryDto(Category.TRANSPORTE, new BigDecimal("0")));
+    valuesByCategory.add(new ValueByCategoryDto(Category.EDUCACAO, new BigDecimal("0")));
+    valuesByCategory.add(new ValueByCategoryDto(Category.LAZER, new BigDecimal("0")));
+    valuesByCategory.add(new ValueByCategoryDto(Category.IMPREVISTOS, new BigDecimal("0")));
+    valuesByCategory.add(new ValueByCategoryDto(Category.OUTRAS, new BigDecimal("0")));
 
     SummaryDto summaryExpected = new SummaryDto(new BigDecimal("4000.0"), new BigDecimal("1950.0"), valuesByCategory);
 
@@ -170,16 +170,16 @@ public class SummaryControllerIT {
     MvcResult result = mock.get("/resumo/" + year + "/" + month, tokenIpsum, 200);
     SummaryDto summaryResponse = DtoFromMvcResult.summaryDto(result);
 
-    List<ValueByCategory> valuesByCategory = new ArrayList<>();
+    List<ValueByCategoryDto> valuesByCategory = new ArrayList<>();
 
-    valuesByCategory.add(new ValueByCategory(Category.ALIMENTACAO, new BigDecimal("800.0")));
-    valuesByCategory.add(new ValueByCategory(Category.SAUDE, new BigDecimal("250.0")));
-    valuesByCategory.add(new ValueByCategory(Category.MORADIA, new BigDecimal("800.0")));
-    valuesByCategory.add(new ValueByCategory(Category.TRANSPORTE, new BigDecimal("0")));
-    valuesByCategory.add(new ValueByCategory(Category.EDUCACAO, new BigDecimal("0")));
-    valuesByCategory.add(new ValueByCategory(Category.LAZER, new BigDecimal("0")));
-    valuesByCategory.add(new ValueByCategory(Category.IMPREVISTOS, new BigDecimal("0")));
-    valuesByCategory.add(new ValueByCategory(Category.OUTRAS, new BigDecimal("0")));
+    valuesByCategory.add(new ValueByCategoryDto(Category.ALIMENTACAO, new BigDecimal("800.0")));
+    valuesByCategory.add(new ValueByCategoryDto(Category.SAUDE, new BigDecimal("250.0")));
+    valuesByCategory.add(new ValueByCategoryDto(Category.MORADIA, new BigDecimal("800.0")));
+    valuesByCategory.add(new ValueByCategoryDto(Category.TRANSPORTE, new BigDecimal("0")));
+    valuesByCategory.add(new ValueByCategoryDto(Category.EDUCACAO, new BigDecimal("0")));
+    valuesByCategory.add(new ValueByCategoryDto(Category.LAZER, new BigDecimal("0")));
+    valuesByCategory.add(new ValueByCategoryDto(Category.IMPREVISTOS, new BigDecimal("0")));
+    valuesByCategory.add(new ValueByCategoryDto(Category.OUTRAS, new BigDecimal("0")));
 
     SummaryDto summaryExpected = new SummaryDto(new BigDecimal("3000.0"), new BigDecimal("1750.0"), valuesByCategory);
 

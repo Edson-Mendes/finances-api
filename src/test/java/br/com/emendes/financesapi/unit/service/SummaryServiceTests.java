@@ -1,10 +1,8 @@
 package br.com.emendes.financesapi.unit.service;
 
-import java.math.BigDecimal;
-import java.util.Optional;
-
-import javax.persistence.NoResultException;
-
+import br.com.emendes.financesapi.controller.dto.SummaryDto;
+import br.com.emendes.financesapi.controller.dto.ValueByCategoryDto;
+import br.com.emendes.financesapi.model.enumerator.Category;
 import br.com.emendes.financesapi.service.ExpenseService;
 import br.com.emendes.financesapi.service.IncomeService;
 import br.com.emendes.financesapi.service.SummaryService;
@@ -13,13 +11,16 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentMatchers;
 import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import br.com.emendes.financesapi.controller.dto.SummaryDto;
+import javax.persistence.NoResultException;
+import java.math.BigDecimal;
+import java.time.Month;
+import java.util.Collections;
+import java.util.List;
 
 @ExtendWith(SpringExtension.class)
 @DisplayName("Tests for SummaryService")
@@ -35,48 +36,87 @@ class SummaryServiceTests {
   @BeforeEach
   public void setUp() {
     BigDecimal incomeTotalValue = new BigDecimal("2500.00");
+    ValueByCategoryDto valueMoradia = new ValueByCategoryDto(Category.MORADIA, new BigDecimal("1000.00"));
+    ValueByCategoryDto valueAlimentacao = new ValueByCategoryDto(Category.ALIMENTACAO, new BigDecimal("700.00"));
+    ValueByCategoryDto valueTransporte = new ValueByCategoryDto(Category.TRANSPORTE, new BigDecimal("550.00"));
+
+    List<ValueByCategoryDto> valuesByCategory = List.of(valueMoradia, valueAlimentacao, valueTransporte);
 
     BDDMockito.when(incomeServiceMock.getTotalValueByMonthAndYearAndUserId(2022, 1))
-        .thenReturn(Optional.of(incomeTotalValue));
-
-    BDDMockito.when(expenseServiceMock.getTotalValueByMonthAndYearAndUser(2022, 1))
-        .thenReturn(Optional.of(BigDecimal.ZERO));
-
-    BDDMockito.when(expenseServiceMock.getTotalByCategoryOnYearAndMonth(
-        ArgumentMatchers.any(),
-        ArgumentMatchers.eq(2022),
-        ArgumentMatchers.eq(1)))
-        .thenReturn(BigDecimal.ZERO);
+        .thenReturn(incomeTotalValue);
+    BDDMockito.when(expenseServiceMock.getValuesByCategoryOnMonthAndYearByUser(2022, 1))
+        .thenReturn(valuesByCategory);
 
     BDDMockito.when(incomeServiceMock.getTotalValueByMonthAndYearAndUserId(2022, 2))
-        .thenReturn(Optional.empty());
+        .thenReturn(incomeTotalValue);
+    BDDMockito.when(expenseServiceMock.getValuesByCategoryOnMonthAndYearByUser(2022, 2))
+        .thenReturn(Collections.EMPTY_LIST);
 
-    BDDMockito.when(expenseServiceMock.getTotalValueByMonthAndYearAndUser(2022, 2))
-        .thenReturn(Optional.empty());
+    BDDMockito.when(incomeServiceMock.getTotalValueByMonthAndYearAndUserId(2022, 3))
+        .thenReturn(BigDecimal.ZERO);
+    BDDMockito.when(expenseServiceMock.getValuesByCategoryOnMonthAndYearByUser(2022, 3))
+        .thenReturn(valuesByCategory);
+
+    BDDMockito.when(incomeServiceMock.getTotalValueByMonthAndYearAndUserId(2022, 4))
+        .thenReturn(BigDecimal.ZERO);
+    BDDMockito.when(expenseServiceMock.getValuesByCategoryOnMonthAndYearByUser(2022, 4))
+        .thenReturn(Collections.EMPTY_LIST);
   }
 
   @Test
   @DisplayName("monthSummary must returns SummaryDto when successful")
   void monthSummary_ReturnsSummaryDto_WhenSuccessful() {
-    Integer year = 2022;
-    Integer month = 1;
+    int year = 2022;
+    int month = 1;
+
+    SummaryDto summaryDto = summaryService.monthSummary(year, month);
+
+    Assertions.assertThat(summaryDto).isNotNull();
+    Assertions.assertThat(summaryDto.getIncomeTotalValue()).isEqualTo(new BigDecimal("2500.00"));
+    Assertions.assertThat(summaryDto.getExpenseTotalValue()).isEqualTo(new BigDecimal("2250.00"));
+    Assertions.assertThat(summaryDto.getFinalBalance()).isEqualTo(new BigDecimal("250.00"));
+    Assertions.assertThat(summaryDto.getValuesByCategory()).hasSize(3);
+  }
+
+  @Test
+  @DisplayName("monthSummary must returns SummaryDto with total expenses ZERO when successful")
+  void monthSummary_ReturnsSummaryDtoWithTotalExpenseZero_WhenUserHasntExpenses() {
+    int year = 2022;
+    int month = 2;
 
     SummaryDto summaryDto = summaryService.monthSummary(year, month);
 
     Assertions.assertThat(summaryDto).isNotNull();
     Assertions.assertThat(summaryDto.getIncomeTotalValue()).isEqualTo(new BigDecimal("2500.00"));
     Assertions.assertThat(summaryDto.getExpenseTotalValue()).isEqualTo(BigDecimal.ZERO);
+    Assertions.assertThat(summaryDto.getFinalBalance()).isEqualTo(new BigDecimal("2500.00"));
+    Assertions.assertThat(summaryDto.getValuesByCategory()).isEmpty();
+  }
+
+  @Test
+  @DisplayName("monthSummary must returns SummaryDto with total incomes ZERO when successful")
+  void monthSummary_ReturnsSummaryDtoWithTotalIncomeZero_WhenUserHasntIncomes() {
+    int year = 2022;
+    int month = 3;
+
+    SummaryDto summaryDto = summaryService.monthSummary(year, month);
+
+    Assertions.assertThat(summaryDto).isNotNull();
+    Assertions.assertThat(summaryDto.getIncomeTotalValue()).isEqualTo(BigDecimal.ZERO);
+    Assertions.assertThat(summaryDto.getExpenseTotalValue()).isEqualTo(new BigDecimal("2250.00"));
+    Assertions.assertThat(summaryDto.getFinalBalance()).isEqualTo(new BigDecimal("-2250.00"));
+    Assertions.assertThat(summaryDto.getValuesByCategory()).hasSize(3);
   }
 
   @Test
   @DisplayName("monthSummary throws NoResultException when user don't have incomes and expenses")
   void monthSummary_ThrowsNoResultException_WhenUserDontHaveIncomesAndExpenses() {
-    Integer year = 2022;
-    Integer month = 2;
+    int year = 2022;
+    int month = 4;
 
     Assertions.assertThatExceptionOfType(NoResultException.class)
         .isThrownBy(() -> summaryService.monthSummary(year, month))
-        .withMessageContaining("Não há receitas e despesas para o ano ");
+        .withMessage(String.format("Não há receitas e despesas para %s %d", Month.of(month), year));
   }
 
 }
