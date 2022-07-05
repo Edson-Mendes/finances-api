@@ -54,12 +54,12 @@ O projeto foi proposto pela Alura no Challenge Backend 2ª edição.
 - `Heroku`
 
 ## :hammer_and_wrench: Deploy
-O deploy da aplicação foi realizado no *Heroku*, você pode testar/brincar/usar [aqui](https://apifinances.herokuapp.com/swagger-ui/index.html#/)
+O deploy da aplicação foi realizado no *Heroku*, você pode testar/brincar/usar [aqui](https://apifinances.herokuapp.com/swagger-ui.html)
 
-OBS: As aplicações que usam conta gratuita do heroku *adormecem* se ficarem inativas, então pode ser que a primeira requisição demore um pouco, apenas seja paciente :wink:.
+OBS: As aplicações que usam conta gratuita do heroku *adormecem* se ficarem inativas, então pode ser que a primeira requisição demore um pouco (até uns 60 segundos), apenas seja paciente :wink:.
 
 ## :card_file_box: Documentação
-Documentação feita com Springdoc openapi, gerando [Swagger UI](https://apifinances.herokuapp.com/swagger-ui/index.html#/) e [Api docs](https://apifinances.herokuapp.com/api-docs)
+Documentação feita com Springdoc openapi, gerando [Swagger UI](https://apifinances.herokuapp.com/swagger-ui.html) e [Api docs](https://apifinances.herokuapp.com/api-docs)
 
 ## :gear: Atualizações futuras
 - [ ] Troca do banco de dados H2 para outro (MySQL, PostgreSQL, ou outro)

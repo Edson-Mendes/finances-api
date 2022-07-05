@@ -58,7 +58,7 @@ public class ExpenseService {
   }
 
   public Page<ExpenseDto> readByYearAndMonthAndUser(
-      Integer year, Integer month, Pageable pageable) {
+      int year, int month, Pageable pageable) {
     Page<Expense> expenses = expenseRepository.findByYearAndMonthAndUser(year, month, pageable);
 
     if (expenses.isEmpty()) {

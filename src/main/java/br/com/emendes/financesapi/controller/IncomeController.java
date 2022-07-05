@@ -19,13 +19,17 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.transaction.Transactional;
 import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import java.net.URI;
 
+@Validated
 @RestController
 @RequestMapping("/receitas")
 public class IncomeController {
@@ -107,8 +111,8 @@ public class IncomeController {
   })
   @GetMapping("/{year}/{month}")
   public ResponseEntity<Page<IncomeDto>> readByYearAndMonth(
-      @PathVariable Integer year,
-      @PathVariable Integer month,
+      @Min(1970) @Max(2099) @PathVariable int year,
+      @Min(1) @Max(12) @PathVariable int month,
       @ParameterObject() @PageableDefault(sort = "date", direction = Direction.DESC, page = 0, size = 10) Pageable pageable) {
     Page<IncomeDto> incomesDto = incomeService.readByYearAndMonthAndUser(year, month, pageable);
     return ResponseEntity.status(HttpStatus.OK)

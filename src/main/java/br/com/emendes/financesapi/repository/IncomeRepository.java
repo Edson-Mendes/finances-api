@@ -22,15 +22,15 @@ public interface IncomeRepository extends JpaRepository<Income, Long> {
       "MONTH(i.date) = :month AND YEAR(i.date) = :year AND i.user.id = ?#{ principal?.id }")
   boolean existsByDescriptionAndMonthAndYearAndUser(
       @Param("description") String description,
-      @Param("month") Integer month,
-      @Param("year") Integer year);
+      @Param("month") int month,
+      @Param("year") int year);
 
   @Query("SELECT count(i) > 0 FROM Income i WHERE i.description = :description AND "
       + "MONTH(i.date) = :month AND YEAR(i.date) = :year AND i.id != :id AND i.user.id = ?#{ principal?.id }")
   boolean existsByDescriptionAndMonthAndYearAndNotIdAndUser(
       @Param("description") String description,
-      @Param("month") Integer month,
-      @Param("year") Integer year,
+      @Param("month") int month,
+      @Param("year") int year,
       @Param("id") Long id);
 
   @Query("SELECT i FROM Income i WHERE i.description LIKE %:description% AND i.user.id = ?#{ principal?.id }")
@@ -40,15 +40,15 @@ public interface IncomeRepository extends JpaRepository<Income, Long> {
 
   @Query("SELECT i FROM Income i WHERE YEAR(i.date) = :year AND MONTH(i.date) = :month AND i.user.id = ?#{ principal?.id }")
   Page<Income> findByYearAndMonthAndUser(
-      @Param("year") Integer year,
-      @Param("month") Integer month,
+      @Param("year") int year,
+      @Param("month") int month,
       Pageable pageable);
 
   @Query("SELECT SUM(i.value) FROM Income i WHERE YEAR(i.date) = :year AND "
       + "MONTH(i.date) = :month AND i.user.id = ?#{ principal?.id }")
   Optional<BigDecimal> getTotalValueByMonthAndYearAndUser(
-      @Param("year") Integer year,
-      @Param("month") Integer month);
+      @Param("year") int year,
+      @Param("month") int month);
 
   @Query("SELECT i FROM Income i WHERE i.id = :id AND i.user.id = ?#{ principal?.id }")
   Optional<Income> findByIdAndUser(Long id);

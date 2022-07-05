@@ -20,15 +20,15 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
       "MONTH(e.date) = :month AND YEAR(e.date) = :year AND e.user.id = ?#{ principal?.id }")
   boolean existsByDescriptionAndMonthAndYearAndUser(
       @Param("description") String description,
-      @Param("month") Integer month,
-      @Param("year") Integer year);
+      @Param("month") int month,
+      @Param("year") int year);
 
   @Query("SELECT count(e) > 0 FROM Expense e WHERE e.description = :description AND "
       + "MONTH(e.date) = :month AND YEAR(e.date) = :year AND e.id != :id AND e.user.id = ?#{ principal?.id }")
   boolean existsByDescriptionAndMonthAndYearAndNotIdAndUser(
       @Param("description") String description,
-      @Param("month") Integer month,
-      @Param("year") Integer year,
+      @Param("month") int month,
+      @Param("year") int year,
       @Param("id") Long id);
 
   @Query("SELECT e FROM Expense e WHERE e.description LIKE %:description% AND e.user.id = ?#{ principal?.id }")
@@ -36,8 +36,8 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
 
   @Query("SELECT e FROM Expense e WHERE YEAR(e.date) = :year AND MONTH(e.date)= :month AND e.user.id = ?#{ principal?.id }")
   Page<Expense> findByYearAndMonthAndUser(
-      @Param("year") Integer year,
-      @Param("month") Integer month,
+      @Param("year") int year,
+      @Param("month") int month,
       Pageable pageable);
 
   @Query("SELECT e FROM Expense e WHERE e.id = :id AND e.user.id = ?#{ principal?.id }")

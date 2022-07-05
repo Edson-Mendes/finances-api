@@ -60,7 +60,7 @@ public class IncomeService {
     return new IncomeDto(findByIdAndUser(incomeId));
   }
 
-  public Page<IncomeDto> readByYearAndMonthAndUser(Integer year, Integer month,
+  public Page<IncomeDto> readByYearAndMonthAndUser(int year, int month,
                                                    Pageable pageable) {
     Page<Income> incomes = incomeRepository.findByYearAndMonthAndUser(year, month, pageable);
     if (incomes.getTotalElements() == 0) {
@@ -82,7 +82,7 @@ public class IncomeService {
     incomeRepository.deleteById(id);
   }
 
-  public BigDecimal getTotalValueByMonthAndYearAndUserId(Integer year, Integer month) {
+  public BigDecimal getTotalValueByMonthAndYearAndUserId(int year, int month) {
     return incomeRepository.getTotalValueByMonthAndYearAndUser(year, month).orElse(BigDecimal.ZERO);
   }
 

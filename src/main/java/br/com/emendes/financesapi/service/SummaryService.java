@@ -18,7 +18,7 @@ public class SummaryService {
   @Autowired
   private IncomeService incomeService;
 
-  public SummaryDto monthSummary(Integer year, Integer month) {
+  public SummaryDto monthSummary(int year, int month) {
     BigDecimal incomeTotalValue = incomeService.getTotalValueByMonthAndYearAndUserId(year, month);
     List<ValueByCategoryDto> valuesByCategory = expenseService.getValuesByCategoryOnMonthAndYearByUser(year, month);
 

@@ -26,7 +26,7 @@ import br.com.emendes.financesapi.model.enumerator.Category;
 import br.com.emendes.financesapi.util.CustomMockMvc;
 import br.com.emendes.financesapi.util.DtoFromMvcResult;
 import br.com.emendes.financesapi.util.Formatter;
-
+//TODO: Refatorar TODOS os testes de integração.
 @SpringBootTest
 @AutoConfigureMockMvc
 @TestInstance(Lifecycle.PER_CLASS)

@@ -189,8 +189,8 @@ class ExpenseServiceTests {
   @Test
   @DisplayName("readByYearAndMonthAndUser must returns Page<ExpenseDto> when finded successful")
   void readByYearAndMonthAndUser_ReturnsPageExpenseDto_WhenFindedSuccessful(){
-    Integer month = 1;
-    Integer year = 2022;
+    int month = 1;
+    int year = 2022;
 
     Page<ExpenseDto> pageExpenseDto = expenseService.readByYearAndMonthAndUser(year, month, PAGEABLE);
 
@@ -201,8 +201,8 @@ class ExpenseServiceTests {
   @Test
   @DisplayName("readByYearAndMonthAndUser must throws NoResultException when don't has expenses")
   void readByYearAndMonthAndUser_ThrowsNoResultException_WhenDontHasExpenses(){
-    Integer month = 1;
-    Integer year = 2000;
+    int month = 1;
+    int year = 2000;
 
     Assertions.assertThatExceptionOfType(NoResultException.class)
         .isThrownBy(() -> expenseService.readByYearAndMonthAndUser(year, month, PAGEABLE))
