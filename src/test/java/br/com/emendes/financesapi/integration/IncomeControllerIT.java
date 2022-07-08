@@ -1,311 +1,455 @@
 package br.com.emendes.financesapi.integration;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.TestInstance.Lifecycle;
-import org.junit.jupiter.api.TestMethodOrder;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MvcResult;
-
 import br.com.emendes.financesapi.controller.dto.IncomeDto;
+import br.com.emendes.financesapi.controller.dto.TokenDto;
 import br.com.emendes.financesapi.controller.dto.error.ErrorDto;
-import br.com.emendes.financesapi.util.CustomMockMvc;
+import br.com.emendes.financesapi.controller.dto.error.FormErrorDto;
+import br.com.emendes.financesapi.controller.form.IncomeForm;
+import br.com.emendes.financesapi.controller.form.LoginForm;
+import br.com.emendes.financesapi.model.Income;
+import br.com.emendes.financesapi.repository.IncomeRepository;
 import br.com.emendes.financesapi.util.Formatter;
-import br.com.emendes.financesapi.util.DtoFromMvcResult;
+import br.com.emendes.financesapi.util.creator.IncomeCreator;
+import br.com.emendes.financesapi.util.creator.IncomeFormCreator;
+import br.com.emendes.financesapi.util.wrapper.PageableResponse;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.data.domain.Page;
+import org.springframework.http.*;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-@TestInstance(Lifecycle.PER_CLASS)
-@TestMethodOrder(OrderAnnotation.class)
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@AutoConfigureTestDatabase()
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @ActiveProfiles("test")
-public class IncomeControllerIT {
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@DisplayName("Integration tests for /receitas/**")
+class IncomeControllerIT {
 
   @Autowired
-  private CustomMockMvc mock;
-
-  private String tokenLorem;
-
-  private String tokenIpsum;
-
+  private TestRestTemplate testRestTemplate;
+  @Autowired
+  private IncomeRepository incomeRepository;
+  private final String BASE_URI = "/receitas";
+  private final HttpHeaders HEADERS = new HttpHeaders();
   @BeforeAll
-  public void addUsuarioLorem() {
-    String name = "Lorem Sit";
-    String email = "lorem.s@email.com";
-    String password = "111111111";
-    String confirm = "111111111";
+  public void singInAndAddAuthorizationHeader(){
+    String email = "user@email.com";
+    String password = "123456";
 
-    Map<String, Object> paramsSignup = Map.of("name", name, "email", email, "password", password, "confirm", confirm);
-    Map<String, Object> paramsSignin = Map.of("email", email, "password", password);
+    HttpEntity<LoginForm> requestBody = new HttpEntity<>(new LoginForm(email, password));
 
-    mock.post("/auth/signup", paramsSignup, "", 201);
-    MvcResult result = mock.post("/auth/signin", paramsSignin, "", 200);
+    ResponseEntity<TokenDto> response = testRestTemplate.exchange(
+        "/auth/signin", HttpMethod.POST, requestBody, new ParameterizedTypeReference<>() {});
 
-    tokenLorem = DtoFromMvcResult.tokenDto(result).generateTypeWithToken();
-  }
-
-  @BeforeAll
-  public void addUsuarioIpsum() {
-    String name = "Ipsum Sit";
-    String email = "ipsum.s@email.com";
-    String password = "222222222";
-    String confirm = "222222222";
-
-    Map<String, Object> paramsSignup = Map.of("name", name, "email", email, "password", password, "confirm", confirm);
-    Map<String, Object> paramsSignin = Map.of("email", email, "password", password);
-
-    mock.post("/auth/signup", paramsSignup, "", 201);
-    MvcResult result = mock.post("/auth/signin", paramsSignin, "", 200);
-
-    tokenIpsum = DtoFromMvcResult.tokenDto(result).generateTypeWithToken();
+    HEADERS.add("Authorization", "Bearer "+response.getBody().getToken());
   }
 
   @Test
-  @Order(1)
-  public void deveriaDevolver201AoCriarReceita() {
-    String description = "Salário";
-    BigDecimal value = new BigDecimal(2500.00);
-    String date = "05/01/2022";
+  @DisplayName("create must returns status 201 and IncomeDto when created successful")
+  void create_ReturnsStatus201AndIncomeDto_WhenCreatedSuccessful(){
+    IncomeForm incomeForm = IncomeFormCreator.validIncomeForm();
 
-    Map<String, Object> params = Map.of("description", description, "value", value, "date", date);
+    HttpEntity<IncomeForm> requestEntity = new HttpEntity<>(incomeForm, HEADERS);
 
-    mock.post("/receitas", params, tokenLorem, 201);
+    ResponseEntity<IncomeDto> response = testRestTemplate.exchange(
+        BASE_URI, HttpMethod.POST, requestEntity, new ParameterizedTypeReference<>() {});
+
+    HttpStatus statusCode = response.getStatusCode();
+    IncomeDto responseBody = response.getBody();
+
+    Assertions.assertThat(statusCode).isEqualByComparingTo(HttpStatus.CREATED);
+    Assertions.assertThat(responseBody).isNotNull();
+    Assertions.assertThat(responseBody.getId()).isNotNull();
+    Assertions.assertThat(responseBody.getDescription()).isEqualTo(incomeForm.getDescription());
+    Assertions.assertThat(responseBody.getDate())
+        .isEqualTo(LocalDate.parse(incomeForm.getDate(), Formatter.dateFormatter));
+    Assertions.assertThat(responseBody.getDescription()).isEqualTo(incomeForm.getDescription());
   }
 
   @Test
-  @Order(2)
-  public void deveriaDevolver400AoCriarSemAlgumParametroObrigatorio() {
+  @DisplayName("create must returns status 401 when isnt authenticaded")
+  void create_ReturnsStatus401_WhenIsntAuthenticated(){
+    ResponseEntity<Void> response = testRestTemplate.exchange(
+        BASE_URI, HttpMethod.POST, null, new ParameterizedTypeReference<>() {});
 
-    String description = "Venda do PS5";
-    BigDecimal value = BigDecimal.valueOf(2885.00);
-    String date = "22/01/2022";
-
-    mock.post("/receitas", Map.of("value", value, "date", date), tokenLorem, 400);
-    mock.post("/receitas", Map.of("description", description, "date", date), tokenLorem, 400);
-    mock.post("/receitas", Map.of("description", description, "value", value), tokenLorem, 400);
-    mock.post("/receitas", Map.of("value", value), tokenLorem, 400);
-    mock.post("/receitas", Map.of("description", description), tokenLorem, 400);
-    mock.post("/receitas", Map.of("date", date), tokenLorem, 400);
-    mock.post("/receitas", Map.of(), tokenLorem, 400);
+    Assertions.assertThat(response.getStatusCode()).isEqualByComparingTo(HttpStatus.UNAUTHORIZED);
   }
 
   @Test
-  @Order(3)
-  public void deveriaDevolver200AoBuscarTodasAsReceitas() {
-    mock.get("/receitas", tokenLorem, 200);
+  @DisplayName("create must returns status 400 and List<FormErrorDto> when body is invalid")
+  void create_ReturnsStatus400AndListFormErrorDto_WhenBodyIsInvalid(){
+    IncomeForm incomeForm = IncomeFormCreator.withBlankDescription();
+
+    HttpEntity<IncomeForm> requestEntity = new HttpEntity<>(incomeForm, HEADERS);
+
+    ResponseEntity<List<FormErrorDto>> response = testRestTemplate.exchange(
+        BASE_URI, HttpMethod.POST, requestEntity, new ParameterizedTypeReference<>() {});
+
+    HttpStatus statusCode = response.getStatusCode();
+    List<FormErrorDto> responseBody = response.getBody();
+
+    Assertions.assertThat(statusCode).isEqualByComparingTo(HttpStatus.BAD_REQUEST);
+    Assertions.assertThat(responseBody).isNotNull().isNotEmpty().hasSize(1);
+    Assertions.assertThat(responseBody.get(0).getField()).isEqualTo("description");
+    Assertions.assertThat(responseBody.get(0).getError()).isEqualTo("não deve estar em branco");
   }
 
   @Test
-  @Order(4)
-  public void deveriaDevolver409AoCadastrarDescricaoDuplicadaEmMesmoMesEAno() {
+  @DisplayName("create must returns status 409 and ErrorDto when has conflict")
+  void create_ReturnsStatus409AndErrorDto_WhenHasConflict(){
+    IncomeForm incomeForm = IncomeFormCreator.validIncomeForm();
 
-    String description = "Lotofácil";
-    BigDecimal value = BigDecimal.valueOf(500.00);
-    String date = "08/01/2022";
+    HttpEntity<IncomeForm> requestEntity = new HttpEntity<>(incomeForm, HEADERS);
 
-    Map<String, Object> params = Map.of("description", description, "value", value, "date", date);
+    testRestTemplate.exchange(
+        BASE_URI, HttpMethod.POST, requestEntity, new ParameterizedTypeReference<>() {});
 
-    mock.post("/receitas", params, tokenLorem, 201);
-    mock.post("/receitas", params, tokenLorem, 409);
+    ResponseEntity<ErrorDto> response = testRestTemplate.exchange(
+        BASE_URI, HttpMethod.POST, requestEntity, new ParameterizedTypeReference<>() {});
 
+    HttpStatus statusCode = response.getStatusCode();
+    ErrorDto responseBody = response.getBody();
+
+    Assertions.assertThat(statusCode).isEqualByComparingTo(HttpStatus.CONFLICT);
+    Assertions.assertThat(responseBody).isNotNull();
+    Assertions.assertThat(responseBody.getError()).isEqualTo("CONFLICT");
+    Assertions.assertThat(responseBody.getMessage()).contains("Uma receita com essa descrição já existe em");
   }
 
   @Test
-  @Order(5)
-  public void deveriaDevolver201AoCadastrarDescricaoEmMesDiferentes() {
+  @DisplayName("read must returns status 200 and Page<IncomeDto> when readed successful")
+  void read_ReturnsStatus200AndPageIncomeDto_WhenReadedSuccessful(){
+    incomeRepository.save(IncomeCreator.withDescription("Salário"));
+    incomeRepository.save(IncomeCreator.withDescription("Venda Smartphone velho"));
 
-    String description = "Trabalho por fora";
-    BigDecimal value = BigDecimal.valueOf(300.00);
-    String date = "18/01/2022";
+    HttpEntity<Void> requestEntity = new HttpEntity<>(HEADERS);
+    ResponseEntity<PageableResponse<IncomeDto>> response = testRestTemplate
+        .exchange(BASE_URI, HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {});
 
-    Map<String, Object> params1 = Map.of("description", description, "value", value, "date", date);
+    HttpStatus statusCode = response.getStatusCode();
+    Page<IncomeDto> responseBody = response.getBody();
 
-    String newDate = "18/02/2022";
-    Map<String, Object> params2 = Map.of("description", description, "value", value, "date", newDate);
-
-    mock.post("/receitas", params1, tokenLorem, 201);
-    mock.post("/receitas", params2, tokenLorem, 201);
-
+    Assertions.assertThat(statusCode).isEqualByComparingTo(HttpStatus.OK);
+    Assertions.assertThat(responseBody).isNotNull().isNotEmpty().hasSize(2);
+    Assertions.assertThat(responseBody.getContent().get(1).getDescription()).isEqualTo("Salário");
+    Assertions.assertThat(responseBody.getContent().get(0).getDescription()).isEqualTo("Venda Smartphone velho");
   }
 
   @Test
-  @Order(6)
-  public void deveriaDevolver200AoBuscarPorIdExistente() {
-    MvcResult result = mock.get("/receitas", tokenLorem, 200);
-    List<IncomeDto> listIncomeDto = DtoFromMvcResult.listIncomeDto(result);
+  @DisplayName("read must returns status 401 when isnt authenticated")
+  void read_ReturnsStatus401_WhenIsntAuthenticated(){
+    ResponseEntity<Void> response = testRestTemplate.exchange(
+        BASE_URI, HttpMethod.GET, null, new ParameterizedTypeReference<>() {});
 
-    Long id = listIncomeDto.get(0).getId();
-
-    mock.get("/receitas/" + id, tokenLorem, 200);
+    Assertions.assertThat(response.getStatusCode()).isEqualByComparingTo(HttpStatus.UNAUTHORIZED);
   }
 
   @Test
-  @Order(7)
-  public void deveriaDevolver200AoBuscarPorAnoEMesExistentes() {
-    mock.get("/receitas/2022/01", tokenLorem, 200);
+  @DisplayName("read must returns status 404 when user hasn't incomes")
+  void read_ReturnsStatus404AndErrorDto_WhenUserHasntIncomes(){
+    HttpEntity<Void> requestEntity = new HttpEntity<>(HEADERS);
+    ResponseEntity<ErrorDto> response = testRestTemplate.exchange(
+        BASE_URI, HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {});
+
+    HttpStatus statusCode = response.getStatusCode();
+    ErrorDto responseBody = response.getBody();
+
+    Assertions.assertThat(statusCode).isEqualByComparingTo(HttpStatus.NOT_FOUND);
+    Assertions.assertThat(responseBody).isNotNull();
+    Assertions.assertThat(responseBody.getError()).isEqualTo("Not Found");
+    Assertions.assertThat(responseBody.getMessage()).isEqualTo("O usuário não possui receitas");
   }
 
   @Test
-  @Order(8)
-  public void deveriaDevolver404AoBuscarPorAnoEMesInexistentes() {
-    mock.get("/receitas/2022/03", tokenLorem, 404);
+  @DisplayName("read must returns status 200 and Page<IncomeDto> when read by description successfully")
+  void read_ReturnsStatus200AndPageIncomeDto_WhenReadByDescriptionSuccessfully(){
+    incomeRepository.save(IncomeCreator.withDescription("Salário"));
+    incomeRepository.save(IncomeCreator.withDescription("Venda Smartphone velho"));
+
+    HttpEntity<Void> requestEntity = new HttpEntity<>(HEADERS);
+    ResponseEntity<PageableResponse<IncomeDto>> response = testRestTemplate
+        .exchange(BASE_URI+"?description=sal", HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {});
+
+    HttpStatus statusCode = response.getStatusCode();
+    Page<IncomeDto> responseBody = response.getBody();
+
+    Assertions.assertThat(statusCode).isEqualByComparingTo(HttpStatus.OK);
+    Assertions.assertThat(responseBody).isNotNull().isNotEmpty().hasSize(1);
+    Assertions.assertThat(responseBody.getContent().get(0).getDescription()).isEqualTo("Salário");
   }
 
   @Test
-  @Order(9)
-  public void deveriaDevolver404AoBuscarPorIdInexistentes() {
-    mock.get("/receitas/999", tokenLorem, 404);
+  @DisplayName("read must returns status 404 when user hasn't incomes with given description")
+  void read_ReturnsStatus404AndErrorDto_WhenUserHasntIncomesWithGivenDescription(){
+    HttpEntity<Void> requestEntity = new HttpEntity<>(HEADERS);
+    ResponseEntity<ErrorDto> response = testRestTemplate.exchange(
+        BASE_URI+"?description=sal", HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {});
+
+    HttpStatus statusCode = response.getStatusCode();
+    ErrorDto responseBody = response.getBody();
+
+    Assertions.assertThat(statusCode).isEqualByComparingTo(HttpStatus.NOT_FOUND);
+    Assertions.assertThat(responseBody).isNotNull();
+    Assertions.assertThat(responseBody.getError()).isEqualTo("Not Found");
+    Assertions.assertThat(responseBody.getMessage()).contains("O usuário não possui receitas com descrição similar a ");
   }
 
   @Test
-  @Order(10)
-  public void deveriaDevolver200AoBuscarPorDescricaoExistente() {
-    mock.get("/receitas?description=sal", tokenLorem, 200);
+  @DisplayName("readById must returns status 200 and IncomeDto when found successful")
+  void readById_ReturnsStatus200AndIncomeDto_WhenFoundSuccessful(){
+    incomeRepository.save(IncomeCreator.withDescription("Venda Halteres"));
+
+    HttpEntity<Void> requestEntity = new HttpEntity<>(HEADERS);
+
+    ResponseEntity<IncomeDto> response = testRestTemplate.exchange(
+        BASE_URI+"/1", HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {});
+
+    HttpStatus statusCode = response.getStatusCode();
+    IncomeDto responseBody = response.getBody();
+
+    Assertions.assertThat(statusCode).isEqualByComparingTo(HttpStatus.OK);
+    Assertions.assertThat(responseBody).isNotNull();
+    Assertions.assertThat(responseBody.getId()).isEqualTo(1L);
+    Assertions.assertThat(responseBody.getDescription()).isEqualTo("Venda Halteres");
   }
 
   @Test
-  @Order(11)
-  public void deveriaDevolver404AoBuscarPorDescricaoInexistente() {
-    mock.get("/receitas?description=salllllll", tokenLorem, 404);
+  @DisplayName("readById must returns status 401 when isn't authenticated")
+  void readById_ReturnsStatus401_WhenIsntAuthenticated(){
+    ResponseEntity<Void> response = testRestTemplate.exchange(
+        BASE_URI+"/1", HttpMethod.GET, null, new ParameterizedTypeReference<>() {});
+
+    HttpStatus statusCode = response.getStatusCode();
+
+    Assertions.assertThat(statusCode).isEqualByComparingTo(HttpStatus.UNAUTHORIZED);
   }
 
   @Test
-  @Order(12)
-  public void deveriaDevolver200AoAtualizarReceitaCorretamente() {
-    MvcResult result = mock.get("/receitas", tokenLorem, 200);
-    List<IncomeDto> listIncomeDto = DtoFromMvcResult.listIncomeDto(result);
+  @DisplayName("readById must returns status 404 and ErrorDto when id don't exists")
+  void readById_ReturnsStatus404AndErrorDto_WhenIdDontExists(){
+    HttpEntity<Void> requestEntity = new HttpEntity<>(HEADERS);
 
-    Long id = listIncomeDto.get(0).getId();
+    ResponseEntity<ErrorDto> response = testRestTemplate.exchange(
+        BASE_URI+"/10000", HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {});
 
-    String description = "Salário 1";
-    BigDecimal value = BigDecimal.valueOf(2500.00);
-    String date = "08/01/2022";
+    HttpStatus statusCode = response.getStatusCode();
+    ErrorDto responseBody = response.getBody();
 
-    Map<String, Object> params = Map.of("description", description, "value", value, "date", date);
-
-    mock.put("/receitas/" + id, params, tokenLorem, 200);
+    Assertions.assertThat(statusCode).isEqualByComparingTo(HttpStatus.NOT_FOUND);
+    Assertions.assertThat(responseBody).isNotNull();
+    Assertions.assertThat(responseBody.getError()).isEqualTo("Not Found");
+    Assertions.assertThat(responseBody.getMessage())
+        .isEqualTo("Nenhuma receita com id = 10000 para esse usuário");
   }
 
   @Test
-  @Order(13)
-  public void deveriaDevolver404AoAtualizarReceitaComIdInexistente() {
-    int id = 1000;
-    String description = "Salário 1";
-    BigDecimal value = BigDecimal.valueOf(2500.00);
-    String date = "08/01/2022";
+  @DisplayName("readByYearAndMonth returns status 200 and Page<IncomeDto> when found successful")
+  void readByYearAndMonth_ReturnsStatus200AndPageIncomeDto_WhenFoundSuccessful(){
+    incomeRepository.save(IncomeCreator.withDescription("Venda Halteres"));
+    incomeRepository.save(IncomeCreator.withDescription("Salário"));
 
-    Map<String, Object> params = Map.of("description", description, "value", value, "date", date);
+    HttpEntity<Void> requestEntity = new HttpEntity<>(HEADERS);
 
-    mock.put("/receitas/" + id, params, tokenLorem, 404);
+    ResponseEntity<PageableResponse<IncomeDto>> response = testRestTemplate.exchange(
+        BASE_URI+"/2022/01", HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {});
+
+    HttpStatus statusCode = response.getStatusCode();
+    Page<IncomeDto> responseBody = response.getBody();
+
+    Assertions.assertThat(statusCode).isEqualByComparingTo(HttpStatus.OK);
+    Assertions.assertThat(responseBody).isNotNull().hasSize(2);
+    Assertions.assertThat(responseBody.getContent().get(0).getDescription()).isEqualTo("Salário");
+    Assertions.assertThat(responseBody.getContent().get(1).getDescription()).isEqualTo("Venda Halteres");
   }
 
   @Test
-  @Order(14)
-  public void deveriaDevolver400AoAtualizarReceitaSemAlgumParametroObrigatorio() {
-    String description = "Venda do PS5";
-    BigDecimal value = BigDecimal.valueOf(2885.00);
-    String date = "22/01/2022";
+  @DisplayName("readByYearAndMonth must returns status 401 when isn't authenticated")
+  void readByYearAndMonth_ReturnsStatus401_WhenIsntAuthenticated(){
+    ResponseEntity<Void> response = testRestTemplate.exchange(
+        BASE_URI+"/2022/01", HttpMethod.GET, null, new ParameterizedTypeReference<>() {});
 
-    mock.put("/receitas/1", Map.of("value", value, "date", date), tokenLorem, 400);
-    mock.put("/receitas/1", Map.of("description", description, "date", date), tokenLorem, 400);
-    mock.put("/receitas/1", Map.of("description", description, "value", value), tokenLorem, 400);
-    mock.put("/receitas/1", Map.of("value", value), tokenLorem, 400);
-    mock.put("/receitas/1", Map.of("description", description), tokenLorem, 400);
-    mock.put("/receitas/1", Map.of("date", date), tokenLorem, 400);
-    mock.put("/receitas/1", Map.of(), tokenLorem, 400);
+    HttpStatus statusCode = response.getStatusCode();
+
+    Assertions.assertThat(statusCode).isEqualByComparingTo(HttpStatus.UNAUTHORIZED);
   }
 
   @Test
-  @Order(15)
-  public void deveriaDevolver200AoDeletarUmaReceitaComIdExistente() {
-    MvcResult result = mock.get("/receitas", tokenLorem, 200);
-    List<IncomeDto> listIncomeDto = DtoFromMvcResult.listIncomeDto(result);
+  @DisplayName("readByYearAndMonth must returns status 404 and ErrorDto when id don't exists")
+  void readByYearAndMonth_ReturnsStatus404AndErrorDto_WhenIdDontExists(){
+    HttpEntity<Void> requestEntity = new HttpEntity<>(HEADERS);
 
-    Long id = listIncomeDto.get(1).getId();
-    mock.delete("/receitas/" + id, tokenLorem, 204);
+    ResponseEntity<ErrorDto> response = testRestTemplate.exchange(
+        BASE_URI+"/2022/01", HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {});
+
+    HttpStatus statusCode = response.getStatusCode();
+    ErrorDto responseBody = response.getBody();
+
+    Assertions.assertThat(statusCode).isEqualByComparingTo(HttpStatus.NOT_FOUND);
+    Assertions.assertThat(responseBody).isNotNull();
+    Assertions.assertThat(responseBody.getError()).isEqualTo("Not Found");
+    Assertions.assertThat(responseBody.getMessage()).isEqualTo("Não há receitas para o ano 2022 e mês 1");
   }
 
   @Test
-  @Order(16)
-  public void deveriaDevolver404AoDeletarUmaReceitaComIdInexistente() {
-    int id = 1000;
-    mock.delete("/receitas/" + id, tokenLorem, 404);
+  @DisplayName("readByYearAndMonth must returns status 400 and ErrorDto when month can't be parsed")
+  void readByYearAndMonth_ReturnsStatus400AndErrorDto_WhenMonthCantBeParsed(){
+    HttpEntity<Void> requestEntity = new HttpEntity<>(HEADERS);
+
+    ResponseEntity<ErrorDto> response = testRestTemplate.exchange(
+        BASE_URI+"/2022/ll", HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {});
+
+    HttpStatus statusCode = response.getStatusCode();
+    ErrorDto responseBody = response.getBody();
+
+    Assertions.assertThat(statusCode).isEqualByComparingTo(HttpStatus.BAD_REQUEST);
+    Assertions.assertThat(responseBody).isNotNull();
+    Assertions.assertThat(responseBody.getError()).isEqualTo("typeMismatch");
+    Assertions.assertThat(responseBody.getMessage())
+        .contains("Failed to convert value of type 'java.lang.String' to required type 'int'");
   }
 
   @Test
-  @Order(17)
-  public void deveriaDevolverSomenteAsReceitasDeIpsum() {
+  @DisplayName("update must returns status 200 and IncomeDto when updated successful")
+  void update_ReturnsStatus200AndIncomeDto_WhenUpdatedSuccessful(){
+    incomeRepository.save(IncomeCreator.withDescription("Salário"));
+    IncomeForm incomeToBeUpdated = IncomeFormCreator.withDescription("Salário baixo e sofrido");
 
-    String description1 = "Salário";
-    BigDecimal value1 = new BigDecimal("2500.0");
-    String date1 = "08/01/2022";
+    HttpEntity<IncomeForm> requestEntity = new HttpEntity<>(incomeToBeUpdated, HEADERS);
 
-    String description2 = "Venda do PC";
-    BigDecimal value2 = new BigDecimal("1200.0");
-    String date2 = "22/01/2022";
+    ResponseEntity<IncomeDto> response = testRestTemplate.exchange(
+        BASE_URI+"/1", HttpMethod.PUT, requestEntity, new ParameterizedTypeReference<>() {});
 
-    Map<String, Object> params1 = Map.of("description", description1, "value", value1, "date", date1);
-    Map<String, Object> params2 = Map.of("description", description2, "value", value2, "date", date2);
+    HttpStatus statusCode = response.getStatusCode();
+    IncomeDto responseBody = response.getBody();
 
-    mock.post("/receitas", params1, tokenIpsum, 201);
-    mock.post("/receitas", params2, tokenIpsum, 201);
-
-    MvcResult result = mock.get("/receitas", tokenIpsum, 200);
-    List<IncomeDto> listIncomeDto = DtoFromMvcResult.listIncomeDto(result);
-
-    List<IncomeDto> listExpected = new ArrayList<>();
-
-    IncomeDto incomeDto1 = new IncomeDto(5l, description1, LocalDate.parse(date1, Formatter.dateFormatter), value1);
-    IncomeDto incomeDto2 = new IncomeDto(6l, description2, LocalDate.parse(date2, Formatter.dateFormatter), value2);
-
-    listExpected.add(incomeDto2);
-    listExpected.add(incomeDto1);
-
-    Assertions.assertEquals(listExpected.size(), listIncomeDto.size());
-    Assertions.assertEquals(listExpected, listIncomeDto);
+    Assertions.assertThat(statusCode).isEqualByComparingTo(HttpStatus.OK);
+    Assertions.assertThat(responseBody).isNotNull();
+    Assertions.assertThat(responseBody.getId()).isEqualTo(1L);
+    Assertions.assertThat(responseBody.getDescription()).isEqualTo("Salário baixo e sofrido");
   }
 
   @Test
-  @Order(18)
-  public void deveriaDevolver404AoTentarAtualizarReceitaDeOutroUsuario() {
-    int id = 1;
-    String description = "Salário 1";
-    BigDecimal value = BigDecimal.valueOf(2500.00);
-    String date = "08/01/2022";
+  @DisplayName("update must returns status 401 when isn't authenticated")
+  void update_ReturnsStatus401_WhenIsntAuthenticated(){
+    ResponseEntity<Void> response = testRestTemplate.exchange(
+        BASE_URI+"/1", HttpMethod.PUT, null, new ParameterizedTypeReference<>() {});
 
-    Map<String, Object> params = Map.of("description", description, "value", value, "date", date);
+    HttpStatus statusCode = response.getStatusCode();
 
-    MvcResult result = mock.put("/receitas/" + id, params, tokenIpsum, 404);
-
-    ErrorDto errorDto = DtoFromMvcResult.errorDto(result);
-
-    Assertions.assertEquals("Not Found", errorDto.getError());
-    Assertions.assertEquals("Nenhuma receita com esse id para esse usuário", errorDto.getMessage());
+    Assertions.assertThat(statusCode).isEqualByComparingTo(HttpStatus.UNAUTHORIZED);
   }
 
   @Test
-  @Order(19)
-  public void deveriaDevolver404AoTentarDeletarReceitaDeOutroUsuario() {
-    Long id = 1l;
+  @DisplayName("update must returns status 404 and ErrorDto when id don't exists")
+  void update_ReturnsStatus404AndErrorDto_WhenIdDontExists(){
+    IncomeForm incomeToBeUpdated = IncomeFormCreator.withDescription("Salário baixo e sofrido");
+    HttpEntity<IncomeForm> requestEntity = new HttpEntity<>(incomeToBeUpdated, HEADERS);
 
-    MvcResult result = mock.delete("/receitas/" + id, tokenIpsum, 404);
+    ResponseEntity<ErrorDto> response = testRestTemplate.exchange(
+        BASE_URI+"/10000", HttpMethod.PUT, requestEntity, new ParameterizedTypeReference<>() {});
 
-    ErrorDto errorDto = DtoFromMvcResult.errorDto(result);
+    HttpStatus statusCode = response.getStatusCode();
+    ErrorDto responseBody = response.getBody();
 
-    Assertions.assertEquals("Not Found", errorDto.getError());
-    Assertions.assertEquals("Nenhuma receita com esse id para esse usuário", errorDto.getMessage());
+    Assertions.assertThat(statusCode).isEqualByComparingTo(HttpStatus.NOT_FOUND);
+    Assertions.assertThat(responseBody).isNotNull();
+    Assertions.assertThat(responseBody.getError()).isEqualTo("Not Found");
+    Assertions.assertThat(responseBody.getMessage())
+        .isEqualTo("Nenhuma receita com id = 10000 para esse usuário");
   }
 
+  @Test
+  @DisplayName("update must returns status 400 and List<FormErrorDto> when body is invalid")
+  void update_ReturnsStatus400AndListFormErrorDto_WhenBodyIsInvalid(){
+    IncomeForm incomeForm = IncomeFormCreator.withBlankDescription();
+    HttpEntity<IncomeForm> requestEntity = new HttpEntity<>(incomeForm, HEADERS);
+
+    ResponseEntity<List<FormErrorDto>> response = testRestTemplate.exchange(
+        BASE_URI+"/1", HttpMethod.PUT, requestEntity, new ParameterizedTypeReference<>() {});
+
+    HttpStatus statusCode = response.getStatusCode();
+    List<FormErrorDto> responseBody = response.getBody();
+
+    Assertions.assertThat(statusCode).isEqualByComparingTo(HttpStatus.BAD_REQUEST);
+    Assertions.assertThat(responseBody).isNotNull();
+    Assertions.assertThat(responseBody.get(0).getField()).isEqualTo("description");
+    Assertions.assertThat(responseBody.get(0).getError()).isEqualTo("não deve estar em branco");
+  }
+
+  @Test
+  @DisplayName("update must returns status 409 and ErrorDto when has conflict between descriptions")
+  void update_ReturnsStatus409AndErrorDto_WhenHasConflictBetweenDescriptions(){
+    incomeRepository.save(IncomeCreator.withDescription("Salário"));
+    incomeRepository.save(IncomeCreator.withDescription("Loteria"));
+
+    IncomeForm incomeForm = IncomeFormCreator.withDescription("Salário");
+    HttpEntity<IncomeForm> requestEntity = new HttpEntity<>(incomeForm, HEADERS);
+
+    ResponseEntity<ErrorDto> response = testRestTemplate.exchange(
+        BASE_URI+"/2", HttpMethod.PUT, requestEntity, new ParameterizedTypeReference<>() {});
+
+    HttpStatus statusCode = response.getStatusCode();
+    ErrorDto responseBody = response.getBody();
+
+    Assertions.assertThat(statusCode).isEqualByComparingTo(HttpStatus.CONFLICT);
+    Assertions.assertThat(responseBody).isNotNull();
+    Assertions.assertThat(responseBody.getError()).isEqualTo("CONFLICT");
+    Assertions.assertThat(responseBody.getMessage()).contains("Outra receita com essa descrição já existe em ");
+  }
+
+  @Test
+  @DisplayName("delete must returns status 204 when deleted successful")
+  void delete_ReturnsStatus204_WhenDeletedSuccessful(){
+    incomeRepository.save(IncomeCreator.withDescription("Salário"));
+    HttpEntity<IncomeForm> requestEntity = new HttpEntity<>(HEADERS);
+
+    ResponseEntity<IncomeDto> response = testRestTemplate.exchange(
+        BASE_URI+"/1", HttpMethod.DELETE, requestEntity, new ParameterizedTypeReference<>() {});
+
+    HttpStatus statusCode = response.getStatusCode();
+
+    Optional<Income> optionalIncome = incomeRepository.findById(1L);
+
+    Assertions.assertThat(statusCode).isEqualByComparingTo(HttpStatus.NO_CONTENT);
+    Assertions.assertThat(optionalIncome).isEmpty();
+  }
+
+  @Test
+  @DisplayName("delete must returns status 401 when isn't authenticated")
+  void delete_ReturnsStatus401_WhenIsntAuthenticated(){
+    ResponseEntity<Void> response = testRestTemplate.exchange(
+        BASE_URI+"/1", HttpMethod.DELETE, null, new ParameterizedTypeReference<>() {});
+
+    HttpStatus statusCode = response.getStatusCode();
+
+    Assertions.assertThat(statusCode).isEqualByComparingTo(HttpStatus.UNAUTHORIZED);
+  }
+
+  @Test
+  @DisplayName("delete must returns status 404 and ErrorDto when id don't exists")
+  void delete_ReturnsStatus404AndErrorDto_WhenIdDontExists(){
+    HttpEntity<IncomeForm> requestEntity = new HttpEntity<>(HEADERS);
+    ResponseEntity<ErrorDto> response = testRestTemplate.exchange(
+        BASE_URI+"/10000", HttpMethod.DELETE, requestEntity, new ParameterizedTypeReference<>() {});
+
+    HttpStatus statusCode = response.getStatusCode();
+    ErrorDto responseBody = response.getBody();
+
+    Assertions.assertThat(statusCode).isEqualByComparingTo(HttpStatus.NOT_FOUND);
+    Assertions.assertThat(responseBody).isNotNull();
+    Assertions.assertThat(responseBody.getError()).isEqualTo("Not Found");
+    Assertions.assertThat(responseBody.getMessage())
+        .isEqualTo("Nenhuma receita com id = 10000 para esse usuário");
+  }
 }
