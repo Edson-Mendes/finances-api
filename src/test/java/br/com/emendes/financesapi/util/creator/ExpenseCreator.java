@@ -57,4 +57,19 @@ public class ExpenseCreator {
 
     return new Expense(description, value, date, category, user);
   }
+
+  public static Expense withDescriptionAndCategory(String description, Category category) {
+    BigDecimal value = new BigDecimal("250.00");
+    LocalDate date = LocalDate.parse("2022-01-17");
+    User user = new User(2L);
+
+    return new Expense(description, value, date, category, user);
+  }
+
+  public static Expense withDescriptionAndValue(String description, BigDecimal value){
+    LocalDate date = LocalDate.parse("2022-01-17");
+    User user = new User(2L);
+
+    return new Expense(description, value, date, Category.OUTRAS, user);
+  }
 }

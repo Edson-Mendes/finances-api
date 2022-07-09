@@ -52,4 +52,11 @@ public class IncomeCreator {
     return new Income(description, value, date, user);
   }
 
+  public static Income withDescriptionAndValue(String description, BigDecimal value){
+    LocalDate date = LocalDate.parse("2022-01-05");
+    User user = new User(2L);
+
+    return new Income(description, value, date, user);
+  }
+
 }

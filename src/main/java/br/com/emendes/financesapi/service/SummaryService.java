@@ -22,7 +22,6 @@ public class SummaryService {
     BigDecimal incomeTotalValue = incomeService.getTotalValueByMonthAndYearAndUserId(year, month);
     List<ValueByCategoryDto> valuesByCategory = expenseService.getValuesByCategoryOnMonthAndYearByUser(year, month);
 
-//    FIXME: Internal Server Error caso month seja menor que 1 e maior que 12.
     if (incomeTotalValue.equals(BigDecimal.ZERO) && valuesByCategory.isEmpty()){
       throw new NoResultException(String.format("Não há receitas e despesas para %s %d", Month.of(month), year));
     }

@@ -15,13 +15,10 @@ public class ValueByCategoryDto {
   @Schema(example = "3700.00")
   private BigDecimal value;
 
+  public ValueByCategoryDto(){}
+
   public ValueByCategoryDto(Category category, BigDecimal value){
     this.category = category;
-    this.value = value;
-  }
-
-  public ValueByCategoryDto(String category, BigDecimal value){
-    this.category = Category.valueOf(category);
     this.value = value;
   }
 
