@@ -32,6 +32,7 @@ public class ExpenseForm {
   @Digits(integer = 6, fraction = 2)
   private BigDecimal value;
 
+//  TODO: Fazer um bean validation para validar a categoria
   @Schema(example = "ALIMENTACAO")
   private Category category;
 

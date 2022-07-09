@@ -48,4 +48,13 @@ public class ExpenseCreator {
     expense.setId(id);
     return expense;
   }
+
+  public static Expense withDescription(String description) {
+    BigDecimal value = new BigDecimal("250.00");
+    LocalDate date = LocalDate.parse("2022-01-17");
+    Category category = Category.TRANSPORTE;
+    User user = new User(2L);
+
+    return new Expense(description, value, date, category, user);
+  }
 }
