@@ -1,45 +1,35 @@
 package br.com.emendes.financesapi.controller;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
-import javax.validation.Valid;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.util.UriComponentsBuilder;
-
 import br.com.emendes.financesapi.controller.dto.TokenDto;
 import br.com.emendes.financesapi.controller.dto.UserDto;
 import br.com.emendes.financesapi.controller.form.LoginForm;
 import br.com.emendes.financesapi.controller.form.SignupForm;
-import br.com.emendes.financesapi.service.TokenService;
+import br.com.emendes.financesapi.service.SigninService;
 import br.com.emendes.financesapi.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.UriComponentsBuilder;
+
+import javax.validation.Valid;
+import java.net.URI;
 
 @RestController
 @RequestMapping("/auth")
 public class AuthenticationController {
 
   @Autowired
-  private AuthenticationManager authManager;
-
-  @Autowired
-  private TokenService tokenService;
-
-  @Autowired
   private UserService userService;
+  @Autowired
+  private SigninService signinService;
 
   @Operation(summary = "Logar um usuário", tags = { "Autenticação" })
   @ApiResponses(value = {
@@ -49,12 +39,9 @@ public class AuthenticationController {
   })
   @PostMapping("/signin")
   public ResponseEntity<TokenDto> auth(@RequestBody @Valid LoginForm form) {
-    UsernamePasswordAuthenticationToken loginData = form.converter();
+    TokenDto tokenDto = signinService.login(form );
 
-    Authentication authentication = authManager.authenticate(loginData);
-    String token = tokenService.generateToken(authentication);
-
-    return ResponseEntity.ok(new TokenDto(token, "Bearer"));
+    return ResponseEntity.ok(tokenDto);
   }
 
   @Operation(summary = "Cadastrar um usuário", tags = { "Autenticação" })
@@ -65,8 +52,7 @@ public class AuthenticationController {
       @ApiResponse(responseCode = "409", description = "Email inserido já está em uso", content = @Content)
   })
   @PostMapping("/signup")
-  public ResponseEntity<UserDto> register(@RequestBody @Valid SignupForm signupForm, UriComponentsBuilder uriBuilder)
-      throws URISyntaxException {
+  public ResponseEntity<UserDto> register(@RequestBody @Valid SignupForm signupForm, UriComponentsBuilder uriBuilder) {
     UserDto userDto = userService.createAccount(signupForm);
     URI uri = uriBuilder.path("/user/{id}").buildAndExpand(userDto.getId()).toUri();
     return ResponseEntity.created(uri).body(userDto);

@@ -10,7 +10,7 @@ public class IncomeDtoCreator {
 
   public static IncomeDto validIncomeDto() {
     Long id = 54321l;
-    String description = "Sálario";
+    String description = "Salário";
     LocalDate date = LocalDate.parse("05/01/2022", DateTimeFormatter.ofPattern("dd/MM/yyyy"));
     BigDecimal value = new BigDecimal("2500.00");
 

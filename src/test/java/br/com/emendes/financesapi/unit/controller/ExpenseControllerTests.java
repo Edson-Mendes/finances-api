@@ -20,6 +20,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -36,7 +37,6 @@ class ExpenseControllerTests {
   @Mock
   private ExpenseService expenseServiceMock;
 
-
   private final UriComponentsBuilder URI_BUILDER = UriComponentsBuilder.fromHttpUrl("http://localhost:8080");
   private final ExpenseForm EXPENSE_FORM = ExpenseFormCreator.validExpenseForm();
   private final Pageable PAGEABLE = PageRequest.of(0, 10, Direction.DESC, "date");
@@ -47,7 +47,7 @@ class ExpenseControllerTests {
     Page<ExpenseDto> pageExpenseDto = new PageImpl<>(List.of(expenseDto));
 
     BDDMockito.when(expenseServiceMock.create(
-        ArgumentMatchers.any(ExpenseForm.class)))
+            ArgumentMatchers.any(ExpenseForm.class)))
         .thenReturn(expenseDto);
 
     BDDMockito.when(expenseServiceMock.readAllByUser(PAGEABLE))
@@ -58,6 +58,9 @@ class ExpenseControllerTests {
 
     BDDMockito.when(expenseServiceMock.readByIdAndUser(expenseDto.getId()))
         .thenReturn(expenseDto);
+
+    BDDMockito.when(expenseServiceMock.readByYearAndMonthAndUser(2022, 1, PAGEABLE))
+            .thenReturn(pageExpenseDto);
 
     BDDMockito.when(expenseServiceMock.update(expenseDto.getId(), EXPENSE_FORM))
         .thenReturn(expenseDto);
@@ -87,16 +90,16 @@ class ExpenseControllerTests {
     Assertions.assertThat(response.getStatusCodeValue()).isEqualTo(200);
     Assertions.assertThat(response.getBody()).isNotNull();
     Assertions.assertThat(
-        response.getBody()
-            .getContent()
-            .get(0)
-            .getDescription())
+            response.getBody()
+                .getContent()
+                .get(0)
+                .getDescription())
         .isEqualTo("Gasolina");
     Assertions.assertThat(
-        response.getBody()
-            .getContent()
-            .get(0)
-            .getValue())
+            response.getBody()
+                .getContent()
+                .get(0)
+                .getValue())
         .isEqualTo(new BigDecimal("250.00"));
   }
 
@@ -109,14 +112,12 @@ class ExpenseControllerTests {
 
     Assertions.assertThat(response.getStatusCodeValue()).isEqualTo(200);
     Assertions.assertThat(response.getBody()).isNotNull();
-    Assertions.assertThat(
-        response.getBody()
+    Assertions.assertThat(response.getBody()
             .getContent()
             .get(0)
             .getDescription())
         .isEqualTo("Gasolina");
-    Assertions.assertThat(
-        response.getBody()
+    Assertions.assertThat(response.getBody()
             .getContent()
             .get(0)
             .getValue())
@@ -133,6 +134,26 @@ class ExpenseControllerTests {
     Assertions.assertThat(response.getBody()).isNotNull();
     Assertions.assertThat(response.getBody().getId()).isEqualTo(expenseDto.getId());
     Assertions.assertThat(response.getBody().getDescription()).isEqualTo(expenseDto.getDescription());
+  }
+
+  @Test
+  @DisplayName("readByYearAndMonth must returns ResponseEntity<Page<ExpenseDto>> when successful")
+  void readByYearAndMonth_ReturnsResponseEntityPageExpenseDto_WhenSuccessful(){
+    ResponseEntity<Page<ExpenseDto>> response = expenseController.readByYearAndMonth(2022, 1, PAGEABLE);
+
+    HttpStatus statusCode = response.getStatusCode();
+    Page<ExpenseDto> responseBody = response.getBody();
+
+    Assertions.assertThat(statusCode).isEqualByComparingTo(HttpStatus.OK);
+    Assertions.assertThat(responseBody).isNotNull();
+    Assertions.assertThat(responseBody
+            .getContent()
+            .get(0)
+            .getDescription()).isEqualTo("Gasolina");
+    Assertions.assertThat(responseBody
+            .getContent()
+            .get(0)
+            .getValue()).isEqualTo(new BigDecimal("250.00"));
   }
 
   @Test

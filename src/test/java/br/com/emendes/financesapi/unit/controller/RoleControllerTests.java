@@ -11,6 +11,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -19,7 +20,7 @@ import br.com.emendes.financesapi.service.RoleService;
 
 @ExtendWith(SpringExtension.class)
 @DisplayName("Tests for RoleController")
-public class RoleControllerTests {
+class RoleControllerTests {
 
   @InjectMocks
   private RoleController roleController;
@@ -27,16 +28,16 @@ public class RoleControllerTests {
   @Mock
   private RoleService roleServiceMock;
 
-  private final RoleDto ROLE_USER = new RoleDto(1l, "ROLE_USER");
-  private final RoleDto ROLE_ADMIN = new RoleDto(2l, "ROLE_ADMIN");
-  private final RoleDto ROLE_MANAGER = new RoleDto(3l, "ROLE_MANAGER");
+  private final RoleDto ROLE_USER = new RoleDto(1L, "ROLE_USER");
+  private final RoleDto ROLE_ADMIN = new RoleDto(2L, "ROLE_ADMIN");
+  private final RoleDto ROLE_MANAGER = new RoleDto(3L, "ROLE_MANAGER");
 
   @BeforeEach
   public void setUp() {
     BDDMockito.when(roleServiceMock.readAll())
         .thenReturn(List.of(ROLE_USER, ROLE_ADMIN, ROLE_MANAGER));
 
-    BDDMockito.when(roleServiceMock.readById(2l))
+    BDDMockito.when(roleServiceMock.readById(2L))
         .thenReturn(ROLE_ADMIN);
   }
 
@@ -54,11 +55,15 @@ public class RoleControllerTests {
   @DisplayName("readById must return ResponseEntity<RoleDto> when successful")
   void readById_ReturnsResponseEntityRoleDto_WhenSuccessful() {
 
-    ResponseEntity<RoleDto> response = roleController.readById(2l);
+    ResponseEntity<RoleDto> response = roleController.readById(2L);
 
-    Assertions.assertThat(response.getStatusCodeValue()).isEqualTo(200);
-    Assertions.assertThat(response.getBody().getId()).isEqualTo(ROLE_ADMIN.getId());
-    Assertions.assertThat(response.getBody().getName()).isEqualTo(ROLE_ADMIN.getName());
+    HttpStatus statusCode = response.getStatusCode();
+    RoleDto responseBody = response.getBody();
+
+    Assertions.assertThat(statusCode).isEqualTo(HttpStatus.OK);
+    Assertions.assertThat(responseBody).isNotNull();
+    Assertions.assertThat(responseBody.getId()).isEqualTo(ROLE_ADMIN.getId());
+    Assertions.assertThat(responseBody.getName()).isEqualTo(ROLE_ADMIN.getName());
   }
 
 }

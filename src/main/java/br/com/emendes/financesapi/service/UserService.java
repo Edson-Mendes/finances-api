@@ -1,14 +1,5 @@
 package br.com.emendes.financesapi.service;
 
-import javax.persistence.NoResultException;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-
 import br.com.emendes.financesapi.controller.dto.UserDto;
 import br.com.emendes.financesapi.controller.form.ChangePasswordForm;
 import br.com.emendes.financesapi.controller.form.SignupForm;
@@ -16,6 +7,14 @@ import br.com.emendes.financesapi.model.User;
 import br.com.emendes.financesapi.repository.UserRepository;
 import br.com.emendes.financesapi.validation.exception.DataConflictException;
 import br.com.emendes.financesapi.validation.exception.PasswordsDoNotMatchException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
+import javax.persistence.NoResultException;
 
 @Service
 public class UserService {
@@ -37,8 +36,7 @@ public class UserService {
 
   public Page<UserDto> read(Pageable pageable) {
     Page<User> users = userRepository.findAll(pageable);
-    Page<UserDto> usersDto = UserDto.convert(users);
-    return usersDto;
+    return UserDto.convert(users);
   }
 
   public User readById(Long userId) {
@@ -53,9 +51,10 @@ public class UserService {
     }
   }
 
-  public void changePassword(ChangePasswordForm changeForm, Long userId) {
+  public void changePassword(ChangePasswordForm changeForm) {
     if (changeForm.passwordMatch()) {
-      User user = userRepository.findById(userId).get();
+      User user = userRepository.findCurrentUser().orElseThrow(
+          () -> new NoResultException("Não foi possível encontrar o usuário atual"));
       user.setPassword(changeForm.generateNewPasswordEncoded());
     } else {
       throw new PasswordsDoNotMatchException("as senhas não correspondem!");

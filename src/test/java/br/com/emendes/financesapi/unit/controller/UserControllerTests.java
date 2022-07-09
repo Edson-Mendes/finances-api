@@ -16,29 +16,25 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import br.com.emendes.financesapi.controller.dto.UserDto;
 import br.com.emendes.financesapi.controller.form.ChangePasswordForm;
-import br.com.emendes.financesapi.service.TokenService;
 import br.com.emendes.financesapi.service.UserService;
 
 @ExtendWith(SpringExtension.class)
 @DisplayName("Tests for UserController")
-public class UserControllerTests {
+class UserControllerTests {
 
   @InjectMocks
   private UserController userController;
-
-  @Mock
-  private TokenService tokenServiceMock;
-
   @Mock
   private UserService userServiceMock;
 
   private final Pageable PAGEABLE = PageRequest.of(0, 10, Direction.ASC, "id");
-  private final UserDto USER_DTO = new UserDto(1000l, "Lorem Ipsum", "lorem@email.com");
+  private final UserDto USER_DTO = new UserDto(1000L, "Lorem Ipsum", "lorem@email.com");
 
   @BeforeEach
   public void setUp() {
@@ -48,9 +44,9 @@ public class UserControllerTests {
     BDDMockito.when(userServiceMock.read(PAGEABLE))
         .thenReturn(pageUserDto);
 
-    BDDMockito.doNothing().when(userServiceMock).delete(1000l);
-    BDDMockito.doNothing().when(userServiceMock).changePassword(changeForm, 1000l);
-    ;
+    BDDMockito.doNothing().when(userServiceMock).delete(1000L);
+    BDDMockito.doNothing().when(userServiceMock).changePassword(changeForm);
+
   }
 
   @Test
@@ -59,6 +55,7 @@ public class UserControllerTests {
     ResponseEntity<Page<UserDto>> response = userController.read(PAGEABLE);
 
     Assertions.assertThat(response.getStatusCodeValue()).isEqualTo(200);
+    Assertions.assertThat(response.getBody()).isNotNull();
     Assertions.assertThat(response.getBody().getContent().get(0).getEmail()).isEqualTo("lorem@email.com");
     Assertions.assertThat(response.getBody().getContent().get(0).getName()).isEqualTo("Lorem Ipsum");
   }
@@ -66,8 +63,18 @@ public class UserControllerTests {
   @Test
   @DisplayName("delete must returns ResponseEntity<Void> when successful")
   void delete_ReturnsResponseEntityVoid_WhenSuccessful() {
-    ResponseEntity<Void> response = userController.delete(1000l);
+    ResponseEntity<Void> response = userController.delete(1000L);
 
-    Assertions.assertThat(response.getStatusCodeValue()).isEqualTo(204);
+    Assertions.assertThat(response.getStatusCode()).isEqualByComparingTo(HttpStatus.NO_CONTENT);
+  }
+
+  @Test
+  @DisplayName("changePassword must returns ResponseEntity<Void> when successful")
+  void changePassword_ReturnsResponseEntityVoid_WhenSucessful(){
+    ChangePasswordForm changePasswordForm = new ChangePasswordForm("1234567890", "1234567890");
+
+    ResponseEntity<Void> response = userController.changePassword(changePasswordForm);
+
+    Assertions.assertThat(response.getStatusCode()).isEqualByComparingTo(HttpStatus.NO_CONTENT);
   }
 }

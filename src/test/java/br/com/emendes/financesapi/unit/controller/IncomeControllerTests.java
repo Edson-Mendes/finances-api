@@ -1,6 +1,7 @@
 package br.com.emendes.financesapi.unit.controller;
 
 import br.com.emendes.financesapi.controller.IncomeController;
+import br.com.emendes.financesapi.controller.dto.ExpenseDto;
 import br.com.emendes.financesapi.controller.dto.IncomeDto;
 import br.com.emendes.financesapi.controller.form.IncomeForm;
 import br.com.emendes.financesapi.service.IncomeService;
@@ -20,6 +21,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -29,7 +31,7 @@ import java.util.List;
 
 @ExtendWith(SpringExtension.class)
 @DisplayName("Tests for IncomeController")
-public class IncomeControllerTests {
+class IncomeControllerTests {
 
   @InjectMocks
   private IncomeController incomeController;
@@ -47,7 +49,7 @@ public class IncomeControllerTests {
     Page<IncomeDto> pageIncomeDto = new PageImpl<>(List.of(incomeDto));
 
     BDDMockito.when(incomeServiceMock.create(
-        ArgumentMatchers.any(IncomeForm.class)))
+            ArgumentMatchers.any(IncomeForm.class)))
         .thenReturn(incomeDto);
 
     BDDMockito.when(incomeServiceMock.readAllByUser(PAGEABLE))
@@ -58,6 +60,9 @@ public class IncomeControllerTests {
 
     BDDMockito.when(incomeServiceMock.readByIdAndUser(incomeDto.getId()))
         .thenReturn(incomeDto);
+
+    BDDMockito.when(incomeServiceMock.readByYearAndMonthAndUser(2022, 1, PAGEABLE))
+        .thenReturn(pageIncomeDto);
 
     BDDMockito.when(incomeServiceMock.update(incomeDto.getId(), INCOME_FORM))
         .thenReturn(incomeDto);
@@ -72,9 +77,13 @@ public class IncomeControllerTests {
 
     ResponseEntity<IncomeDto> response = incomeController.create(form, URI_BUILDER);
 
-    Assertions.assertThat(response.getStatusCodeValue()).isEqualTo(201);
-    Assertions.assertThat(response.getBody().getDescription()).isEqualTo(form.getDescription());
-    Assertions.assertThat(response.getBody().getValue()).isEqualTo(form.getValue());
+    HttpStatus statusCode = response.getStatusCode();
+    IncomeDto responseBody = response.getBody();
+
+    Assertions.assertThat(statusCode).isEqualByComparingTo(HttpStatus.CREATED);
+    Assertions.assertThat(responseBody).isNotNull();
+    Assertions.assertThat(responseBody.getDescription()).isEqualTo(form.getDescription());
+    Assertions.assertThat(responseBody.getValue()).isEqualTo(form.getValue());
   }
 
   @Test
@@ -84,19 +93,20 @@ public class IncomeControllerTests {
 
     ResponseEntity<Page<IncomeDto>> response = incomeController.read(description, PAGEABLE);
 
-    Assertions.assertThat(response.getStatusCodeValue()).isEqualTo(200);
-    Assertions.assertThat(
-        response.getBody()
+
+    HttpStatus statusCode = response.getStatusCode();
+    Page<IncomeDto> responseBody = response.getBody();
+
+    Assertions.assertThat(statusCode).isEqualByComparingTo(HttpStatus.OK);
+    Assertions.assertThat(responseBody).isNotNull();
+    Assertions.assertThat(responseBody
             .getContent()
             .get(0)
-            .getDescription())
-        .isEqualTo("Sálario");
-    Assertions.assertThat(
-        response.getBody()
+            .getDescription()).isEqualTo("Salário");
+    Assertions.assertThat(responseBody
             .getContent()
             .get(0)
-            .getValue())
-        .isEqualTo(new BigDecimal("2500.00"));
+            .getValue()).isEqualTo(new BigDecimal("2500.00"));
   }
 
   @Test
@@ -108,16 +118,16 @@ public class IncomeControllerTests {
 
     Assertions.assertThat(response.getStatusCodeValue()).isEqualTo(200);
     Assertions.assertThat(
-        response.getBody()
-            .getContent()
-            .get(0)
-            .getDescription())
-        .isEqualTo("Sálario");
+            response.getBody()
+                .getContent()
+                .get(0)
+                .getDescription())
+        .isEqualTo("Salário");
     Assertions.assertThat(
-        response.getBody()
-            .getContent()
-            .get(0)
-            .getValue())
+            response.getBody()
+                .getContent()
+                .get(0)
+                .getValue())
         .isEqualTo(new BigDecimal("2500.00"));
   }
 
@@ -130,6 +140,26 @@ public class IncomeControllerTests {
     Assertions.assertThat(response.getStatusCodeValue()).isEqualTo(200);
     Assertions.assertThat(response.getBody().getId()).isEqualTo(incomeDto.getId());
     Assertions.assertThat(response.getBody().getDescription()).isEqualTo(incomeDto.getDescription());
+  }
+
+  @Test
+  @DisplayName("readByYearAndMonth must returns ResponseEntity<Page<ExpenseDto>> when successful")
+  void readByYearAndMonth_ReturnsResponseEntityPageExpenseDto_WhenSuccessful() {
+    ResponseEntity<Page<IncomeDto>> response = incomeController.readByYearAndMonth(2022, 1, PAGEABLE);
+
+    HttpStatus statusCode = response.getStatusCode();
+    Page<IncomeDto> responseBody = response.getBody();
+
+    Assertions.assertThat(statusCode).isEqualByComparingTo(HttpStatus.OK);
+    Assertions.assertThat(responseBody).isNotNull();
+    Assertions.assertThat(responseBody
+        .getContent()
+        .get(0)
+        .getDescription()).isEqualTo("Salário");
+    Assertions.assertThat(responseBody
+        .getContent()
+        .get(0)
+        .getValue()).isEqualTo(new BigDecimal("2500.00"));
   }
 
   @Test

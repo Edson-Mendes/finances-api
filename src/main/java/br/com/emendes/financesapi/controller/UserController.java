@@ -1,9 +1,13 @@
 package br.com.emendes.financesapi.controller;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.transaction.Transactional;
-import javax.validation.Valid;
-
+import br.com.emendes.financesapi.controller.dto.UserDto;
+import br.com.emendes.financesapi.controller.form.ChangePasswordForm;
+import br.com.emendes.financesapi.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -12,23 +16,10 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import br.com.emendes.financesapi.controller.dto.UserDto;
-import br.com.emendes.financesapi.controller.form.ChangePasswordForm;
-import br.com.emendes.financesapi.service.TokenService;
-import br.com.emendes.financesapi.service.UserService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import javax.transaction.Transactional;
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/users")
@@ -36,9 +27,6 @@ public class UserController {
 
   @Autowired
   private UserService userService;
-
-  @Autowired
-  private TokenService tokenService;
 
   @Operation(summary = "Buscar todos os usuários", tags = { "Usuários" }, security = {
       @SecurityRequirement(name = "bearer-key") })
@@ -49,7 +37,7 @@ public class UserController {
   })
   @GetMapping
   public ResponseEntity<Page<UserDto>> read(
-      @ParameterObject @PageableDefault(sort = "id", direction = Direction.ASC, page = 0, size = 10) Pageable pageable) {
+      @ParameterObject @PageableDefault(sort = "id", direction = Direction.ASC) Pageable pageable) {
     Page<UserDto> usersDto = userService.read(pageable);
     return ResponseEntity.ok(usersDto);
   }
@@ -71,16 +59,15 @@ public class UserController {
   @Operation(summary = "Atualizar senha do usuário", tags = { "Usuários" }, security = {
       @SecurityRequirement(name = "bearer-key") })
   @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "Senha atualizada com sucesso"),
+      @ApiResponse(responseCode = "204", description = "Senha atualizada com sucesso"),
       @ApiResponse(responseCode = "400", description = "Algum parâmetro do corpo da requisição inválido"),
       @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
   })
   @PutMapping("/password")
   @Transactional
-  public void changePassword(@Valid @RequestBody ChangePasswordForm changeForm, HttpServletRequest request) {
-    Long userId = tokenService.getUserId(request);
-
-    userService.changePassword(changeForm, userId);
+  public ResponseEntity<Void> changePassword(@Valid @RequestBody ChangePasswordForm changeForm) {
+    userService.changePassword(changeForm);
+    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
 
 }
