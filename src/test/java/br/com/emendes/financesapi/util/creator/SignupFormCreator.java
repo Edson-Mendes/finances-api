@@ -12,4 +12,10 @@ public class SignupFormCreator {
     return new SignupForm(name, email, password, confirm);
   }
 
+  public static SignupForm withNameAndEmail(String name, String email){
+    String password = "1234567890";
+    String confirm = "1234567890";
+    return new SignupForm(name, email, password, confirm);
+  }
+
 }
