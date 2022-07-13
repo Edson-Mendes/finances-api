@@ -52,7 +52,7 @@ class UserControllerTests {
   @Test
   @DisplayName("read must returns ResponseEntity<Page<UserDto>> when successful")
   void read_ReturnsResponseEntityPageUserDto_WhenSuccessful() {
-    ResponseEntity<Page<UserDto>> response = userController.read(PAGEABLE);
+    ResponseEntity<Page<UserDto>> response = userController.readAll(PAGEABLE);
 
     Assertions.assertThat(response.getStatusCodeValue()).isEqualTo(200);
     Assertions.assertThat(response.getBody()).isNotNull();

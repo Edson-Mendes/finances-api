@@ -36,7 +36,7 @@ public class UserController {
       @ApiResponse(responseCode = "403", description = "Forbidden, usuário não tem permissão de acesso", content = @Content),
   })
   @GetMapping
-  public ResponseEntity<Page<UserDto>> read(
+  public ResponseEntity<Page<UserDto>> readAll(
       @ParameterObject @PageableDefault(sort = "id", direction = Direction.ASC) Pageable pageable) {
     Page<UserDto> usersDto = userService.read(pageable);
     return ResponseEntity.ok(usersDto);
