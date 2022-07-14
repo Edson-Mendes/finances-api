@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import br.com.emendes.financesapi.controller.dto.error.ErrorDto;
 
 @RestControllerAdvice
-public class QueryErrorHandler {
+public class QueryExceptionHandler {
 
   @ExceptionHandler(QueryException.class)
   public ResponseEntity<ErrorDto> handle(QueryException exception) {

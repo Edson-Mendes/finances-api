@@ -1,25 +1,23 @@
 package br.com.emendes.financesapi.validation.handler;
 
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import br.com.emendes.financesapi.controller.dto.error.ErrorDto;
+import br.com.emendes.financesapi.validation.exception.PasswordsDoNotMatchException;
 
 @RestControllerAdvice
-public class InvalidCategoryErrorHandler {
+public class PasswordsDoNotMatchExceptionHandler {
 
-  @ExceptionHandler(InvalidFormatException.class)
-  public ResponseEntity<ErrorDto> handle(InvalidFormatException exception) {
-    ErrorDto errorDto = new ErrorDto("Categoria inválida",
-        "Categorias válidas: ALIMENTACAO, SAUDE, MORADIA, TRANSPORTE, EDUCACAO, LAZER, IMPREVISTOS, OUTRAS");
+  @ExceptionHandler(PasswordsDoNotMatchException.class)
+  public ResponseEntity<ErrorDto> handle(PasswordsDoNotMatchException exception) {
+    ErrorDto errorDto = new ErrorDto("BAD REQUEST", exception.getMessage());
 
-    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+    return ResponseEntity
+        .status(HttpStatus.BAD_REQUEST)
         .header("Content-Type", "application/json;charset=UTF-8")
         .body(errorDto);
   }
-
 }

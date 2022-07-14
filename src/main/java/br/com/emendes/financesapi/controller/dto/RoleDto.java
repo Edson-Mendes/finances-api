@@ -1,10 +1,10 @@
 package br.com.emendes.financesapi.controller.dto;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import br.com.emendes.financesapi.model.Role;
 import io.swagger.v3.oas.annotations.media.Schema;
+
+import java.util.List;
+import java.util.Objects;
 
 public class RoleDto {
   
@@ -33,7 +33,19 @@ public class RoleDto {
   }
 
   public static List<RoleDto> convert(List<Role> roles) {
-    List<RoleDto> rolesDto = roles.stream().map(RoleDto::new).collect(Collectors.toList());
-    return rolesDto;
+    return roles.stream().map(RoleDto::new).toList();
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    RoleDto roleDto = (RoleDto) o;
+    return Objects.equals(id, roleDto.id) && Objects.equals(name, roleDto.name);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(id, name);
   }
 }

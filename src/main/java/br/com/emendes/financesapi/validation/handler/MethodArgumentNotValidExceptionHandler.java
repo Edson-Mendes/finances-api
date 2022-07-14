@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import br.com.emendes.financesapi.controller.dto.error.FormErrorDto;
 
 @RestControllerAdvice
-public class ValidationErrorHandler {
+public class MethodArgumentNotValidExceptionHandler {
 
   @Autowired
   private MessageSource messageSource;

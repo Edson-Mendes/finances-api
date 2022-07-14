@@ -9,7 +9,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import br.com.emendes.financesapi.controller.dto.error.ErrorDto;
 
 @RestControllerAdvice
-public class TypeMismatchErrorHandler {
+public class TypeMismatchHandler {
 
 // TODO: Pensar/Pesquisar uma maneira de melhorar essa mensagem!
   @ExceptionHandler(MethodArgumentTypeMismatchException.class)

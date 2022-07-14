@@ -10,7 +10,7 @@ import br.com.emendes.financesapi.controller.dto.error.ErrorDto;
 import br.com.emendes.financesapi.validation.exception.DataConflictException;
 
 @RestControllerAdvice
-public class ConflictErrorHandler {
+public class ConflictExceptionHandler {
 
   @ExceptionHandler(ResponseStatusException.class)
   public ResponseEntity<ErrorDto> handle(ResponseStatusException exception) {
