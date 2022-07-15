@@ -7,11 +7,13 @@ import br.com.emendes.financesapi.model.User;
 import br.com.emendes.financesapi.repository.UserRepository;
 import br.com.emendes.financesapi.validation.exception.DataConflictException;
 import br.com.emendes.financesapi.validation.exception.PasswordsDoNotMatchException;
+import br.com.emendes.financesapi.validation.exception.WrongPasswordException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.NoResultException;
@@ -55,10 +57,18 @@ public class UserService {
     if (changeForm.passwordMatch()) {
       User user = userRepository.findCurrentUser().orElseThrow(
           () -> new NoResultException("Não foi possível encontrar o usuário atual"));
-      user.setPassword(changeForm.generateNewPasswordEncoded());
+      if (passwordsMatch(changeForm.getOldPassword(), user.getPassword())) {
+        user.setPassword(changeForm.generateNewPasswordEncoded());
+      }else{
+        throw new WrongPasswordException("Senha incorreta");
+      }
     } else {
       throw new PasswordsDoNotMatchException("as senhas não correspondem!");
     }
+  }
+
+  private boolean passwordsMatch(String password, String encodedPassword) {
+    return new BCryptPasswordEncoder().matches(password, encodedPassword);
   }
 
 }

@@ -39,7 +39,8 @@ class UserControllerTests {
   @BeforeEach
   public void setUp() {
     Page<UserDto> pageUserDto = new PageImpl<>(List.of(USER_DTO));
-    ChangePasswordForm changeForm = new ChangePasswordForm("123456789O", "123456789O");
+    ChangePasswordForm changeForm = new ChangePasswordForm(
+        "123456", "123456789O", "123456789O");
 
     BDDMockito.when(userServiceMock.read(PAGEABLE))
         .thenReturn(pageUserDto);
@@ -70,8 +71,9 @@ class UserControllerTests {
 
   @Test
   @DisplayName("changePassword must returns ResponseEntity<Void> when successful")
-  void changePassword_ReturnsResponseEntityVoid_WhenSucessful(){
-    ChangePasswordForm changePasswordForm = new ChangePasswordForm("1234567890", "1234567890");
+  void changePassword_ReturnsResponseEntityVoid_WhenSucessful() {
+    ChangePasswordForm changePasswordForm = new ChangePasswordForm(
+        "123456", "1234567890", "1234567890");
 
     ResponseEntity<Void> response = userController.changePassword(changePasswordForm);
 

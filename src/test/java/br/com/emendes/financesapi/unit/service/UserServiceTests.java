@@ -5,7 +5,9 @@ import java.util.Optional;
 
 import javax.persistence.NoResultException;
 
+import br.com.emendes.financesapi.controller.form.ChangePasswordForm;
 import br.com.emendes.financesapi.service.UserService;
+import br.com.emendes.financesapi.validation.exception.WrongPasswordException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -34,20 +36,20 @@ import br.com.emendes.financesapi.validation.exception.PasswordsDoNotMatchExcept
 
 @ExtendWith(SpringExtension.class)
 @DisplayName("Tests for UserService")
-public class UserServiceTests {
+class UserServiceTests {
 
   @InjectMocks
   private UserService userService;
-
   @Mock
   private UserRepository userRepositoryMock;
 
   private final Pageable PAGEABLE = PageRequest.of(0, 10, Direction.ASC, "id");
-  private final Long NON_EXISTING_USER_ID = 111111l;
+  private final Long NON_EXISTING_USER_ID = 111111L;
 
   @BeforeEach
   public void setUp() {
     User userSaved = UserCreator.userSavedForUserServiceTests();
+    User userWithPasswordEncoded = UserCreator.userWithPasswordEncoded();
     Page<User> pageUser = new PageImpl<>(List.of(userSaved));
 
     BDDMockito.when(userRepositoryMock.findAll(PAGEABLE))
@@ -65,6 +67,9 @@ public class UserServiceTests {
     BDDMockito.doThrow(EmptyResultDataAccessException.class)
         .when(userRepositoryMock)
         .deleteById(NON_EXISTING_USER_ID);
+
+    BDDMockito.when(userRepositoryMock.findCurrentUser())
+        .thenReturn(Optional.of(userWithPasswordEncoded));
 
   }
 
@@ -93,8 +98,8 @@ public class UserServiceTests {
   }
 
   @Test
-  @DisplayName("createAccount must throws PasswordsDoNotMatchException when password don't matches")
-  void createAccount_ThrowsPasswordsDoNotMatchException_WhenPassDontMatches() {
+  @DisplayName("createAccount must throws PasswordsDoNotMatchException when password don't match")
+  void createAccount_ThrowsPasswordsDoNotMatchException_WhenPassDontMatch() {
 
     SignupForm signupForm = SignupFormCreator.validSignupForm();
     signupForm.setConfirm("999999999999");
@@ -118,7 +123,7 @@ public class UserServiceTests {
   @Test
   @DisplayName("readById must return User when successful")
   void readById_ReturnsUser_WhenSuccessful() {
-    Long userId = 10000l;
+    Long userId = 10000L;
     User user = userService.readById(userId);
 
     Assertions.assertThat(user)
@@ -130,15 +135,14 @@ public class UserServiceTests {
   @Test
   @DisplayName("readById must return Null when not found user")
   void readById_ReturnsNull_WhenNotFoundUser() {
-    Long userId = NON_EXISTING_USER_ID;
-    User user = userService.readById(userId);
+    User user = userService.readById(NON_EXISTING_USER_ID);
 
     Assertions.assertThat(user)
         .isNull();
   }
 
   @Test
-  @DisplayName("delete must return Null when not found user")
+  @DisplayName("delete must throws NoResultException when not found user")
   void delete_ThrowsNoResultException_WhenNotFoundUser() {
     Long userId = NON_EXISTING_USER_ID;
 
@@ -147,4 +151,40 @@ public class UserServiceTests {
         .withMessageContaining("não existe usuário com id: ");
   }
 
+  @Test
+  @DisplayName("changePassword must throws NoResultException when not found current user")
+  void changePassword_ThrowsNoResultException_WhenNotFoundCurrentUser(){
+    BDDMockito.when(userRepositoryMock.findCurrentUser()).thenReturn(Optional.empty());
+    ChangePasswordForm changePasswordForm = new ChangePasswordForm(
+        "123456", "1234567890", "1234567890");
+
+    Assertions.assertThatExceptionOfType(NoResultException.class)
+        .isThrownBy(() -> userService.changePassword(changePasswordForm))
+        .withMessageContaining("Não foi possível encontrar o usuário atual");
+  }
+
+  @Test
+  @DisplayName("changePassword must throws PasswordsDoNotMatchException when password and confirm don't match")
+  void changePassword_ThrowsPasswordsDoNotMatchException_WhenPasswordsDontMatch(){
+    String newPassword = "1234567890";
+    String confirmWhichDontMatch = "123456789";
+    ChangePasswordForm changePasswordForm = new ChangePasswordForm(
+        "123456", newPassword, confirmWhichDontMatch);
+
+    Assertions.assertThatExceptionOfType(PasswordsDoNotMatchException.class)
+        .isThrownBy(() -> userService.changePassword(changePasswordForm))
+        .withMessageContaining("as senhas não correspondem!");
+  }
+
+  @Test
+  @DisplayName("changePassword must throws WrongPasswordException when password is wrong")
+  void changePassword_ThrowsWrongPasswordException_WhenPasswordIsWrong(){
+    String oldPassword = "1234";
+    ChangePasswordForm changePasswordForm = new ChangePasswordForm(
+        oldPassword, "1234567890", "1234567890");
+
+    Assertions.assertThatExceptionOfType(WrongPasswordException.class)
+        .isThrownBy(() -> userService.changePassword(changePasswordForm))
+        .withMessageContaining("Senha incorreta");
+  }
 }

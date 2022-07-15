@@ -9,6 +9,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 public class ChangePasswordForm {
 
+  @Schema(example = "myOldPassword1234")
+  @NotBlank
+  private String oldPassword;
   @Schema(example = "myNewPassword1234")
   @ValidPassword
   @NotBlank
@@ -21,7 +24,8 @@ public class ChangePasswordForm {
   public ChangePasswordForm() {
   }
 
-  public ChangePasswordForm(String newPassword, String confirm) {
+  public ChangePasswordForm(String oldPassword, String newPassword, String confirm) {
+    this.oldPassword = oldPassword;
     this.newPassword = newPassword;
     this.confirm = confirm;
   }
@@ -41,6 +45,10 @@ public class ChangePasswordForm {
   public void setConfirm(String confirm) {
     this.confirm = confirm;
   }
+
+  public String getOldPassword() { return oldPassword; }
+
+  public void setOldPassword(String oldPassword) { this.oldPassword = oldPassword; }
 
   public boolean passwordMatch() {
     return this.newPassword.equals(this.confirm);

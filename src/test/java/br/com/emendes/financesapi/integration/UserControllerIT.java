@@ -137,7 +137,7 @@ class UserControllerIT {
   @Test
   @DisplayName("changePassword must returns status 204 when change password successful")
   void changePassword_ReturnsStatus204_WhenChangePasswordSuccessful(){
-    ChangePasswordForm changePasswordForm = new ChangePasswordForm("12345678", "12345678");
+    ChangePasswordForm changePasswordForm = new ChangePasswordForm("123456", "12345678", "12345678");
 
     HttpEntity<ChangePasswordForm> requestEntity = new HttpEntity<>(changePasswordForm, HEADERS_USER);
     ResponseEntity<Void> response = testRestTemplate
@@ -164,7 +164,7 @@ class UserControllerIT {
   @Test
   @DisplayName("changePassword must returns status 400 and errorDto when password and confirm don't matches")
   void changePassword_ReturnsStatus400AndErrorDto_WhenPasswordAndConfirmDontMatches(){
-    ChangePasswordForm changePasswordForm = new ChangePasswordForm("12345678", "1234567");
+    ChangePasswordForm changePasswordForm = new ChangePasswordForm("123456", "12345678", "1234567");
 
     HttpEntity<ChangePasswordForm> requestEntity = new HttpEntity<>(changePasswordForm, HEADERS_USER);
     ResponseEntity<ErrorDto> response = testRestTemplate
@@ -182,7 +182,7 @@ class UserControllerIT {
   @Test
   @DisplayName("changePassword must returns status 400 and List<FormErrorDto> when password is not strong enough")
   void changePassword_ReturnsStatus400AndListFormErrorDto_WhenPasswordIsNotStrongEnough(){
-    ChangePasswordForm changePasswordForm = new ChangePasswordForm("1234", "1234");
+    ChangePasswordForm changePasswordForm = new ChangePasswordForm("123456","1234", "1234");
 
     HttpEntity<ChangePasswordForm> requestEntity = new HttpEntity<>(changePasswordForm, HEADERS_USER);
     ResponseEntity<List<FormErrorDto>> response = testRestTemplate

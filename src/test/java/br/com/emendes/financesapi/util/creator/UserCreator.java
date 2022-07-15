@@ -2,6 +2,7 @@ package br.com.emendes.financesapi.util.creator;
 
 import br.com.emendes.financesapi.model.Role;
 import br.com.emendes.financesapi.model.User;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.List;
 
@@ -56,7 +57,7 @@ public class UserCreator {
     String password = "123456";
 
     User user = new User(name, email, password);
-    user.setId(10000l);
+    user.setId(10000L);
 
     return user;
   }
@@ -70,4 +71,10 @@ public class UserCreator {
     return new User(id, name, email, password, roles);
   }
 
+  public static User userWithPasswordEncoded() {
+    User user = userSavedForUserServiceTests();
+    String passwordEncoded = new BCryptPasswordEncoder().encode(user.getPassword());
+    user.setPassword(passwordEncoded);
+    return user;
+  }
 }
