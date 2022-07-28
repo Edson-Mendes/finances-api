@@ -16,6 +16,7 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
   @Query("SELECT e FROM Expense e WHERE e.user.id = ?#{ principal?.id }")
   Page<Expense> findAllByUser(Pageable pageable);
 
+//  TODO: ajustar de modo que letras acentuadas sejam buscadas como letras sem acento, tipo 'salario' puxar 'Sálario'
   @Query("SELECT count(e) > 0 FROM Expense e WHERE e.description = :description AND " +
       "MONTH(e.date) = :month AND YEAR(e.date) = :year AND e.user.id = ?#{ principal?.id }")
   boolean existsByDescriptionAndMonthAndYearAndUser(

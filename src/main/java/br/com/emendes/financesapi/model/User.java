@@ -4,13 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
+import javax.persistence.*;
 
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
@@ -19,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Entity
+@Table(name = "tb_user")
 public class User implements UserDetails {
 
   @Id
@@ -40,7 +35,7 @@ public class User implements UserDetails {
     this.name = name;
     this.email = email;
     this.password = new BCryptPasswordEncoder().encode(password);
-    this.roles.add(new Role(1l, "ROLE_USER"));
+    this.roles.add(new Role(1L, "ROLE_USER"));
   }
 
   public User(Long id) {
