@@ -16,7 +16,6 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
   @Query("SELECT e FROM Expense e WHERE e.user.id = ?#{ principal?.id }")
   Page<Expense> findAllByUser(Pageable pageable);
 
-//  TODO: ajustar de modo que letras acentuadas sejam buscadas como letras sem acento, tipo 'salario' puxar 'Sálario'
   @Query("SELECT count(e) > 0 FROM Expense e WHERE e.description = :description AND " +
       "MONTH(e.date) = :month AND YEAR(e.date) = :year AND e.user.id = ?#{ principal?.id }")
   boolean existsByDescriptionAndMonthAndYearAndUser(
@@ -32,7 +31,8 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
       @Param("year") int year,
       @Param("id") Long id);
 
-  @Query("SELECT e FROM Expense e WHERE e.description LIKE %:description% AND e.user.id = ?#{ principal?.id }")
+//  TODO: Ajustar para que letras tipo 'á' e 'a' sejam consideradas iguais.
+  @Query("SELECT e FROM Expense e WHERE LOWER(e.description) LIKE LOWER('%' || :description || '%') AND e.user.id = ?#{ principal?.id }")
   Page<Expense> findByDescriptionAndUser(@Param("description") String description, Pageable pageable);
 
   @Query("SELECT e FROM Expense e WHERE YEAR(e.date) = :year AND MONTH(e.date)= :month AND e.user.id = ?#{ principal?.id }")

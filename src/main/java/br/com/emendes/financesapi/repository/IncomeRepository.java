@@ -33,7 +33,7 @@ public interface IncomeRepository extends JpaRepository<Income, Long> {
       @Param("year") int year,
       @Param("id") Long id);
 
-  @Query("SELECT i FROM Income i WHERE i.description LIKE %:description% AND i.user.id = ?#{ principal?.id }")
+  @Query("SELECT i FROM Income i WHERE LOWER(i.description) LIKE LOWER('%' || :description || '%') AND i.user.id = ?#{ principal?.id }")
   Page<Income> findByDescriptionAndUser(
       @Param("description") String description,
       Pageable pageable);
