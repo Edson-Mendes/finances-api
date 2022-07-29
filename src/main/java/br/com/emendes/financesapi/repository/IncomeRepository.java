@@ -18,34 +18,39 @@ public interface IncomeRepository extends JpaRepository<Income, Long> {
   @Query("SELECT i FROM Income i WHERE i.user.id = ?#{ principal?.id }")
   Page<Income> findAllByUser(Pageable pageable);
 
-  @Query("SELECT count(i) > 0 FROM Income i WHERE i.description = :description AND " +
-      "MONTH(i.date) = :month AND YEAR(i.date) = :year AND i.user.id = ?#{ principal?.id }")
+  @Query("SELECT count(i) > 0 FROM Income i " +
+      "WHERE lower_unaccent(i.description) = lower_unaccent(:description) " +
+      "AND MONTH(i.date) = :month AND YEAR(i.date) = :year AND i.user.id = ?#{ principal?.id }")
   boolean existsByDescriptionAndMonthAndYearAndUser(
       @Param("description") String description,
       @Param("month") int month,
       @Param("year") int year);
 
-  @Query("SELECT count(i) > 0 FROM Income i WHERE i.description = :description AND "
-      + "MONTH(i.date) = :month AND YEAR(i.date) = :year AND i.id != :id AND i.user.id = ?#{ principal?.id }")
+  @Query("SELECT count(i) > 0 FROM Income i " +
+      "WHERE lower_unaccent(i.description) = lower_unaccent(:description) " +
+      "AND MONTH(i.date) = :month AND YEAR(i.date) = :year AND i.id != :id AND i.user.id = ?#{ principal?.id }")
   boolean existsByDescriptionAndMonthAndYearAndNotIdAndUser(
       @Param("description") String description,
       @Param("month") int month,
       @Param("year") int year,
       @Param("id") Long id);
 
-  @Query("SELECT i FROM Income i WHERE LOWER(i.description) LIKE LOWER('%' || :description || '%') AND i.user.id = ?#{ principal?.id }")
+  @Query("SELECT i FROM Income i " +
+      "WHERE lower_unaccent(i.description) LIKE lower_unaccent('%' || :description || '%') " +
+      "AND i.user.id = ?#{ principal?.id }")
   Page<Income> findByDescriptionAndUser(
       @Param("description") String description,
       Pageable pageable);
 
-  @Query("SELECT i FROM Income i WHERE YEAR(i.date) = :year AND MONTH(i.date) = :month AND i.user.id = ?#{ principal?.id }")
+  @Query("SELECT i FROM Income i WHERE YEAR(i.date) = :year " +
+      "AND MONTH(i.date) = :month AND i.user.id = ?#{ principal?.id }")
   Page<Income> findByYearAndMonthAndUser(
       @Param("year") int year,
       @Param("month") int month,
       Pageable pageable);
 
-  @Query("SELECT SUM(i.value) FROM Income i WHERE YEAR(i.date) = :year AND "
-      + "MONTH(i.date) = :month AND i.user.id = ?#{ principal?.id }")
+  @Query("SELECT SUM(i.value) FROM Income i WHERE YEAR(i.date) = :year " +
+      "AND MONTH(i.date) = :month AND i.user.id = ?#{ principal?.id }")
   Optional<BigDecimal> getTotalValueByMonthAndYearAndUser(
       @Param("year") int year,
       @Param("month") int month);
