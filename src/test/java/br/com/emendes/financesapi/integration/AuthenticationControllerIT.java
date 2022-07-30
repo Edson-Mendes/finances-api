@@ -10,9 +10,7 @@ import br.com.emendes.financesapi.util.creator.SignupFormCreator;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
@@ -27,8 +25,6 @@ import java.util.List;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-@AutoConfigureTestDatabase
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ActiveProfiles("test")
 @DisplayName("Integration tests for /auth/**")
 class AuthenticationControllerIT {
@@ -39,8 +35,8 @@ class AuthenticationControllerIT {
   private final String BASE_URI = "/auth";
 
   @Test
-  @DisplayName("auth must returns status 200 and TokenDto when sucessful")
-  void auth_ReturnsStatus200AndTokenDto_WhenSucessful() {
+  @DisplayName("auth must returns status 200 and TokenDto when successful")
+  void auth_ReturnsStatus200AndTokenDto_WhenSuccessful() {
     String email = "user@email.com";
     String password = "123456";
     HttpEntity<LoginForm> requestBody = new HttpEntity<>(new LoginForm(email, password));
@@ -119,8 +115,8 @@ class AuthenticationControllerIT {
   }
 
   @Test
-  @DisplayName("register must returns status 200 and UserDto when created sucessful")
-  void register_ReturnsStatus200AndUserDto_WhenCreatedSucessful() {
+  @DisplayName("register must returns status 200 and UserDto when created successful")
+  void register_ReturnsStatus200AndUserDto_WhenCreatedSuccessful() {
     String name = "New User";
     String email = "newuser@email.com";
     HttpEntity<SignupForm> requestBody = new HttpEntity<>(SignupFormCreator.withNameAndEmail(name, email));

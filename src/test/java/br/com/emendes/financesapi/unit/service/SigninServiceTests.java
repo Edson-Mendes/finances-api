@@ -20,7 +20,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
 @DisplayName("Unit tests for SigninService")
-class SigninServiceTest {
+class SigninServiceTests {
 
   @InjectMocks
   private SigninService signinService;

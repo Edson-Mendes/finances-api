@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.Optional;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureTestDatabase()
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @ActiveProfiles("test")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -142,8 +141,8 @@ class IncomeControllerIT {
 
     Assertions.assertThat(statusCode).isEqualByComparingTo(HttpStatus.OK);
     Assertions.assertThat(responseBody).isNotNull().isNotEmpty().hasSize(2);
-    Assertions.assertThat(responseBody.getContent().get(1).getDescription()).isEqualTo("Salário");
-    Assertions.assertThat(responseBody.getContent().get(0).getDescription()).isEqualTo("Venda Smartphone velho");
+    Assertions.assertThat(responseBody.getContent().get(0).getDescription()).isEqualTo("Salário");
+    Assertions.assertThat(responseBody.getContent().get(1).getDescription()).isEqualTo("Venda Smartphone velho");
   }
 
   @Test
@@ -269,8 +268,8 @@ class IncomeControllerIT {
 
     Assertions.assertThat(statusCode).isEqualByComparingTo(HttpStatus.OK);
     Assertions.assertThat(responseBody).isNotNull().hasSize(2);
-    Assertions.assertThat(responseBody.getContent().get(0).getDescription()).isEqualTo("Salário");
-    Assertions.assertThat(responseBody.getContent().get(1).getDescription()).isEqualTo("Venda Halteres");
+    Assertions.assertThat(responseBody.getContent().get(0).getDescription()).isEqualTo("Venda Halteres");
+    Assertions.assertThat(responseBody.getContent().get(1).getDescription()).isEqualTo("Salário");
   }
 
   @Test

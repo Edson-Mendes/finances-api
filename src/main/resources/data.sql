@@ -8,6 +8,19 @@ INSERT INTO tb_user_roles(user_id, roles_id) VALUES(1, 1);
 INSERT INTO tb_user_roles(user_id, roles_id) VALUES(1, 2);
 INSERT INTO tb_user_roles(user_id, roles_id) VALUES(2, 1);
 
+--CREATE EXTENSION IF NOT EXISTS unaccent;
+
+-- Função converter texto para minúsculo e sem acento.
+--CREATE OR REPLACE FUNCTION public.lower_unaccent(input character varying)
+-- RETURNS character varying
+-- LANGUAGE plpgsql
+--AS $function$
+--begin
+--	return lower(unaccent(input));
+--end;
+--$function$;
+
+
 --INSERT INTO expense(description, value, date, category, user_id) VALUES ('Internet', 100.00, '2022-01-05', 'MORADIA', 2);
 --INSERT INTO expense(description, value, date, category, user_id) VALUES ('Água', 50.00, '2022-01-08', 'MORADIA', 2);
 --INSERT INTO expense(description, value, date, category, user_id) VALUES ('Ônibus', 150.00, '2022-01-02', 'TRANSPORTE', 2);
