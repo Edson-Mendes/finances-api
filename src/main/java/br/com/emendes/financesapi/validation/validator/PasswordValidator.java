@@ -12,7 +12,7 @@ public class PasswordValidator implements ConstraintValidator<ValidPassword, Str
     if (password == null) {
       return false;
     }
-    if (isNotSizeEnough(password)) {
+    if (isTooSmall(password)) {
       context.buildConstraintViolationWithTemplate("deve ter de 8 a 30 caracteres.")
           .addConstraintViolation();
       return false;
@@ -30,7 +30,7 @@ public class PasswordValidator implements ConstraintValidator<ValidPassword, Str
     return true;
   }
 
-  private boolean isNotSizeEnough(String password) {
+  private boolean isTooSmall(String password) {
     return password.length() < 8 || password.length() > 30;
   }
 

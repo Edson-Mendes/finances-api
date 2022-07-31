@@ -21,7 +21,7 @@ public class Income {
   private BigDecimal value;
   private LocalDate date;
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @OnDelete(action = OnDeleteAction.CASCADE)
   private User user;
 

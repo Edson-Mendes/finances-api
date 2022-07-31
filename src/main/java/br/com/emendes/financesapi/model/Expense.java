@@ -26,8 +26,7 @@ public class Expense {
   @Enumerated(EnumType.STRING)
   private Category category;
 
-//  TODO: Alterar para carregamento lazy
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @OnDelete(action = OnDeleteAction.CASCADE)
   private User user;
 

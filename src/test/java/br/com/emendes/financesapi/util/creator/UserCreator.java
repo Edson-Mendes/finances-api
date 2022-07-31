@@ -18,34 +18,9 @@ public class UserCreator {
     return user;
   }
 
-  public static User validUserForIncomeRepositoryTest() {
-    String name = "Lorem Ipsum";
-    String email = "lorem@email.com";
-    String password = "123456";
-
-    return new User(name, email, password);
-  }
-
   public static User validUserForUserRepositoryTest() {
     String name = "Amet xpto";
     String email = "amet@email.com";
-    String password = "123456";
-
-    return new User(name, email, password);
-  }
-
-  // TODO: Talvez não seja usado
-  public static User validUserForExpenseServiceTest() {
-    String name = "Amet xpto";
-    String email = "ametxpto@email.com";
-    String password = "123456";
-
-    return new User(name, email, password);
-  }
-
-  public static User userToBeSavedForUserServiceTests() {
-    String name = "Ipsum Dolor";
-    String email = "ipsum@email.com";
     String password = "123456";
 
     return new User(name, email, password);

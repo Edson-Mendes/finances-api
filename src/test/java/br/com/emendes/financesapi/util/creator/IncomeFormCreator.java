@@ -22,14 +22,6 @@ public class IncomeFormCreator {
     return new IncomeForm(description, date, value);
   }
 
-  public static IncomeForm withInvalidDate(){
-    String description = "";
-    String date = "05/01/2022";
-    BigDecimal value = new BigDecimal("2500.00");
-
-    return new IncomeForm(description, date, value);
-  }
-
   public static IncomeForm withDescription(String description){
     String date = "05/01/2022";
     BigDecimal value = new BigDecimal("2500.00");
