@@ -5,6 +5,7 @@
 ![Badge Spring](https://img.shields.io/static/v1?label=Spring&message=v2.6.3&color=brightgreen&style=for-the-badge&logo=spring)
 ![Badge Maven](https://img.shields.io/static/v1?label=Maven&message=v3.8.4&color=critical&style=for-the-badge&logo=apache+maven)
 ![Badge JUnit5](https://img.shields.io/static/v1?label=JUnit5&message=v5.8.2&color=green&style=for-the-badge&logo=junit5)
+![Badge JUnit5](https://img.shields.io/static/v1?label=PostgreSQL&message=v14.4&color=blue&style=for-the-badge&logo=PostgreSQL)
 
 ## :book: Resumo do projeto
 Finances API é um projeto de uma REST API para controle de orçamento familiar que visa auxiliar o usuário a gerenciar suas receitas e despesas de forma clara e segura.
@@ -39,17 +40,19 @@ O projeto foi proposto pela Alura no Challenge Backend 2ª edição.
   - `Deletar usuário`: Através de um DELETE para */user/{id}* o admin pode deletar um usuário por id.
 
 ## :toolbox: Tecnologias
-- `VSCode`
+- `Intellij`
 - `Java 17`
-- `Maven`
 - `Spring Boot, Spring MVC, Spring Data JPA, Spring Security`
-- `H2 database`
+- `PostregSQL 14.4`
+- `Maven`
 - `Bean Validation`
-- `Postman`
 - `OpenAPI 3 (Swagger)`
 - `JWT`
+- `Postman`
 - `JUnit 5`
 - `Mockito`
+- `Testes de Unidade`
+- `Testes de Integração`
 - `Docker`
 - `Heroku`
 
@@ -62,6 +65,7 @@ OBS: As aplicações que usam conta gratuita do heroku *adormecem* se ficarem in
 Documentação feita com Springdoc openapi, gerando [Swagger UI](https://apifinances.herokuapp.com/swagger-ui.html) e [Api docs](https://apifinances.herokuapp.com/api-docs)
 
 ## :gear: Atualizações futuras
-- [ ] Troca do banco de dados H2 para outro (MySQL, PostgreSQL, ou outro)
+- [x] Troca do banco de dados H2 para outro (MySQL, PostgreSQL, ou outro)
 - [ ] Mais relatórios, tipo relatório anual, ou por categoria em dados mês e ano.
 - [ ] Adicionar algum recurso para monitorar e gerenciar a aplicação, tipo o Actuator
+- [ ] Endpoint para listar todas as categorias.
