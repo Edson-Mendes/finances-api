@@ -18,7 +18,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
@@ -134,8 +133,8 @@ class ExpenseControllerIT {
   @Test
   @DisplayName("read must returns status 200 and Page<ExpenseDto> when readed successful")
   void read_ReturnsStatus200AndPageExpenseDto_WhenReadedSuccessful(){
-    expenseRepository.save(ExpenseCreator.withDescription("Salário"));
-    expenseRepository.save(ExpenseCreator.withDescription("Venda Smartphone velho"));
+    expenseRepository.save(ExpenseCreator.withDescription("Mercado"));
+    expenseRepository.save(ExpenseCreator.withDescription("Internet"));
 
     HttpEntity<Void> requestEntity = new HttpEntity<>(HEADERS);
     ResponseEntity<PageableResponse<ExpenseDto>> response = testRestTemplate
@@ -146,15 +145,15 @@ class ExpenseControllerIT {
 
     Assertions.assertThat(statusCode).isEqualByComparingTo(HttpStatus.OK);
     Assertions.assertThat(responseBody).isNotNull().isNotEmpty().hasSize(2);
-    Assertions.assertThat(responseBody.getContent().get(0).getDescription()).isEqualTo("Salário");
-    Assertions.assertThat(responseBody.getContent().get(1).getDescription()).isEqualTo("Venda Smartphone velho");
+    Assertions.assertThat(responseBody.getContent().get(0).getDescription()).isEqualTo("Mercado");
+    Assertions.assertThat(responseBody.getContent().get(1).getDescription()).isEqualTo("Internet");
   }
 
   @Test
   @DisplayName("read must returns status 200 and empty Page<ExpenseDto> when read page one")
   void read_ReturnsStatus200AndEmptyPageExpenseDto_WhenReadPageOne(){
-    expenseRepository.save(ExpenseCreator.withDescription("Salário"));
-    expenseRepository.save(ExpenseCreator.withDescription("Venda Smartphone velho"));
+    expenseRepository.save(ExpenseCreator.withDescription("Mercado"));
+    expenseRepository.save(ExpenseCreator.withDescription("Internet"));
 
     HttpEntity<Void> requestEntity = new HttpEntity<>(HEADERS);
     ResponseEntity<PageableResponse<ExpenseDto>> response = testRestTemplate
@@ -169,7 +168,26 @@ class ExpenseControllerIT {
   }
 
   @Test
-  @DisplayName("read must returns status 401 when isnt authenticated")
+  @DisplayName("read must returns status 200 and empty Page<ExpenseDto> when read by description and page one")
+  void read_ReturnsStatus200AndEmptyPageExpenseDto_WhenReadByDescriptionAndPageOne(){
+    expenseRepository.save(ExpenseCreator.withDescription("Mercado"));
+    expenseRepository.save(ExpenseCreator.withDescription("Intenet"));
+
+    HttpEntity<Void> requestEntity = new HttpEntity<>(HEADERS);
+    ResponseEntity<PageableResponse<ExpenseDto>> response = testRestTemplate
+        .exchange(BASE_URI+"?description=mer&page=1",
+            HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {});
+
+    HttpStatus statusCode = response.getStatusCode();
+    Page<ExpenseDto> responseBody = response.getBody();
+
+    Assertions.assertThat(statusCode).isEqualByComparingTo(HttpStatus.OK);
+    Assertions.assertThat(responseBody).isNotNull().isEmpty();
+    Assertions.assertThat(responseBody.getTotalElements()).isEqualTo(1L);
+  }
+
+  @Test
+  @DisplayName("read must returns status 401 when isn't authenticated")
   void read_ReturnsStatus401_WhenIsntAuthenticated(){
     ResponseEntity<Void> response = testRestTemplate.exchange(
         BASE_URI, HttpMethod.GET, null, new ParameterizedTypeReference<>() {});
@@ -196,19 +214,19 @@ class ExpenseControllerIT {
   @Test
   @DisplayName("read must returns status 200 and Page<ExpenseDto> when read by description successfully")
   void read_ReturnsStatus200AndPageExpenseDto_WhenReadByDescriptionSuccessfully(){
-    expenseRepository.save(ExpenseCreator.withDescription("Salário"));
-    expenseRepository.save(ExpenseCreator.withDescription("Venda Smartphone velho"));
+    expenseRepository.save(ExpenseCreator.withDescription("Mercado"));
+    expenseRepository.save(ExpenseCreator.withDescription("Internet"));
 
     HttpEntity<Void> requestEntity = new HttpEntity<>(HEADERS);
     ResponseEntity<PageableResponse<ExpenseDto>> response = testRestTemplate
-        .exchange(BASE_URI+"?description=sal", HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {});
+        .exchange(BASE_URI+"?description=mer", HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {});
 
     HttpStatus statusCode = response.getStatusCode();
     Page<ExpenseDto> responseBody = response.getBody();
 
     Assertions.assertThat(statusCode).isEqualByComparingTo(HttpStatus.OK);
     Assertions.assertThat(responseBody).isNotNull().isNotEmpty().hasSize(1);
-    Assertions.assertThat(responseBody.getContent().get(0).getDescription()).isEqualTo("Salário");
+    Assertions.assertThat(responseBody.getContent().get(0).getDescription()).isEqualTo("Mercado");
   }
 
   @Test
@@ -216,7 +234,7 @@ class ExpenseControllerIT {
   void read_ReturnsStatus404AndErrorDto_WhenUserHasntExpensesWithGivenDescription(){
     HttpEntity<Void> requestEntity = new HttpEntity<>(HEADERS);
     ResponseEntity<ErrorDto> response = testRestTemplate.exchange(
-        BASE_URI+"?description=sal", HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {});
+        BASE_URI+"?description=mer", HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {});
 
     HttpStatus statusCode = response.getStatusCode();
     ErrorDto responseBody = response.getBody();
@@ -230,7 +248,7 @@ class ExpenseControllerIT {
   @Test
   @DisplayName("readById must returns status 200 and ExpenseDto when found successful")
   void readById_ReturnsStatus200AndExpenseDto_WhenFoundSuccessful(){
-    expenseRepository.save(ExpenseCreator.withDescription("Venda Halteres"));
+    expenseRepository.save(ExpenseCreator.withDescription("Farmácia"));
 
     HttpEntity<Void> requestEntity = new HttpEntity<>(HEADERS);
 
@@ -243,7 +261,7 @@ class ExpenseControllerIT {
     Assertions.assertThat(statusCode).isEqualByComparingTo(HttpStatus.OK);
     Assertions.assertThat(responseBody).isNotNull();
     Assertions.assertThat(responseBody.getId()).isEqualTo(1L);
-    Assertions.assertThat(responseBody.getDescription()).isEqualTo("Venda Halteres");
+    Assertions.assertThat(responseBody.getDescription()).isEqualTo("Farmácia");
   }
 
   @Test
@@ -278,8 +296,8 @@ class ExpenseControllerIT {
   @Test
   @DisplayName("readByYearAndMonth returns status 200 and Page<ExpenseDto> when found successful")
   void readByYearAndMonth_ReturnsStatus200AndPageExpenseDto_WhenFoundSuccessful(){
-    expenseRepository.save(ExpenseCreator.withDescription("Venda Halteres"));
-    expenseRepository.save(ExpenseCreator.withDescription("Salário"));
+    expenseRepository.save(ExpenseCreator.withDescription("Farmácia"));
+    expenseRepository.save(ExpenseCreator.withDescription("Mercado"));
 
     HttpEntity<Void> requestEntity = new HttpEntity<>(HEADERS);
 
@@ -291,8 +309,27 @@ class ExpenseControllerIT {
 
     Assertions.assertThat(statusCode).isEqualByComparingTo(HttpStatus.OK);
     Assertions.assertThat(responseBody).isNotNull().hasSize(2);
-    Assertions.assertThat(responseBody.getContent().get(1).getDescription()).isEqualTo("Salário");
-    Assertions.assertThat(responseBody.getContent().get(0).getDescription()).isEqualTo("Venda Halteres");
+    Assertions.assertThat(responseBody.getContent().get(1).getDescription()).isEqualTo("Mercado");
+    Assertions.assertThat(responseBody.getContent().get(0).getDescription()).isEqualTo("Farmácia");
+  }
+
+  @Test
+  @DisplayName("readByYearAndMonth returns status 200 and empty page when read by year and month and page one")
+  void readByYearAndMonth_ReturnsStatus200AndEmptyPage_WhenReadByYearAndMonthAndPageOne(){
+    expenseRepository.save(ExpenseCreator.withDescription("Farmácia"));
+    expenseRepository.save(ExpenseCreator.withDescription("Transporte"));
+
+    HttpEntity<Void> requestEntity = new HttpEntity<>(HEADERS);
+
+    ResponseEntity<PageableResponse<ExpenseDto>> response = testRestTemplate.exchange(
+        BASE_URI+"/2022/01?page=1", HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {});
+
+    HttpStatus statusCode = response.getStatusCode();
+    Page<ExpenseDto> responseBody = response.getBody();
+
+    Assertions.assertThat(statusCode).isEqualByComparingTo(HttpStatus.OK);
+    Assertions.assertThat(responseBody).isNotNull().isEmpty();
+    Assertions.assertThat(responseBody.getTotalElements()).isEqualTo(2L);
   }
 
   @Test
@@ -344,8 +381,8 @@ class ExpenseControllerIT {
   @Test
   @DisplayName("update must returns status 200 and ExpenseDto when updated successful")
   void update_ReturnsStatus200AndExpenseDto_WhenUpdatedSuccessful(){
-    expenseRepository.save(ExpenseCreator.withDescription("Salário"));
-    ExpenseForm expenseToBeUpdated = ExpenseFormCreator.withDescription("Salário baixo e sofrido");
+    expenseRepository.save(ExpenseCreator.withDescription("Mercado"));
+    ExpenseForm expenseToBeUpdated = ExpenseFormCreator.withDescription("Mercado caro");
 
     HttpEntity<ExpenseForm> requestEntity = new HttpEntity<>(expenseToBeUpdated, HEADERS);
 
@@ -358,7 +395,7 @@ class ExpenseControllerIT {
     Assertions.assertThat(statusCode).isEqualByComparingTo(HttpStatus.OK);
     Assertions.assertThat(responseBody).isNotNull();
     Assertions.assertThat(responseBody.getId()).isEqualTo(1L);
-    Assertions.assertThat(responseBody.getDescription()).isEqualTo("Salário baixo e sofrido");
+    Assertions.assertThat(responseBody.getDescription()).isEqualTo("Mercado caro");
   }
 
   @Test
@@ -375,7 +412,7 @@ class ExpenseControllerIT {
   @Test
   @DisplayName("update must returns status 404 and ErrorDto when id not exists")
   void update_ReturnsStatus404AndErrorDto_WhenIdNotExists(){
-    ExpenseForm expenseToBeUpdated = ExpenseFormCreator.withDescription("Salário baixo e sofrido");
+    ExpenseForm expenseToBeUpdated = ExpenseFormCreator.withDescription("Mercado caro");
     HttpEntity<ExpenseForm> requestEntity = new HttpEntity<>(expenseToBeUpdated, HEADERS);
 
     ResponseEntity<ErrorDto> response = testRestTemplate.exchange(
@@ -412,10 +449,10 @@ class ExpenseControllerIT {
   @Test
   @DisplayName("update must returns status 409 and ErrorDto when there is conflict between descriptions")
   void update_ReturnsStatus409AndErrorDto_WhenThereIsConflictBetweenDescriptions(){
-    expenseRepository.save(ExpenseCreator.withDescription("Salário"));
-    expenseRepository.save(ExpenseCreator.withDescription("Loteria"));
+    expenseRepository.save(ExpenseCreator.withDescription("Mercado"));
+    expenseRepository.save(ExpenseCreator.withDescription("Transporte"));
 
-    ExpenseForm expenseForm = ExpenseFormCreator.withDescription("Salário");
+    ExpenseForm expenseForm = ExpenseFormCreator.withDescription("Mercado");
     HttpEntity<ExpenseForm> requestEntity = new HttpEntity<>(expenseForm, HEADERS);
 
     ResponseEntity<ErrorDto> response = testRestTemplate.exchange(
@@ -433,7 +470,7 @@ class ExpenseControllerIT {
   @Test
   @DisplayName("delete must returns status 204 when deleted successful")
   void delete_ReturnsStatus204_WhenDeletedSuccessful(){
-    expenseRepository.save(ExpenseCreator.withDescription("Salário"));
+    expenseRepository.save(ExpenseCreator.withDescription("Mercado"));
     HttpEntity<ExpenseForm> requestEntity = new HttpEntity<>(HEADERS);
 
     ResponseEntity<ExpenseDto> response = testRestTemplate.exchange(
