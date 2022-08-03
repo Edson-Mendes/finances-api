@@ -13,9 +13,11 @@ import br.com.emendes.financesapi.util.creator.IncomeCreator;
 import br.com.emendes.financesapi.util.creator.IncomeFormCreator;
 import br.com.emendes.financesapi.util.wrapper.PageableResponse;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
@@ -77,7 +79,7 @@ class IncomeControllerIT {
   }
 
   @Test
-  @DisplayName("create must returns status 401 when isnt authenticaded")
+  @DisplayName("create must returns status 401 when isnt authenticated")
   void create_ReturnsStatus401_WhenIsntAuthenticated(){
     ResponseEntity<Void> response = testRestTemplate.exchange(
         BASE_URI, HttpMethod.POST, null, new ParameterizedTypeReference<>() {});
@@ -146,6 +148,24 @@ class IncomeControllerIT {
   }
 
   @Test
+  @DisplayName("read must returns status 200 and empty Page<IncomeDto> when read page one")
+  void read_ReturnsStatus200AndEmptyPageIncomeDto_WhenReadPageOne(){
+    incomeRepository.save(IncomeCreator.withDescription("Salário"));
+    incomeRepository.save(IncomeCreator.withDescription("Venda Smartphone velho"));
+
+    HttpEntity<Void> requestEntity = new HttpEntity<>(HEADERS);
+    ResponseEntity<PageableResponse<IncomeDto>> response = testRestTemplate
+        .exchange(BASE_URI+"?page=1", HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {});
+
+    HttpStatus statusCode = response.getStatusCode();
+    Page<IncomeDto> responseBody = response.getBody();
+
+    Assertions.assertThat(statusCode).isEqualByComparingTo(HttpStatus.OK);
+    Assertions.assertThat(responseBody).isNotNull().isEmpty();
+    Assertions.assertThat(responseBody.getTotalElements()).isEqualTo(2L);
+  }
+
+  @Test
   @DisplayName("read must returns status 401 when isnt authenticated")
   void read_ReturnsStatus401_WhenIsntAuthenticated(){
     ResponseEntity<Void> response = testRestTemplate.exchange(
@@ -186,6 +206,24 @@ class IncomeControllerIT {
     Assertions.assertThat(statusCode).isEqualByComparingTo(HttpStatus.OK);
     Assertions.assertThat(responseBody).isNotNull().isNotEmpty().hasSize(1);
     Assertions.assertThat(responseBody.getContent().get(0).getDescription()).isEqualTo("Salário");
+  }
+
+  @Test
+  @DisplayName("read must returns status 200 and empty Page<IncomeDto> when read by description and page one")
+  void read_ReturnsStatus200AndEmptyPageIncomeDto_WhenReadByDescriptionAndPageOne(){
+    incomeRepository.save(IncomeCreator.withDescription("Salário"));
+    incomeRepository.save(IncomeCreator.withDescription("Venda Smartphone velho"));
+
+    HttpEntity<Void> requestEntity = new HttpEntity<>(HEADERS);
+    ResponseEntity<PageableResponse<IncomeDto>> response = testRestTemplate
+        .exchange(BASE_URI+"?description=sal&page=1", HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {});
+
+    HttpStatus statusCode = response.getStatusCode();
+    Page<IncomeDto> responseBody = response.getBody();
+
+    Assertions.assertThat(statusCode).isEqualByComparingTo(HttpStatus.OK);
+    Assertions.assertThat(responseBody).isNotNull().isEmpty();
+    Assertions.assertThat(responseBody.getTotalElements()).isEqualTo(1L);
   }
 
   @Test
@@ -270,6 +308,25 @@ class IncomeControllerIT {
     Assertions.assertThat(responseBody).isNotNull().hasSize(2);
     Assertions.assertThat(responseBody.getContent().get(0).getDescription()).isEqualTo("Venda Halteres");
     Assertions.assertThat(responseBody.getContent().get(1).getDescription()).isEqualTo("Salário");
+  }
+
+  @Test
+  @DisplayName("readByYearAndMonth returns status 200 and empty page when read by year and month and page one")
+  void readByYearAndMonth_ReturnsStatus200AndEmptyPage_WhenReadByYearAndMonthAndPageOne(){
+    incomeRepository.save(IncomeCreator.withDescription("Venda Halteres"));
+    incomeRepository.save(IncomeCreator.withDescription("Salário"));
+
+    HttpEntity<Void> requestEntity = new HttpEntity<>(HEADERS);
+
+    ResponseEntity<PageableResponse<IncomeDto>> response = testRestTemplate.exchange(
+        BASE_URI+"/2022/01?page=1", HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {});
+
+    HttpStatus statusCode = response.getStatusCode();
+    Page<IncomeDto> responseBody = response.getBody();
+
+    Assertions.assertThat(statusCode).isEqualByComparingTo(HttpStatus.OK);
+    Assertions.assertThat(responseBody).isNotNull().isEmpty();
+    Assertions.assertThat(responseBody.getTotalElements()).isEqualTo(2L);
   }
 
   @Test

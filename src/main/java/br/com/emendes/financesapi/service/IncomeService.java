@@ -6,8 +6,6 @@ import java.util.Optional;
 
 import javax.persistence.NoResultException;
 
-import br.com.emendes.financesapi.controller.dto.ExpenseDto;
-import br.com.emendes.financesapi.model.Expense;
 import br.com.emendes.financesapi.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -42,7 +40,7 @@ public class IncomeService {
   public Page<IncomeDto> readAllByUser(Pageable pageable) {
     Page<Income> incomes = incomeRepository.findAllByUser(pageable);
 
-    if (incomes.isEmpty()) {
+    if (incomes.getTotalElements() == 0) {
       throw new NoResultException("O usuário não possui receitas");
     }
     return IncomeDto.convert(incomes);
@@ -50,7 +48,7 @@ public class IncomeService {
 
   public Page<IncomeDto> readByDescriptionAndUser(String description, Pageable pageable) {
     Page<Income> incomes = incomeRepository.findByDescriptionAndUser(description, pageable);
-    if (incomes.isEmpty()) {
+    if (incomes.getTotalElements() == 0) {
       throw new NoResultException("O usuário não possui receitas com descrição similar a " + description);
     }
     return IncomeDto.convert(incomes);

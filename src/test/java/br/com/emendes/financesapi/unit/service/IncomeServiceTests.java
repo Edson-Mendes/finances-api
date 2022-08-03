@@ -29,6 +29,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.persistence.NoResultException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,6 +47,7 @@ class IncomeServiceTests {
 
   private final Long NON_EXISTING_INCOME_ID = 99999L;
   private final Pageable PAGEABLE = PageRequest.of(0, 10, Direction.DESC, "date");
+  private final Pageable PAGEABLE_WITH_PAGE_ONE = PageRequest.of(1, 10, Direction.DESC, "date");
   private final Authentication AUTHENTICATION = mock(Authentication.class);
   private final SecurityContext SECURITY_CONTEXT = mock(SecurityContext.class);
   private final IncomeForm INCOME_FORM = IncomeFormCreator.validIncomeForm();
@@ -55,6 +57,8 @@ class IncomeServiceTests {
     Income incomeSaved = IncomeCreator.incomeWithAllArgs();
 
     PageImpl<Income> pageIncome = new PageImpl<>(List.of(incomeSaved));
+    PageImpl<Income> pageOneEmpty = new PageImpl<>(Collections.emptyList(), PAGEABLE_WITH_PAGE_ONE, 4L);
+
     SecurityContextHolder.setContext(SECURITY_CONTEXT);
 
     BDDMockito.when(incomeRepositoryMock.existsByDescriptionAndMonthAndYearAndUser(
@@ -74,6 +78,12 @@ class IncomeServiceTests {
     BDDMockito.when(incomeRepositoryMock.findByDescriptionAndUser("lario", PAGEABLE))
         .thenReturn(Page.empty(PAGEABLE));
 
+    BDDMockito.when(incomeRepositoryMock.findByDescriptionAndUser("venda", PAGEABLE_WITH_PAGE_ONE))
+        .thenReturn(pageOneEmpty);
+
+    BDDMockito.when(incomeRepositoryMock.findAllByUser(PAGEABLE_WITH_PAGE_ONE))
+        .thenReturn(pageOneEmpty);
+
     BDDMockito.when(incomeRepositoryMock.findByIdAndUser(incomeSaved.getId()))
         .thenReturn(Optional.of(incomeSaved));
 
@@ -92,8 +102,12 @@ class IncomeServiceTests {
 
     BDDMockito.when(incomeRepositoryMock.findByYearAndMonthAndUser(2022, 1, PAGEABLE))
         .thenReturn(pageIncome);
+
     BDDMockito.when(incomeRepositoryMock.findByYearAndMonthAndUser(2000, 1, PAGEABLE))
         .thenReturn(Page.empty(PAGEABLE));
+
+    BDDMockito.when(incomeRepositoryMock.findByYearAndMonthAndUser(2023, 9, PAGEABLE_WITH_PAGE_ONE))
+        .thenReturn(pageOneEmpty);
   }
 
   @Test
@@ -143,6 +157,15 @@ class IncomeServiceTests {
   }
 
   @Test
+  @DisplayName("readAllByUser must returns empty page when user has incomes but request a page without data")
+  void readAllByUser_ReturnsEmptyPage_WhenUserHasIncomesButRequestAPageWithoutData(){
+    Page<IncomeDto> pageIncomeDto = incomeService.readAllByUser(PAGEABLE_WITH_PAGE_ONE);
+
+    Assertions.assertThat(pageIncomeDto).isEmpty();
+    Assertions.assertThat(pageIncomeDto.getTotalElements()).isEqualTo(4L);
+  }
+
+  @Test
   @DisplayName("readByDescriptionAndUser must returns page of incomeDto when successful")
   void readByDescriptionAndUser_ReturnsPageOfIncomeDto_WhenSuccessful() {
     String description = "ario";
@@ -161,6 +184,16 @@ class IncomeServiceTests {
     Assertions.assertThatExceptionOfType(NoResultException.class)
         .isThrownBy(() -> incomeService.readByDescriptionAndUser(description, PAGEABLE))
         .withMessageContaining("O usuário não possui receitas com descrição similar a ");
+  }
+
+  @Test
+  @DisplayName("readByDescriptionAndUser must returns empty page when user has incomes but request a page without data")
+  void readByDescriptionAndUser_ReturnsEmptyPage_WhenUserHasIncomesButRequestAPageWithoutData(){
+    String description = "venda";
+    Page<IncomeDto> pageIncomeDto = incomeService.readByDescriptionAndUser(description, PAGEABLE_WITH_PAGE_ONE);
+
+    Assertions.assertThat(pageIncomeDto).isNotNull().isEmpty();
+    Assertions.assertThat(pageIncomeDto.getTotalElements()).isEqualTo(4L);
   }
 
   @Test
@@ -185,26 +218,37 @@ class IncomeServiceTests {
   }
 
   @Test
-  @DisplayName("readByYearAndMonthAndUser must returns Page<ExpenseDto> when found successful")
+  @DisplayName("readByYearAndMonthAndUser must returns Page<IncomeDto> when found successful")
   void readByYearAndMonthAndUser_ReturnsPageIncomeDto_WhenFoundSuccessful(){
-    Integer month = 1;
-    Integer year = 2022;
+    int month = 1;
+    int year = 2022;
 
-    Page<IncomeDto> pageExpenseDto = incomeService.readByYearAndMonthAndUser(year, month, PAGEABLE);
+    Page<IncomeDto> pageIncomeDto = incomeService.readByYearAndMonthAndUser(year, month, PAGEABLE);
 
-    Assertions.assertThat(pageExpenseDto).isNotEmpty();
-    Assertions.assertThat(pageExpenseDto.getNumberOfElements()).isEqualTo(1);
+    Assertions.assertThat(pageIncomeDto).isNotEmpty();
+    Assertions.assertThat(pageIncomeDto.getNumberOfElements()).isEqualTo(1);
   }
 
   @Test
-  @DisplayName("readByYearAndMonthAndUser must throws NoResultException when don't has expenses")
+  @DisplayName("readByYearAndMonthAndUser must throws NoResultException when don't has incomes")
   void readByYearAndMonthAndUser_ThrowsNoResultException_WhenDontHasIncomes(){
-    Integer month = 1;
-    Integer year = 2000;
+    int month = 1;
+    int year = 2000;
 
     Assertions.assertThatExceptionOfType(NoResultException.class)
         .isThrownBy(() -> incomeService.readByYearAndMonthAndUser(year, month, PAGEABLE))
         .withMessage(String.format("Não há receitas para o ano %d e mês %d", year, month));
+  }
+
+  @Test
+  @DisplayName("readByYearAndMonthAndUser must returns empty page when user has incomes but request a page without data")
+  void readByYearAndMonthAndUser_ReturnsEmptyPage_WhenUserHasIncomesButRequestAPageWithoutData(){
+    int year = 2023;
+    int month = 9;
+    Page<IncomeDto> pageIncomeDto = incomeService.readByYearAndMonthAndUser(year, month, PAGEABLE_WITH_PAGE_ONE);
+
+    Assertions.assertThat(pageIncomeDto).isEmpty();
+    Assertions.assertThat(pageIncomeDto.getTotalElements()).isEqualTo(4L);
   }
 
   @Test
@@ -238,8 +282,8 @@ class IncomeServiceTests {
   }
 
   @Test
-  @DisplayName("update must throws NoResultException when expense don't exists")
-  void update_ThrowsNoResultException_WhenExpenseDontExists() {
+  @DisplayName("update must throws NoResultException when income don't exists")
+  void update_ThrowsNoResultException_WhenIncomeDontExists() {
     IncomeForm incomeForm = IncomeFormCreator.validIncomeForm();
 
     Assertions.assertThatExceptionOfType(NoResultException.class)
@@ -248,8 +292,8 @@ class IncomeServiceTests {
   }
 
   @Test
-  @DisplayName("readByYearAndMonthAndUser must throws NoResultException when don't has expenses")
-  void deleteById_ThrowsNoResultException_WhenExpenseDontExists(){
+  @DisplayName("readByYearAndMonthAndUser must throws NoResultException income don't exists")
+  void deleteById_ThrowsNoResultException_WhenIncomeDontExists(){
     Assertions.assertThatExceptionOfType(NoResultException.class)
         .isThrownBy(() -> incomeService.deleteById(NON_EXISTING_INCOME_ID))
         .withMessage(String.format("Nenhuma receita com id = %d para esse usuário", NON_EXISTING_INCOME_ID));
