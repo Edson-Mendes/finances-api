@@ -39,7 +39,7 @@ public class ExpenseService {
 
   public Page<ExpenseDto> readAllByUser(Pageable pageable) {
     Page<Expense> expenses = expenseRepository.findAllByUser(pageable);
-    if (expenses.isEmpty()) {
+    if (expenses.getTotalElements() == 0) {
       throw new NoResultException("O usuário não possui despesas");
     }
     return ExpenseDto.convert(expenses);
@@ -47,7 +47,7 @@ public class ExpenseService {
 
   public Page<ExpenseDto> readByDescriptionAndUser(String description, Pageable pageable) {
     Page<Expense> expenses = expenseRepository.findByDescriptionAndUser(description, pageable);
-    if (expenses.isEmpty()) {
+    if (expenses.getTotalElements() == 0) {
       throw new NoResultException("O usuário não possui despesas com descrição similar a " + description);
     }
     return ExpenseDto.convert(expenses);
@@ -61,7 +61,7 @@ public class ExpenseService {
       int year, int month, Pageable pageable) {
     Page<Expense> expenses = expenseRepository.findByYearAndMonthAndUser(year, month, pageable);
 
-    if (expenses.isEmpty()) {
+    if (expenses.getTotalElements() == 0) {
       throw new NoResultException(String.format("Não há despesas para o ano %d e mês %d", year, month));
     }
     return ExpenseDto.convert(expenses);

@@ -151,6 +151,24 @@ class ExpenseControllerIT {
   }
 
   @Test
+  @DisplayName("read must returns status 200 and empty Page<ExpenseDto> when read page one")
+  void read_ReturnsStatus200AndEmptyPageExpenseDto_WhenReadPageOne(){
+    expenseRepository.save(ExpenseCreator.withDescription("Salário"));
+    expenseRepository.save(ExpenseCreator.withDescription("Venda Smartphone velho"));
+
+    HttpEntity<Void> requestEntity = new HttpEntity<>(HEADERS);
+    ResponseEntity<PageableResponse<ExpenseDto>> response = testRestTemplate
+        .exchange(BASE_URI+"?page=1", HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {});
+
+    HttpStatus statusCode = response.getStatusCode();
+    Page<ExpenseDto> responseBody = response.getBody();
+
+    Assertions.assertThat(statusCode).isEqualByComparingTo(HttpStatus.OK);
+    Assertions.assertThat(responseBody).isNotNull().isEmpty();
+    Assertions.assertThat(responseBody.getTotalElements()).isEqualTo(2L);
+  }
+
+  @Test
   @DisplayName("read must returns status 401 when isnt authenticated")
   void read_ReturnsStatus401_WhenIsntAuthenticated(){
     ResponseEntity<Void> response = testRestTemplate.exchange(

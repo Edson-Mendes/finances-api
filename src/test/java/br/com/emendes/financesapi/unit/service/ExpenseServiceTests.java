@@ -29,6 +29,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.persistence.NoResultException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -47,6 +48,7 @@ class ExpenseServiceTests {
 
   private final Long NON_EXISTING_EXPENSE_ID = 99999L;
   private final Pageable PAGEABLE = PageRequest.of(0, 10, Direction.DESC, "date");
+  private final Pageable PAGEABLE_WITH_PAGE_ONE = PageRequest.of(1, 10, Direction.DESC, "date");
   private final Authentication AUTHENTICATION = mock(Authentication.class);
   private final SecurityContext SECURITY_CONTEXT = mock(SecurityContext.class);
   private final ExpenseForm EXPENSE_FORM = ExpenseFormCreator.validExpenseForm();
@@ -58,6 +60,7 @@ class ExpenseServiceTests {
     Expense expenseSaved = ExpenseCreator.expenseWithAllArgs();
 
     PageImpl<Expense> pageExpense = new PageImpl<>(List.of(expenseSaved));
+    PageImpl<Expense> pageOneEmpty = new PageImpl<>(Collections.emptyList(), PAGEABLE_WITH_PAGE_ONE, 4L);
 
     SecurityContextHolder.setContext(SECURITY_CONTEXT);
 
@@ -78,6 +81,12 @@ class ExpenseServiceTests {
     BDDMockito.when(expenseRepositoryMock.findByDescriptionAndUser("lina", PAGEABLE))
         .thenReturn(Page.empty(PAGEABLE));
 
+    BDDMockito.when(expenseRepositoryMock.findAllByUser(PAGEABLE_WITH_PAGE_ONE))
+        .thenReturn(pageOneEmpty);
+
+    BDDMockito.when(expenseRepositoryMock.findByDescriptionAndUser("uber", PAGEABLE_WITH_PAGE_ONE))
+        .thenReturn(pageOneEmpty);
+
     BDDMockito.when(expenseRepositoryMock.findByIdAndUser(expenseSaved.getId()))
         .thenReturn(Optional.of(expenseSaved));
 
@@ -96,6 +105,10 @@ class ExpenseServiceTests {
 
     BDDMockito.when(expenseRepositoryMock.findByYearAndMonthAndUser(2022, 1, PAGEABLE))
         .thenReturn(pageExpense);
+
+    BDDMockito.when(expenseRepositoryMock.findByYearAndMonthAndUser(2023, 9, PAGEABLE_WITH_PAGE_ONE))
+        .thenReturn(pageOneEmpty);
+
     BDDMockito.when(expenseRepositoryMock.findByYearAndMonthAndUser(2000, 1, PAGEABLE))
         .thenReturn(Page.empty(PAGEABLE));
   }
@@ -128,7 +141,6 @@ class ExpenseServiceTests {
   @Test
   @DisplayName("readAllByUser must returns page of expenseDto when successful")
   void readAllByUser_ReturnsPageOfExpenseDto_WhenSuccessful() {
-
     Page<ExpenseDto> pageExpenseDto = expenseService.readAllByUser(PAGEABLE);
 
     Assertions.assertThat(pageExpenseDto).isNotEmpty();
@@ -144,6 +156,15 @@ class ExpenseServiceTests {
     Assertions.assertThatExceptionOfType(NoResultException.class)
         .isThrownBy(() -> expenseService.readAllByUser(PAGEABLE))
         .withMessage("O usuário não possui despesas");
+  }
+
+  @Test
+  @DisplayName("readAllByUser must returns empty page when user has expenses but request a page without data")
+  void readAllByUser_ReturnsEmptyPage_WhenUserHasExpensesButRequestAPageWithoutData(){
+    Page<ExpenseDto> pageExpenseDto = expenseService.readAllByUser(PAGEABLE_WITH_PAGE_ONE);
+
+    Assertions.assertThat(pageExpenseDto).isEmpty();
+    Assertions.assertThat(pageExpenseDto.getTotalElements()).isEqualTo(4L);
   }
 
   @Test
@@ -165,6 +186,16 @@ class ExpenseServiceTests {
     Assertions.assertThatExceptionOfType(NoResultException.class)
         .isThrownBy(() -> expenseService.readByDescriptionAndUser(description, PAGEABLE))
         .withMessageContaining("O usuário não possui despesas com descrição similar a ");
+  }
+
+  @Test
+  @DisplayName("readByDescriptionAndUser must returns empty page when user has expenses but request a page without data")
+  void readByDescriptionAndUser_ReturnsEmptyPage_WhenUserHasExpensesButRequestAPageWithoutData(){
+    String description = "uber";
+    Page<ExpenseDto> pageExpenseDto = expenseService.readByDescriptionAndUser(description, PAGEABLE_WITH_PAGE_ONE);
+
+    Assertions.assertThat(pageExpenseDto).isEmpty();
+    Assertions.assertThat(pageExpenseDto.getTotalElements()).isEqualTo(4L);
   }
 
   @Test
@@ -207,6 +238,17 @@ class ExpenseServiceTests {
     Assertions.assertThatExceptionOfType(NoResultException.class)
         .isThrownBy(() -> expenseService.readByYearAndMonthAndUser(year, month, PAGEABLE))
         .withMessage(String.format("Não há despesas para o ano %d e mês %d", year, month));
+  }
+
+  @Test
+  @DisplayName("readByYearAndMonthAndUser must returns empty page when user has expenses but request a page without data")
+  void readByYearAndMonthAndUser_ReturnsEmptyPage_WhenUserHasExpensesButRequestAPageWithoutData(){
+    int year = 2023;
+    int month = 9;
+    Page<ExpenseDto> pageExpenseDto = expenseService.readByYearAndMonthAndUser(year, month, PAGEABLE_WITH_PAGE_ONE);
+
+    Assertions.assertThat(pageExpenseDto).isEmpty();
+    Assertions.assertThat(pageExpenseDto.getTotalElements()).isEqualTo(4L);
   }
 
   @Test
