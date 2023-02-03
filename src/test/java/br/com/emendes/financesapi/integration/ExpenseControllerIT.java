@@ -6,7 +6,7 @@ import br.com.emendes.financesapi.controller.dto.error.ErrorDto;
 import br.com.emendes.financesapi.controller.dto.error.FormErrorDto;
 import br.com.emendes.financesapi.controller.form.ExpenseForm;
 import br.com.emendes.financesapi.controller.form.LoginForm;
-import br.com.emendes.financesapi.model.Expense;
+import br.com.emendes.financesapi.model.entity.Expense;
 import br.com.emendes.financesapi.repository.ExpenseRepository;
 import br.com.emendes.financesapi.util.Formatter;
 import br.com.emendes.financesapi.util.creator.ExpenseCreator;

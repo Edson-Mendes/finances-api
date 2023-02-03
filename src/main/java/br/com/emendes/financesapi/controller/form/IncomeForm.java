@@ -8,8 +8,8 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 
-import br.com.emendes.financesapi.model.Income;
-import br.com.emendes.financesapi.model.User;
+import br.com.emendes.financesapi.model.entity.Income;
+import br.com.emendes.financesapi.model.entity.User;
 import br.com.emendes.financesapi.util.Formatter;
 import br.com.emendes.financesapi.validation.annotation.DateValidation;
 import io.swagger.v3.oas.annotations.media.Schema;

@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 
 import br.com.emendes.financesapi.controller.form.ExpenseForm;
 import br.com.emendes.financesapi.util.creator.ExpenseFormCreator;
-import br.com.emendes.financesapi.model.enumerator.Category;
+import br.com.emendes.financesapi.model.Category;
 
 @DisplayName("Tests for ExpenseForm")
 public class ExpenseFormTests {

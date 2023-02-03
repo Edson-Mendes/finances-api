@@ -1,6 +1,6 @@
 package br.com.emendes.financesapi.controller.dto;
 
-import br.com.emendes.financesapi.model.Role;
+import br.com.emendes.financesapi.model.entity.Role;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.List;
@@ -9,7 +9,7 @@ import java.util.Objects;
 public class RoleDto {
   
   @Schema(example = "2")
-  private Long id;
+  private Integer id;
 
   @Schema(example = "ROLE_USER")
   private String name;
@@ -19,12 +19,12 @@ public class RoleDto {
     this.name = role.getName();
   }
 
-  public RoleDto(Long id, String name){
+  public RoleDto(Integer id, String name){
     this.id = id;
     this.name = name;
   }
 
-  public Long getId() {
+  public Integer getId() {
     return id;
   }
 

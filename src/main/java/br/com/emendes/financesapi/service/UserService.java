@@ -3,7 +3,7 @@ package br.com.emendes.financesapi.service;
 import br.com.emendes.financesapi.controller.dto.UserDto;
 import br.com.emendes.financesapi.controller.form.ChangePasswordForm;
 import br.com.emendes.financesapi.controller.form.SignupForm;
-import br.com.emendes.financesapi.model.User;
+import br.com.emendes.financesapi.model.entity.User;
 import br.com.emendes.financesapi.repository.UserRepository;
 import br.com.emendes.financesapi.validation.exception.DataConflictException;
 import br.com.emendes.financesapi.validation.exception.PasswordsDoNotMatchException;

@@ -1,4 +1,4 @@
-package br.com.emendes.financesapi.model;
+package br.com.emendes.financesapi.model.entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -9,7 +9,7 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import br.com.emendes.financesapi.controller.form.ExpenseForm;
-import br.com.emendes.financesapi.model.enumerator.Category;
+import br.com.emendes.financesapi.model.Category;
 import br.com.emendes.financesapi.util.Formatter;
 
 @Entity

@@ -1,12 +1,9 @@
 package br.com.emendes.financesapi.util.creator;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 
 import br.com.emendes.financesapi.controller.form.ExpenseForm;
-import br.com.emendes.financesapi.model.Expense;
-import br.com.emendes.financesapi.model.User;
-import br.com.emendes.financesapi.model.enumerator.Category;
+import br.com.emendes.financesapi.model.Category;
 
 public class ExpenseFormCreator {
 

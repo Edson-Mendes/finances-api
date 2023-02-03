@@ -17,7 +17,7 @@ import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import br.com.emendes.financesapi.controller.dto.RoleDto;
-import br.com.emendes.financesapi.model.Role;
+import br.com.emendes.financesapi.model.entity.Role;
 import br.com.emendes.financesapi.repository.RoleRepository;
 
 @ExtendWith(SpringExtension.class)
@@ -30,8 +30,8 @@ public class RoleServiceTests {
   @Mock
   private RoleRepository roleRepositoryMock;
 
-  private final Role ROLE_USER = new Role(1l, "ROLE_USER");
-  private final Role ROLE_ADMIN = new Role(2l, "ROLE_ADMIN");
+  private final Role ROLE_USER = new Role(1, "ROLE_USER");
+  private final Role ROLE_ADMIN = new Role(2, "ROLE_ADMIN");
 
   @BeforeEach
   public void setUp() {

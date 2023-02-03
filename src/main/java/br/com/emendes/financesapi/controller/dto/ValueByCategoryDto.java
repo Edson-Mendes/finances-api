@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-import br.com.emendes.financesapi.model.enumerator.Category;
+import br.com.emendes.financesapi.model.Category;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 public class ValueByCategoryDto {

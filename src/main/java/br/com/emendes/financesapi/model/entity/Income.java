@@ -1,4 +1,4 @@
-package br.com.emendes.financesapi.model;
+package br.com.emendes.financesapi.model.entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

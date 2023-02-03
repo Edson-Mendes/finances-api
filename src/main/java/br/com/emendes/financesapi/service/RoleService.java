@@ -2,7 +2,7 @@ package br.com.emendes.financesapi.service;
 
 import br.com.emendes.financesapi.controller.dto.RoleDto;
 import br.com.emendes.financesapi.controller.form.RoleForm;
-import br.com.emendes.financesapi.model.Role;
+import br.com.emendes.financesapi.model.entity.Role;
 import br.com.emendes.financesapi.repository.RoleRepository;
 import br.com.emendes.financesapi.validation.exception.DataConflictException;
 import org.springframework.beans.factory.annotation.Autowired;

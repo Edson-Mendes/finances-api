@@ -10,7 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import br.com.emendes.financesapi.model.Income;
+import br.com.emendes.financesapi.model.entity.Income;
 
 @Repository
 public interface IncomeRepository extends JpaRepository<Income, Long> {

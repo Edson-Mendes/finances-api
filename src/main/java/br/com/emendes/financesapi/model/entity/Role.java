@@ -1,4 +1,4 @@
-package br.com.emendes.financesapi.model;
+package br.com.emendes.financesapi.model.entity;
 
 import javax.persistence.*;
 
@@ -9,7 +9,7 @@ import org.springframework.security.core.GrantedAuthority;
 public class Role implements GrantedAuthority{
 
   @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+  private Integer id;
 
   @Column(unique = true)
   private String name;
@@ -20,16 +20,16 @@ public class Role implements GrantedAuthority{
     this.name = name;
   }
 
-  public Role(Long id, String name){
+  public Role(Integer id, String name){
     this.id = id;
     this.name = name;
   }
 
-  public Long getId() {
+  public Integer getId() {
     return id;
   }
 
-  public void setId(Long id) {
+  public void setId(Integer id) {
     this.id = id;
   }
 

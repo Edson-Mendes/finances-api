@@ -11,7 +11,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import br.com.emendes.financesapi.model.User;
+import br.com.emendes.financesapi.model.entity.User;
 import br.com.emendes.financesapi.service.TokenService;
 import br.com.emendes.financesapi.service.UserService;
 

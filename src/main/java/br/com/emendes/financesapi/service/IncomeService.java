@@ -6,7 +6,7 @@ import java.util.Optional;
 
 import javax.persistence.NoResultException;
 
-import br.com.emendes.financesapi.model.User;
+import br.com.emendes.financesapi.model.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,7 +17,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import br.com.emendes.financesapi.controller.dto.IncomeDto;
 import br.com.emendes.financesapi.controller.form.IncomeForm;
-import br.com.emendes.financesapi.model.Income;
+import br.com.emendes.financesapi.model.entity.Income;
 import br.com.emendes.financesapi.repository.IncomeRepository;
 import br.com.emendes.financesapi.util.Formatter;
 

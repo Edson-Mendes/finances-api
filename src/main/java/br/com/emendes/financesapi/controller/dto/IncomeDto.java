@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 import org.springframework.data.domain.Page;
 
-import br.com.emendes.financesapi.model.Income;
+import br.com.emendes.financesapi.model.entity.Income;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 public class IncomeDto {

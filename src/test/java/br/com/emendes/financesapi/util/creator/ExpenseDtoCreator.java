@@ -5,7 +5,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 import br.com.emendes.financesapi.controller.dto.ExpenseDto;
-import br.com.emendes.financesapi.model.enumerator.Category;
+import br.com.emendes.financesapi.model.Category;
 
 public class ExpenseDtoCreator {
 

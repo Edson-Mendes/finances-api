@@ -3,8 +3,8 @@ package br.com.emendes.financesapi.util.creator;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-import br.com.emendes.financesapi.model.Income;
-import br.com.emendes.financesapi.model.User;
+import br.com.emendes.financesapi.model.entity.Income;
+import br.com.emendes.financesapi.model.entity.User;
 
 public class IncomeCreator {
 

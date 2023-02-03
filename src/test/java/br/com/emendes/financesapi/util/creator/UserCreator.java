@@ -1,7 +1,7 @@
 package br.com.emendes.financesapi.util.creator;
 
-import br.com.emendes.financesapi.model.Role;
-import br.com.emendes.financesapi.model.User;
+import br.com.emendes.financesapi.model.entity.Role;
+import br.com.emendes.financesapi.model.entity.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.List;

@@ -2,8 +2,8 @@ package br.com.emendes.financesapi.unit.service;
 
 import br.com.emendes.financesapi.controller.dto.IncomeDto;
 import br.com.emendes.financesapi.controller.form.IncomeForm;
-import br.com.emendes.financesapi.model.Income;
-import br.com.emendes.financesapi.model.User;
+import br.com.emendes.financesapi.model.entity.Income;
+import br.com.emendes.financesapi.model.entity.User;
 import br.com.emendes.financesapi.repository.IncomeRepository;
 import br.com.emendes.financesapi.service.IncomeService;
 import br.com.emendes.financesapi.util.creator.IncomeCreator;

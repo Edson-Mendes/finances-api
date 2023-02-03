@@ -2,7 +2,7 @@ package br.com.emendes.financesapi.unit.service;
 
 import br.com.emendes.financesapi.controller.dto.SummaryDto;
 import br.com.emendes.financesapi.controller.dto.ValueByCategoryDto;
-import br.com.emendes.financesapi.model.enumerator.Category;
+import br.com.emendes.financesapi.model.Category;
 import br.com.emendes.financesapi.service.ExpenseService;
 import br.com.emendes.financesapi.service.IncomeService;
 import br.com.emendes.financesapi.service.SummaryService;

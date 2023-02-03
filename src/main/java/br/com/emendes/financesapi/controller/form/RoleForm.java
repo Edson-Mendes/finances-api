@@ -3,7 +3,7 @@ package br.com.emendes.financesapi.controller.form;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 
-import br.com.emendes.financesapi.model.Role;
+import br.com.emendes.financesapi.model.entity.Role;
 
 public class RoleForm {
 

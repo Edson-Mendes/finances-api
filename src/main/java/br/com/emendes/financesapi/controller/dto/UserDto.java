@@ -2,7 +2,7 @@ package br.com.emendes.financesapi.controller.dto;
 
 import org.springframework.data.domain.Page;
 
-import br.com.emendes.financesapi.model.User;
+import br.com.emendes.financesapi.model.entity.User;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 public class UserDto {

@@ -1,4 +1,4 @@
-package br.com.emendes.financesapi.model;
+package br.com.emendes.financesapi.model.entity;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.persistence.*;
 
+import br.com.emendes.financesapi.model.entity.Role;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.security.core.GrantedAuthority;
@@ -35,7 +36,7 @@ public class User implements UserDetails {
     this.name = name;
     this.email = email;
     this.password = new BCryptPasswordEncoder().encode(password);
-    this.roles.add(new Role(1L, "ROLE_USER"));
+    this.roles.add(new Role(1, "ROLE_USER"));
   }
 
   public User(Long id) {

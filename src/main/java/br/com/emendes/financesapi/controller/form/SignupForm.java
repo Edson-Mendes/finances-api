@@ -3,7 +3,7 @@ package br.com.emendes.financesapi.controller.form;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
-import br.com.emendes.financesapi.model.User;
+import br.com.emendes.financesapi.model.entity.User;
 import br.com.emendes.financesapi.validation.annotation.ValidPassword;
 import io.swagger.v3.oas.annotations.media.Schema;
 

@@ -1,7 +1,7 @@
 package br.com.emendes.financesapi.repository;
 
 import br.com.emendes.financesapi.controller.dto.ValueByCategoryDto;
-import br.com.emendes.financesapi.model.Expense;
+import br.com.emendes.financesapi.model.entity.Expense;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

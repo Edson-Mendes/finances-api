@@ -1,10 +1,12 @@
 package br.com.emendes.financesapi.config.security;
 
+import br.com.emendes.financesapi.service.AuthenticationService;
+import br.com.emendes.financesapi.service.TokenService;
+import br.com.emendes.financesapi.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-import org.springframework.data.spel.spi.EvaluationContextExtension;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,10 +20,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.data.repository.query.SecurityEvaluationContextExtension;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
-import br.com.emendes.financesapi.service.AuthenticationService;
-import br.com.emendes.financesapi.service.TokenService;
-import br.com.emendes.financesapi.service.UserService;
 
 @EnableWebSecurity
 @Configuration

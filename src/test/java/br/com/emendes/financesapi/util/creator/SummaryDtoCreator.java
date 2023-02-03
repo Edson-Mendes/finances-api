@@ -6,7 +6,7 @@ import java.util.List;
 
 import br.com.emendes.financesapi.controller.dto.SummaryDto;
 import br.com.emendes.financesapi.controller.dto.ValueByCategoryDto;
-import br.com.emendes.financesapi.model.enumerator.Category;
+import br.com.emendes.financesapi.model.Category;
 
 public class SummaryDtoCreator {
 

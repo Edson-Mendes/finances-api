@@ -28,9 +28,9 @@ class RoleControllerTests {
   @Mock
   private RoleService roleServiceMock;
 
-  private final RoleDto ROLE_USER = new RoleDto(1L, "ROLE_USER");
-  private final RoleDto ROLE_ADMIN = new RoleDto(2L, "ROLE_ADMIN");
-  private final RoleDto ROLE_MANAGER = new RoleDto(3L, "ROLE_MANAGER");
+  private final RoleDto ROLE_USER = new RoleDto(1, "ROLE_USER");
+  private final RoleDto ROLE_ADMIN = new RoleDto(2, "ROLE_ADMIN");
+  private final RoleDto ROLE_MANAGER = new RoleDto(3, "ROLE_MANAGER");
 
   @BeforeEach
   public void setUp() {

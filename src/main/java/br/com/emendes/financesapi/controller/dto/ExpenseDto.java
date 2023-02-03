@@ -8,8 +8,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 import org.springframework.data.domain.Page;
 
-import br.com.emendes.financesapi.model.Expense;
-import br.com.emendes.financesapi.model.enumerator.Category;
+import br.com.emendes.financesapi.model.entity.Expense;
+import br.com.emendes.financesapi.model.Category;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 public class ExpenseDto {
