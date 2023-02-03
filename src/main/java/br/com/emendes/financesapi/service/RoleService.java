@@ -34,7 +34,7 @@ public class RoleService {
     return RoleDto.convert(roles);
   }
 
-  public RoleDto readById(Long id) {
+  public RoleDto readById(Integer id) {
     Optional<Role> optionalRole = roleRepository.findById(id);
 
     return new RoleDto(optionalRole.orElseThrow(() -> {
@@ -42,7 +42,7 @@ public class RoleService {
     }));
   }
 
-  public void deleteById(Long id) {
+  public void deleteById(Integer id) {
     try {
       roleRepository.deleteById(id);
     } catch (Exception e) {

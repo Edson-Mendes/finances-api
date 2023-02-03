@@ -31,7 +31,7 @@ import java.net.URI;
 
 @Validated
 @RestController
-@RequestMapping("/receitas")
+@RequestMapping("/api/incomes")
 public class IncomeController {
 
   @Autowired

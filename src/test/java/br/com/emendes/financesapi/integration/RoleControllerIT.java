@@ -68,8 +68,8 @@ class RoleControllerIT {
     Assertions.assertThat(responseBody)
         .isNotNull()
         .hasSize(2)
-        .contains(new RoleDto(1L, "ROLE_USER"))
-        .contains(new RoleDto(2L, "ROLE_ADMIN"));
+        .contains(new RoleDto(1, "ROLE_USER"))
+        .contains(new RoleDto(2, "ROLE_ADMIN"));
   }
 
   @Test
@@ -100,7 +100,7 @@ class RoleControllerIT {
     Assertions.assertThat(statusCode).isEqualTo(HttpStatus.OK);
     Assertions.assertThat(responseBody)
         .isNotNull()
-        .isEqualTo(new RoleDto(1L, "ROLE_USER"));
+        .isEqualTo(new RoleDto(1, "ROLE_USER"));
   }
 
   @Test

@@ -23,7 +23,7 @@ import javax.validation.constraints.Min;
 
 @Validated
 @RestController
-@RequestMapping("/resumo")
+@RequestMapping("api/summaries")
 public class SummaryController {
 
   @Autowired

@@ -40,10 +40,10 @@ public class RoleServiceTests {
     BDDMockito.when(roleRepositoryMock.findAll())
         .thenReturn(listRoles);
 
-    BDDMockito.when(roleRepositoryMock.findById(1l))
+    BDDMockito.when(roleRepositoryMock.findById(1))
         .thenReturn(Optional.of(ROLE_USER));
 
-    BDDMockito.when(roleRepositoryMock.findById(1000l))
+    BDDMockito.when(roleRepositoryMock.findById(1000))
         .thenReturn(Optional.empty());
 
   }
@@ -62,7 +62,7 @@ public class RoleServiceTests {
   @Test
   @DisplayName("readById must return RoleDto when successful")
   void readById_ReturnsRoleDto_WhenSuccessful() {
-    Long id = 1l;
+    Integer id = 1;
 
     RoleDto roleDto = this.roleService.readById(id);
 
@@ -74,7 +74,7 @@ public class RoleServiceTests {
   @Test
   @DisplayName("readById must return RoleDto when successful")
   void readById_ThrowsNoResultException_WhenNotFoundRole() {
-    Long id = 1000l;
+    Integer id = 1000;
 
     Assertions.assertThatExceptionOfType(NoResultException.class)
         .isThrownBy(() -> this.roleService.readById(id))
