@@ -1,18 +1,23 @@
 package br.com.emendes.financesapi.model.entity;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import javax.persistence.*;
-
-import br.com.emendes.financesapi.model.entity.Role;
+import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
+@Builder
 @Entity
 @Table(name = "tb_user")
 public class User implements UserDetails {
@@ -29,9 +34,6 @@ public class User implements UserDetails {
   @OnDelete(action = OnDeleteAction.CASCADE)
   private List<Role> roles = new ArrayList<>();
 
-  public User() {
-  }
-
   public User(String name, String email, String password) {
     this.name = name;
     this.email = email;
@@ -41,14 +43,6 @@ public class User implements UserDetails {
 
   public User(Long id) {
     this.id = id;
-  }
-
-  public User(Long id, String name, String email, String password, List<Role> roles) {
-    this.id = id;
-    this.name = name;
-    this.email = email;
-    this.password = password;
-    this.roles = roles;
   }
 
   @Override
@@ -86,36 +80,8 @@ public class User implements UserDetails {
     return true;
   }
 
-  public Long getId() {
-    return id;
-  }
-
-  public void setId(Long id) {
-    this.id = id;
-  }
-
-  public String getEmail() {
-    return email;
-  }
-
-  public void setEmail(String email) {
-    this.email = email;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public void setPassword(String password) {
-    this.password = password;
-  }
-
   public List<Role> getRoles() {
-    return roles;
+    return Collections.unmodifiableList(roles);
   }
 
   public void setRoles(List<Role> roles) {

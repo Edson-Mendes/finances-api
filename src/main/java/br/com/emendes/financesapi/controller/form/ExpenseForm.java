@@ -1,20 +1,25 @@
 package br.com.emendes.financesapi.controller.form;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
+import br.com.emendes.financesapi.model.Category;
+import br.com.emendes.financesapi.model.entity.Expense;
+import br.com.emendes.financesapi.model.entity.User;
+import br.com.emendes.financesapi.util.Formatter;
+import br.com.emendes.financesapi.validation.annotation.DateValidation;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.*;
 
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 
-import br.com.emendes.financesapi.model.entity.Expense;
-import br.com.emendes.financesapi.model.entity.User;
-import br.com.emendes.financesapi.model.Category;
-import br.com.emendes.financesapi.util.Formatter;
-import br.com.emendes.financesapi.validation.annotation.DateValidation;
-import io.swagger.v3.oas.annotations.media.Schema;
-
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
+@Builder
 public class ExpenseForm {
 
   @Schema(example = "Mercado")
@@ -32,51 +37,9 @@ public class ExpenseForm {
   @Digits(integer = 6, fraction = 2)
   private BigDecimal value;
 
-//  TODO: Fazer um bean validation para validar a categoria
+  //  TODO: Fazer um bean validation para validar a categoria
   @Schema(example = "ALIMENTACAO")
   private Category category;
-
-  public ExpenseForm() {
-  }
-
-  public ExpenseForm(String description, String date, BigDecimal value, Category category) {
-    this.description = description;
-    this.date = date;
-    this.value = value;
-    this.category = category;
-  }
-
-  public String getDescription() {
-    return description;
-  }
-
-  public void setDescription(String description) {
-    this.description = description;
-  }
-
-  public Category getCategory() {
-    return category;
-  }
-
-  public void setCategory(Category category) {
-    this.category = category;
-  }
-
-  public String getDate() {
-    return date;
-  }
-
-  public void setDate(String date) {
-    this.date = date;
-  }
-
-  public BigDecimal getValue() {
-    return value;
-  }
-
-  public void setValue(BigDecimal value) {
-    this.value = value;
-  }
 
   public Expense convert(Long userId) {
     LocalDate date = parseDateToLocalDate();

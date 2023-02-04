@@ -1,12 +1,17 @@
 package br.com.emendes.financesapi.controller.form;
 
-import javax.validation.constraints.NotBlank;
-
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-
 import br.com.emendes.financesapi.validation.annotation.ValidPassword;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.*;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import javax.validation.constraints.NotBlank;
+
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
+@Builder
 public class ChangePasswordForm {
 
   @Schema(example = "myOldPassword1234")
@@ -21,39 +26,11 @@ public class ChangePasswordForm {
   @NotBlank
   private String confirm;
 
-  public ChangePasswordForm() {
-  }
-
-  public ChangePasswordForm(String oldPassword, String newPassword, String confirm) {
-    this.oldPassword = oldPassword;
-    this.newPassword = newPassword;
-    this.confirm = confirm;
-  }
-
-  public void setNewPassword(String newPassword) {
-    this.newPassword = newPassword;
-  }
-
-  public String getNewPassword() {
-    return newPassword;
-  }
-
-  public String getConfirm() {
-    return confirm;
-  }
-
-  public void setConfirm(String confirm) {
-    this.confirm = confirm;
-  }
-
-  public String getOldPassword() { return oldPassword; }
-
-  public void setOldPassword(String oldPassword) { this.oldPassword = oldPassword; }
-
   public boolean passwordMatch() {
     return this.newPassword.equals(this.confirm);
   }
 
+  // TODO: remover daqui o encode do password!
   public String generateNewPasswordEncoded() {
     return new BCryptPasswordEncoder().encode(newPassword);
   }

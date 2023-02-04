@@ -1,10 +1,16 @@
 package br.com.emendes.financesapi.controller.form;
 
+import lombok.*;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
+@Builder
 public class LoginForm {
 
   @NotBlank
@@ -14,30 +20,7 @@ public class LoginForm {
   @NotBlank
   private String password;
 
-  public LoginForm() {
-  }
-
-  public LoginForm(String email, String password) {
-    this.email = email;
-    this.password = password;
-  }
-
-  public void setEmail(String email) {
-    this.email = email;
-  }
-
-  public String getEmail() {
-    return email;
-  }
-
-  public void setPassword(String password) {
-    this.password = password;
-  }
-
-  public String getPassword() {
-    return password;
-  }
-
+  // FIXME: ISSO NÃO DEVERIA ESTAR AQUI!
   public UsernamePasswordAuthenticationToken converter() {
     return new UsernamePasswordAuthenticationToken(email, password);
   }

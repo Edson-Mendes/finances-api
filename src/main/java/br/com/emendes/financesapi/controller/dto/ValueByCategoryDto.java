@@ -1,12 +1,20 @@
 package br.com.emendes.financesapi.controller.dto;
 
+import br.com.emendes.financesapi.model.Category;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.*;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-import br.com.emendes.financesapi.model.Category;
-import io.swagger.v3.oas.annotations.media.Schema;
-
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
+@EqualsAndHashCode
+@ToString
+@Builder
 public class ValueByCategoryDto {
 
   @Schema(example = "MORADIA")
@@ -15,52 +23,13 @@ public class ValueByCategoryDto {
   @Schema(example = "3700.00")
   private BigDecimal value;
 
-  public ValueByCategoryDto(){}
-
-  public ValueByCategoryDto(Category category, BigDecimal value){
-    this.category = category;
-    this.value = value;
-  }
-
-  public Category getCategory() {
-    return category;
-  }
-
-  public BigDecimal getValue() {
-    return value;
-  }
-
-  @Override
-  public boolean equals(Object obj) {
-    if(this == obj) return true;
-    if(obj == null || getClass() != obj.getClass()) return false;
-    ValueByCategoryDto other = (ValueByCategoryDto) obj;
-    return category.equals(other.getCategory()) && value.equals(other.getValue());
-  }
-
-  @Override
-  public int hashCode() {
-    int result = 17;
-    if(category != null){
-      result = result * 31 + category.hashCode();
-    }
-    if(value != null){
-      result = result * 31 + value.hashCode();
-    }
-    return result;
-  }
-
-  @Override
-  public String toString() {
-    return category.name()+" - "+value;
-  }
-
   /**
    * @return Lista com todas as categorias com valor igual a zero.
    */
-  public static List<ValueByCategoryDto> listWithZero(){
+  // TODO: Entender por que isso existe
+  public static List<ValueByCategoryDto> listWithZero() {
     List<ValueByCategoryDto> totalByCategory = new ArrayList<>();
-    for(Category category : Category.values()){
+    for (Category category : Category.values()) {
       totalByCategory.add(new ValueByCategoryDto(category, BigDecimal.ZERO));
     }
 

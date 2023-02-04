@@ -1,15 +1,20 @@
 package br.com.emendes.financesapi.model.entity;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-
-import javax.persistence.*;
-
 import br.com.emendes.financesapi.controller.form.IncomeForm;
 import br.com.emendes.financesapi.util.Formatter;
+import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import javax.persistence.*;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
+@Builder
 @Entity
 @Table(name = "tb_income")
 public class Income {
@@ -25,9 +30,7 @@ public class Income {
   @OnDelete(action = OnDeleteAction.CASCADE)
   private User user;
 
-  public Income() {
-  }
-
+  //FIXME: Substituir pelo Builder
   public Income(String description, BigDecimal value, LocalDate date, User user) {
     this.description = description;
     this.value = value;
@@ -35,46 +38,7 @@ public class Income {
     this.user = user;
   }
 
-  public User getUser() {
-    return user;
-  }
-
-  public void setUser(User user) {
-    this.user = user;
-  }
-
-  public Long getId() {
-    return id;
-  }
-
-  public void setId(Long id) {
-    this.id = id;
-  }
-
-  public String getDescription() {
-    return description;
-  }
-
-  public void setDescription(String description) {
-    this.description = description;
-  }
-
-  public BigDecimal getValue() {
-    return value;
-  }
-
-  public void setValue(BigDecimal value) {
-    this.value = value;
-  }
-
-  public LocalDate getDate() {
-    return date;
-  }
-
-  public void setDate(LocalDate date) {
-    this.date = date;
-  }
-
+  // TODO: Criar um Mapper com um método merge.
   public void setParams(IncomeForm incomeForm) {
     this.description = incomeForm.getDescription();
     this.date = LocalDate.parse(incomeForm.getDate(), Formatter.dateFormatter);
