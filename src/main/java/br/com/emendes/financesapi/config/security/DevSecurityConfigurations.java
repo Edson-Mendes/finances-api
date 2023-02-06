@@ -26,6 +26,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Profile("dev")
 public class DevSecurityConfigurations extends WebSecurityConfigurerAdapter {
 
+  private static final String ROLE_ADMIN = "ADMIN";
+
   @Autowired
   private AuthenticationService authenticationService;
 
@@ -51,13 +53,10 @@ public class DevSecurityConfigurations extends WebSecurityConfigurerAdapter {
   @Override
   protected void configure(HttpSecurity http) throws Exception {
     http.authorizeRequests()
-        .antMatchers(HttpMethod.POST, "/auth/signin").permitAll()
-        .antMatchers(HttpMethod.POST, "/auth/signup").permitAll()
-        .antMatchers(HttpMethod.GET, "/roles").hasRole("ADMIN")
-        .antMatchers(HttpMethod.GET, "/roles/*").hasRole("ADMIN")
-        .antMatchers(HttpMethod.GET, "/users").hasRole("ADMIN")
-        .antMatchers(HttpMethod.DELETE, "/users/*").hasRole("ADMIN")
-        .antMatchers("/h2-console/**").permitAll()
+        .antMatchers(HttpMethod.POST, "/api/auth/*").permitAll()
+        .antMatchers(HttpMethod.GET, "/api/categories").permitAll()
+        .antMatchers(HttpMethod.GET, "/api/users").hasRole(ROLE_ADMIN)
+        .antMatchers(HttpMethod.DELETE, "/api/users/*").hasRole(ROLE_ADMIN)
         .anyRequest().authenticated()
         .and().csrf().disable()
         .headers().frameOptions().disable()
