@@ -1,7 +1,6 @@
 package br.com.emendes.financesapi.controller.dto;
 
 import br.com.emendes.financesapi.model.entity.Income;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import org.springframework.data.domain.Page;
@@ -10,7 +9,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @AllArgsConstructor
-@NoArgsConstructor
 @Getter
 @Setter
 @EqualsAndHashCode
@@ -24,8 +22,7 @@ public class IncomeDto {
   @Schema(example = "Salário")
   private String description;
 
-  @JsonFormat(pattern = "dd/MM/yyyy")
-  @Schema(pattern = "dd/MM/yyyy", type = "string", example = "05/01/2022")
+  @Schema(pattern = "yyyy-MM-dd", type = "string", example = "2023-01-17")
   private LocalDate date;
 
   @Schema(example = "3500.00")
