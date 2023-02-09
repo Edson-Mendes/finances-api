@@ -21,8 +21,11 @@ public class Income {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
+  @Column(nullable = false)
   private String description;
+  @Column(nullable = false, precision = 8, scale = 2)
   private BigDecimal value;
+  @Column(nullable = false)
   private LocalDate date;
 
   @ManyToOne(fetch = FetchType.LAZY)

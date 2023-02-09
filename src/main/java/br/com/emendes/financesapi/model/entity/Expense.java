@@ -22,10 +22,14 @@ public class Expense {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
+  @Column(nullable = false)
   private String description;
+  @Column(nullable = false, precision = 8, scale = 2)
   private BigDecimal value;
+  @Column(nullable = false)
   private LocalDate date;
 
+  @Column(nullable = false, length = 25)
   @Enumerated(EnumType.STRING)
   private Category category;
 

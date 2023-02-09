@@ -1,6 +1,6 @@
 <h1 align="center"> Finances API </h1>
 
-![Badge Concluído](https://img.shields.io/static/v1?label=Status&message=Concluído&color=success&style=for-the-badge)
+![Badge Em Manutenção](https://img.shields.io/static/v1?label=Status&message=Em+Manutenção&color=yellow&style=for-the-badge)
 ![Badge Java](https://img.shields.io/static/v1?label=Java&message=17&color=orange&style=for-the-badge&logo=java)
 ![Badge Spring](https://img.shields.io/static/v1?label=Spring&message=v2.6.3&color=brightgreen&style=for-the-badge&logo=spring)
 ![Badge Maven](https://img.shields.io/static/v1?label=Maven&message=v3.8.4&color=critical&style=for-the-badge&logo=apache+maven)
@@ -54,6 +54,7 @@ O projeto foi proposto pela Alura no Challenge Backend 2ª edição.
 - `Testes de Unidade`
 - `Testes de Integração`
 - `Docker`
+- `Flyway (Migration)`
 - `Heroku`
 
 ## :hammer_and_wrench: Deploy
@@ -68,4 +69,6 @@ Documentação feita com Springdoc openapi, gerando [Swagger UI](https://apifina
 - [x] Troca do banco de dados H2 para outro (MySQL, PostgreSQL, ou outro)
 - [ ] Mais relatórios, tipo relatório anual, ou por categoria em dados mês e ano.
 - [ ] Adicionar algum recurso para monitorar e gerenciar a aplicação, tipo o Actuator
-- [ ] Endpoint para listar todas as categorias.
+- [x] Endpoint para listar todas as categorias.
+- [x] Remoção da regra de negócio que **não permitia** receitas/despesas com mesmo **DESCRIÇÃO** no mesmo **MÊS** e **ANO**.
+- [ ] Atualizar versão do Spring boot (2.7.* ou 3.0.*)
