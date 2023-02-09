@@ -7,17 +7,13 @@ import br.com.emendes.financesapi.model.entity.Expense;
 import br.com.emendes.financesapi.model.entity.User;
 import br.com.emendes.financesapi.repository.ExpenseRepository;
 import br.com.emendes.financesapi.service.ExpenseService;
-import br.com.emendes.financesapi.util.Formatter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import javax.persistence.NoResultException;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,8 +25,6 @@ public class ExpenseServiceImpl implements ExpenseService {
 
   @Override
   public ExpenseDto create(ExpenseForm expenseForm) {
-    existsIncomeWithSameDescriptionOnMonthYear(expenseForm);
-
     Long userId = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
 
     Expense expense = expenseForm.convert(userId);
@@ -75,7 +69,6 @@ public class ExpenseServiceImpl implements ExpenseService {
   @Override
   public ExpenseDto update(Long id, ExpenseForm expenseForm) {
     Expense expenseToBeUpdated = findByIdAndUser(id);
-    existsAnotherExpenseWithSameDescriptionOnMonthYear(expenseForm, id);
 
     expenseToBeUpdated.setParams(expenseForm);
     return new ExpenseDto(expenseToBeUpdated);
@@ -97,60 +90,6 @@ public class ExpenseServiceImpl implements ExpenseService {
 
     return optionalExpense.orElseThrow(
         () -> new NoResultException(String.format("Nenhuma despesa com id = %d para esse usuário", id)));
-  }
-
-  /**
-   * Verifica se o usuário já possui outra despesa com a mesma descrição no mesmo
-   * mês e ano da respectiva despesa.
-   * Forma que encontrei que impedir despesas com descrição duplicada no mesmo mês
-   * e ano
-   *
-   * @param form
-   * @return false, se não existir uma despesa com a mesma descrição em um mesmo
-   * mês e ano.
-   * @throws ResponseStatusException se existir despesa.
-   */
-  private boolean existsIncomeWithSameDescriptionOnMonthYear(ExpenseForm form) {
-    LocalDate date = LocalDate.parse(form.getDate());
-    boolean exists = expenseRepository.existsByDescriptionAndMonthAndYearAndUser(
-        form.getDescription(),
-        date.getMonthValue(),
-        date.getYear());
-    if (exists) {
-      String message = "Uma despesa com essa descrição já existe em " + date.getMonth().name().toLowerCase() + " "
-          + date.getYear();
-      throw new ResponseStatusException(
-          HttpStatus.CONFLICT, message, null);
-    }
-    return false;
-  }
-
-  /**
-   * Verifica se o usuário já possui outra despesa com a mesma descrição no mesmo
-   * mês e
-   * ano da respectiva despesa.
-   * e com id diferente do atual.
-   *
-   * @param form
-   * @param id
-   * @return false, se não existir uma despesa com a mesma descrição em um mesmo
-   * mês e ano.
-   * @throws ResponseStatusException se existir despesa.
-   */
-  private boolean existsAnotherExpenseWithSameDescriptionOnMonthYear(ExpenseForm form, Long id) {
-    LocalDate date = LocalDate.parse(form.getDate());
-    boolean exists = expenseRepository.existsByDescriptionAndMonthAndYearAndNotIdAndUser(
-        form.getDescription(),
-        date.getMonthValue(),
-        date.getYear(),
-        id);
-    if (exists) {
-      String message = "Outra despesa com essa descrição já existe em " + date.getMonth().name().toLowerCase() + " "
-          + date.getYear();
-      throw new ResponseStatusException(
-          HttpStatus.CONFLICT, message, null);
-    }
-    return false;
   }
 
 }
