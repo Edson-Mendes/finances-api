@@ -4,8 +4,8 @@ import br.com.emendes.financesapi.controller.dto.UserDto;
 import br.com.emendes.financesapi.controller.form.ChangePasswordForm;
 import br.com.emendes.financesapi.controller.openapi.UserControllerOpenAPI;
 import br.com.emendes.financesapi.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springdoc.api.annotations.ParameterObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
@@ -17,13 +17,12 @@ import org.springframework.web.bind.annotation.*;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/users")
 public class UserController implements UserControllerOpenAPI {
 
-  @Autowired
-  private UserService userService;
-
+  private final UserService userService;
 
   @Override
   @GetMapping

@@ -5,7 +5,7 @@ import br.com.emendes.financesapi.controller.form.ExpenseForm;
 import br.com.emendes.financesapi.model.entity.Expense;
 import br.com.emendes.financesapi.model.entity.User;
 import br.com.emendes.financesapi.repository.ExpenseRepository;
-import br.com.emendes.financesapi.service.ExpenseService;
+import br.com.emendes.financesapi.service.impl.ExpenseServiceImpl;
 import br.com.emendes.financesapi.util.creator.ExpenseCreator;
 import br.com.emendes.financesapi.util.creator.ExpenseFormCreator;
 import br.com.emendes.financesapi.util.creator.UserCreator;
@@ -37,10 +37,10 @@ import static org.mockito.Mockito.mock;
 
 @ExtendWith(SpringExtension.class)
 @DisplayName("Tests for ExpenseService")
-class ExpenseServiceTests {
+class ExpenseServiceImplTests {
 
   @InjectMocks
-  private ExpenseService expenseService;
+  private ExpenseServiceImpl expenseServiceImpl;
 
   @Mock
   private ExpenseRepository expenseRepositoryMock;
@@ -117,7 +117,7 @@ class ExpenseServiceTests {
   @DisplayName("Create must returns ExpenseDto when created successfully")
   void create_ReturnsExpenseDto_WhenSuccessful() {
     ExpenseForm expenseForm = ExpenseFormCreator.validExpenseForm();
-    ExpenseDto expenseDto = this.expenseService.create(expenseForm);
+    ExpenseDto expenseDto = this.expenseServiceImpl.create(expenseForm);
 
     Assertions.assertThat(expenseDto).isNotNull();
     Assertions.assertThat(expenseDto.getDescription()).isEqualTo(expenseForm.getDescription());
@@ -134,14 +134,14 @@ class ExpenseServiceTests {
 
     ExpenseForm expenseForm = ExpenseFormCreator.validExpenseForm();
     Assertions.assertThatExceptionOfType(ResponseStatusException.class)
-        .isThrownBy(() -> this.expenseService.create(expenseForm))
+        .isThrownBy(() -> this.expenseServiceImpl.create(expenseForm))
         .withMessageContaining("Uma despesa com essa descrição já existe em ");
   }
 
   @Test
   @DisplayName("readAllByUser must returns page of expenseDto when successful")
   void readAllByUser_ReturnsPageOfExpenseDto_WhenSuccessful() {
-    Page<ExpenseDto> pageExpenseDto = expenseService.readAllByUser(PAGEABLE);
+    Page<ExpenseDto> pageExpenseDto = expenseServiceImpl.readAllByUser(PAGEABLE);
 
     Assertions.assertThat(pageExpenseDto).isNotEmpty();
     Assertions.assertThat(pageExpenseDto.getNumberOfElements()).isEqualTo(1);
@@ -154,14 +154,14 @@ class ExpenseServiceTests {
         .thenReturn(Page.empty(PAGEABLE));
 
     Assertions.assertThatExceptionOfType(NoResultException.class)
-        .isThrownBy(() -> expenseService.readAllByUser(PAGEABLE))
+        .isThrownBy(() -> expenseServiceImpl.readAllByUser(PAGEABLE))
         .withMessage("O usuário não possui despesas");
   }
 
   @Test
   @DisplayName("readAllByUser must returns empty page when user has expenses but request a page without data")
   void readAllByUser_ReturnsEmptyPage_WhenUserHasExpensesButRequestAPageWithoutData(){
-    Page<ExpenseDto> pageExpenseDto = expenseService.readAllByUser(PAGEABLE_WITH_PAGE_ONE);
+    Page<ExpenseDto> pageExpenseDto = expenseServiceImpl.readAllByUser(PAGEABLE_WITH_PAGE_ONE);
 
     Assertions.assertThat(pageExpenseDto).isEmpty();
     Assertions.assertThat(pageExpenseDto.getTotalElements()).isEqualTo(4L);
@@ -172,7 +172,7 @@ class ExpenseServiceTests {
   void readByDescriptionAndUser_ReturnsPageOfExpenseDto_WhenSuccessful() {
     String description = "solina";
 
-    Page<ExpenseDto> pageExpenseDto = expenseService.readByDescriptionAndUser(description, PAGEABLE);
+    Page<ExpenseDto> pageExpenseDto = expenseServiceImpl.readByDescriptionAndUser(description, PAGEABLE);
 
     Assertions.assertThat(pageExpenseDto).isNotEmpty();
     Assertions.assertThat(pageExpenseDto.getNumberOfElements()).isEqualTo(1);
@@ -184,7 +184,7 @@ class ExpenseServiceTests {
     String description = "lina";
 
     Assertions.assertThatExceptionOfType(NoResultException.class)
-        .isThrownBy(() -> expenseService.readByDescriptionAndUser(description, PAGEABLE))
+        .isThrownBy(() -> expenseServiceImpl.readByDescriptionAndUser(description, PAGEABLE))
         .withMessageContaining("O usuário não possui despesas com descrição similar a ");
   }
 
@@ -192,7 +192,7 @@ class ExpenseServiceTests {
   @DisplayName("readByDescriptionAndUser must returns empty page when user has expenses but request a page without data")
   void readByDescriptionAndUser_ReturnsEmptyPage_WhenUserHasExpensesButRequestAPageWithoutData(){
     String description = "uber";
-    Page<ExpenseDto> pageExpenseDto = expenseService.readByDescriptionAndUser(description, PAGEABLE_WITH_PAGE_ONE);
+    Page<ExpenseDto> pageExpenseDto = expenseServiceImpl.readByDescriptionAndUser(description, PAGEABLE_WITH_PAGE_ONE);
 
     Assertions.assertThat(pageExpenseDto).isEmpty();
     Assertions.assertThat(pageExpenseDto.getTotalElements()).isEqualTo(4L);
@@ -203,7 +203,7 @@ class ExpenseServiceTests {
   void readByIdAndUser_ReturnsOptionalExpenseDto_WhenSuccessful() {
     Long id = ExpenseCreator.expenseWithAllArgs().getId();
 
-    ExpenseDto expenseDto = expenseService.readByIdAndUser(id);
+    ExpenseDto expenseDto = expenseServiceImpl.readByIdAndUser(id);
 
     Assertions.assertThat(expenseDto).isNotNull();
     Assertions.assertThat(expenseDto.getId()).isEqualTo(id);
@@ -213,7 +213,7 @@ class ExpenseServiceTests {
   @DisplayName("readByIdAndUser must throws NoResultException when expenseId don't exists")
   void readByIdAndUser_ThrowsNoResultException_WhenExpenseIdDontExists() {
     Assertions.assertThatExceptionOfType(NoResultException.class)
-        .isThrownBy(() -> expenseService.readByIdAndUser(NON_EXISTING_EXPENSE_ID))
+        .isThrownBy(() -> expenseServiceImpl.readByIdAndUser(NON_EXISTING_EXPENSE_ID))
         .withMessage(String.format("Nenhuma despesa com id = %d para esse usuário", NON_EXISTING_EXPENSE_ID));
   }
 
@@ -223,7 +223,7 @@ class ExpenseServiceTests {
     int month = 1;
     int year = 2022;
 
-    Page<ExpenseDto> pageExpenseDto = expenseService.readByYearAndMonthAndUser(year, month, PAGEABLE);
+    Page<ExpenseDto> pageExpenseDto = expenseServiceImpl.readByYearAndMonthAndUser(year, month, PAGEABLE);
 
     Assertions.assertThat(pageExpenseDto).isNotEmpty();
     Assertions.assertThat(pageExpenseDto.getNumberOfElements()).isEqualTo(1);
@@ -236,7 +236,7 @@ class ExpenseServiceTests {
     int year = 2000;
 
     Assertions.assertThatExceptionOfType(NoResultException.class)
-        .isThrownBy(() -> expenseService.readByYearAndMonthAndUser(year, month, PAGEABLE))
+        .isThrownBy(() -> expenseServiceImpl.readByYearAndMonthAndUser(year, month, PAGEABLE))
         .withMessage(String.format("Não há despesas para o ano %d e mês %d", year, month));
   }
 
@@ -245,7 +245,7 @@ class ExpenseServiceTests {
   void readByYearAndMonthAndUser_ReturnsEmptyPage_WhenUserHasExpensesButRequestAPageWithoutData(){
     int year = 2023;
     int month = 9;
-    Page<ExpenseDto> pageExpenseDto = expenseService.readByYearAndMonthAndUser(year, month, PAGEABLE_WITH_PAGE_ONE);
+    Page<ExpenseDto> pageExpenseDto = expenseServiceImpl.readByYearAndMonthAndUser(year, month, PAGEABLE_WITH_PAGE_ONE);
 
     Assertions.assertThat(pageExpenseDto).isEmpty();
     Assertions.assertThat(pageExpenseDto.getTotalElements()).isEqualTo(4L);
@@ -257,7 +257,7 @@ class ExpenseServiceTests {
     Long id = ExpenseCreator.expenseWithAllArgs().getId();
     ExpenseForm expenseForm = ExpenseFormCreator.validExpenseForm();
 
-    ExpenseDto updateExpense = expenseService.update(id, expenseForm);
+    ExpenseDto updateExpense = expenseServiceImpl.update(id, expenseForm);
 
     Assertions.assertThat(updateExpense).isNotNull();
     Assertions.assertThat(updateExpense.getId()).isEqualTo(id);
@@ -277,7 +277,7 @@ class ExpenseServiceTests {
     ExpenseForm expenseForm = ExpenseFormCreator.validExpenseForm();
 
     Assertions.assertThatExceptionOfType(ResponseStatusException.class)
-        .isThrownBy(() -> expenseService.update(id, expenseForm))
+        .isThrownBy(() -> expenseServiceImpl.update(id, expenseForm))
         .withMessageContaining("Outra despesa com essa descrição já existe em ");
   }
 
@@ -287,7 +287,7 @@ class ExpenseServiceTests {
     ExpenseForm expenseForm = ExpenseFormCreator.validExpenseForm();
 
     Assertions.assertThatExceptionOfType(NoResultException.class)
-        .isThrownBy(() -> expenseService.update(NON_EXISTING_EXPENSE_ID, expenseForm))
+        .isThrownBy(() -> expenseServiceImpl.update(NON_EXISTING_EXPENSE_ID, expenseForm))
         .withMessage(String.format("Nenhuma despesa com id = %d para esse usuário", NON_EXISTING_EXPENSE_ID));
   }
 
@@ -296,7 +296,7 @@ class ExpenseServiceTests {
   @DisplayName("readByYearAndMonthAndUser must throws NoResultException when don't has expenses")
   void deleteById_ThrowsNoResultException_WhenExpenseDontExists(){
     Assertions.assertThatExceptionOfType(NoResultException.class)
-        .isThrownBy(() -> expenseService.deleteById(NON_EXISTING_EXPENSE_ID))
+        .isThrownBy(() -> expenseServiceImpl.deleteById(NON_EXISTING_EXPENSE_ID))
         .withMessage(String.format("Nenhuma despesa com id = %d para esse usuário", NON_EXISTING_EXPENSE_ID));
   }
 

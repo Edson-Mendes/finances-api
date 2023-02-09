@@ -15,7 +15,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import br.com.emendes.financesapi.controller.dto.SummaryDto;
 import br.com.emendes.financesapi.util.creator.SummaryDtoCreator;
-import br.com.emendes.financesapi.service.SummaryService;
+import br.com.emendes.financesapi.service.impl.SummaryServiceImpl;
 
 @ExtendWith(SpringExtension.class)
 @DisplayName("Tests for SummaryController")
@@ -25,13 +25,13 @@ class SummaryControllerTests {
   private SummaryController summaryController;
 
   @Mock
-  private SummaryService summaryServiceMock;
+  private SummaryServiceImpl summaryServiceImplMock;
 
   @BeforeEach
   public void setUp() {
     SummaryDto summaryDto = SummaryDtoCreator.simpleSummaryDto();
 
-    BDDMockito.when(summaryServiceMock.monthSummary(2022, 1))
+    BDDMockito.when(summaryServiceImplMock.monthSummary(2022, 1))
         .thenReturn(summaryDto);
   }
 

@@ -1,10 +1,9 @@
 package br.com.emendes.financesapi.unit.controller;
 
 import br.com.emendes.financesapi.controller.IncomeController;
-import br.com.emendes.financesapi.controller.dto.ExpenseDto;
 import br.com.emendes.financesapi.controller.dto.IncomeDto;
 import br.com.emendes.financesapi.controller.form.IncomeForm;
-import br.com.emendes.financesapi.service.IncomeService;
+import br.com.emendes.financesapi.service.impl.IncomeServiceImpl;
 import br.com.emendes.financesapi.util.creator.IncomeDtoCreator;
 import br.com.emendes.financesapi.util.creator.IncomeFormCreator;
 import org.assertj.core.api.Assertions;
@@ -37,7 +36,7 @@ class IncomeControllerTests {
   private IncomeController incomeController;
 
   @Mock
-  private IncomeService incomeServiceMock;
+  private IncomeServiceImpl incomeServiceImplMock;
 
   private final UriComponentsBuilder URI_BUILDER = UriComponentsBuilder.fromHttpUrl("http://localhost:8080");
   private final IncomeForm INCOME_FORM = IncomeFormCreator.validIncomeForm();
@@ -48,26 +47,26 @@ class IncomeControllerTests {
     IncomeDto incomeDto = IncomeDtoCreator.validIncomeDto();
     Page<IncomeDto> pageIncomeDto = new PageImpl<>(List.of(incomeDto));
 
-    BDDMockito.when(incomeServiceMock.create(
+    BDDMockito.when(incomeServiceImplMock.create(
             ArgumentMatchers.any(IncomeForm.class)))
         .thenReturn(incomeDto);
 
-    BDDMockito.when(incomeServiceMock.readAllByUser(PAGEABLE))
+    BDDMockito.when(incomeServiceImplMock.readAllByUser(PAGEABLE))
         .thenReturn(pageIncomeDto);
 
-    BDDMockito.when(incomeServiceMock.readByDescriptionAndUser("ario", PAGEABLE))
+    BDDMockito.when(incomeServiceImplMock.readByDescriptionAndUser("ario", PAGEABLE))
         .thenReturn(pageIncomeDto);
 
-    BDDMockito.when(incomeServiceMock.readByIdAndUser(incomeDto.getId()))
+    BDDMockito.when(incomeServiceImplMock.readByIdAndUser(incomeDto.getId()))
         .thenReturn(incomeDto);
 
-    BDDMockito.when(incomeServiceMock.readByYearAndMonthAndUser(2022, 1, PAGEABLE))
+    BDDMockito.when(incomeServiceImplMock.readByYearAndMonthAndUser(2022, 1, PAGEABLE))
         .thenReturn(pageIncomeDto);
 
-    BDDMockito.when(incomeServiceMock.update(incomeDto.getId(), INCOME_FORM))
+    BDDMockito.when(incomeServiceImplMock.update(incomeDto.getId(), INCOME_FORM))
         .thenReturn(incomeDto);
 
-    BDDMockito.doNothing().when(incomeServiceMock).deleteById(incomeDto.getId());
+    BDDMockito.doNothing().when(incomeServiceImplMock).deleteById(incomeDto.getId());
   }
 
   @Test

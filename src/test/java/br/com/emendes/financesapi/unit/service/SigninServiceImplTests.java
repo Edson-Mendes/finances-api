@@ -2,8 +2,8 @@ package br.com.emendes.financesapi.unit.service;
 
 import br.com.emendes.financesapi.controller.dto.TokenDto;
 import br.com.emendes.financesapi.controller.form.LoginForm;
-import br.com.emendes.financesapi.service.SigninService;
-import br.com.emendes.financesapi.service.TokenService;
+import br.com.emendes.financesapi.service.impl.SigninServiceImpl;
+import br.com.emendes.financesapi.config.security.service.TokenServiceImpl;
 import br.com.emendes.financesapi.util.creator.LoginFormCreator;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,14 +20,14 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
 @DisplayName("Unit tests for SigninService")
-class SigninServiceTests {
+class SigninServiceImplTests {
 
   @InjectMocks
-  private SigninService signinService;
+  private SigninServiceImpl signinServiceImpl;
   @Mock
   private AuthenticationManager authManagerMock;
   @Mock
-  private TokenService tokenServiceMock;
+  private TokenServiceImpl tokenServiceImplMock;
 
   @BeforeEach
   public void setUp() {
@@ -36,7 +36,7 @@ class SigninServiceTests {
         .thenReturn(loginForm.converter());
 
     String token = "thisIsAFakeToken12345";
-    BDDMockito.when(tokenServiceMock.generateToken(ArgumentMatchers.any(loginForm.converter().getClass())))
+    BDDMockito.when(tokenServiceImplMock.generateToken(ArgumentMatchers.any(loginForm.converter().getClass())))
         .thenReturn(token);
 
   }
@@ -46,7 +46,7 @@ class SigninServiceTests {
   void login_ReturnsTokenDto_WhenSucessful(){
     LoginForm loginForm = new LoginForm("user@email.com", "123456");
 
-    TokenDto tokenDto = signinService.login(loginForm);
+    TokenDto tokenDto = signinServiceImpl.login(loginForm);
 
     Assertions.assertThat(tokenDto).isNotNull();
     Assertions.assertThat(tokenDto.getType()).isEqualTo("Bearer");
@@ -62,7 +62,7 @@ class SigninServiceTests {
         .given(authManagerMock).authenticate(ArgumentMatchers.any(loginForm.converter().getClass()));
 
     Assertions.assertThatExceptionOfType(BadCredentialsException.class)
-        .isThrownBy(() -> signinService.login(loginForm));
+        .isThrownBy(() -> signinServiceImpl.login(loginForm));
 
   }
 }

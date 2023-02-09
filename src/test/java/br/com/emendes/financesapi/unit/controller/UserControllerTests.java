@@ -22,7 +22,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import br.com.emendes.financesapi.controller.dto.UserDto;
 import br.com.emendes.financesapi.controller.form.ChangePasswordForm;
-import br.com.emendes.financesapi.service.UserService;
+import br.com.emendes.financesapi.service.impl.UserServiceImpl;
 
 @ExtendWith(SpringExtension.class)
 @DisplayName("Tests for UserController")
@@ -31,7 +31,7 @@ class UserControllerTests {
   @InjectMocks
   private UserController userController;
   @Mock
-  private UserService userServiceMock;
+  private UserServiceImpl userServiceImplImplMock;
 
   private final Pageable PAGEABLE = PageRequest.of(0, 10, Direction.ASC, "id");
   private final UserDto USER_DTO = new UserDto(1000L, "Lorem Ipsum", "lorem@email.com");
@@ -42,11 +42,11 @@ class UserControllerTests {
     ChangePasswordForm changeForm = new ChangePasswordForm(
         "123456", "123456789O", "123456789O");
 
-    BDDMockito.when(userServiceMock.read(PAGEABLE))
+    BDDMockito.when(userServiceImplImplMock.read(PAGEABLE))
         .thenReturn(pageUserDto);
 
-    BDDMockito.doNothing().when(userServiceMock).delete(1000L);
-    BDDMockito.doNothing().when(userServiceMock).changePassword(changeForm);
+    BDDMockito.doNothing().when(userServiceImplImplMock).delete(1000L);
+    BDDMockito.doNothing().when(userServiceImplImplMock).changePassword(changeForm);
 
   }
 

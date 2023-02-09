@@ -4,6 +4,7 @@ import br.com.emendes.financesapi.controller.dto.IncomeDto;
 import br.com.emendes.financesapi.controller.form.IncomeForm;
 import br.com.emendes.financesapi.controller.openapi.IncomeControllerOpenAPI;
 import br.com.emendes.financesapi.service.IncomeService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,13 +22,12 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import java.net.URI;
 
-@Validated
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/incomes")
 public class IncomeController implements IncomeControllerOpenAPI {
 
-  @Autowired
-  private IncomeService incomeService;
+  private final IncomeService incomeService;
   private final String headerName = "Content-Type";
   private final String headerValue = "application/json;charset=UTF-8";
 
@@ -59,7 +59,7 @@ public class IncomeController implements IncomeControllerOpenAPI {
 
   @Override
   @GetMapping("/{id}")
-  public ResponseEntity<IncomeDto> readById(@PathVariable Long id) {
+  public ResponseEntity<IncomeDto> readById(@PathVariable(name = "id") Long id) {
     IncomeDto incomeDto = incomeService.readByIdAndUser(id);
     return ResponseEntity.status(HttpStatus.OK)
         .header(headerName, headerValue)
@@ -69,8 +69,8 @@ public class IncomeController implements IncomeControllerOpenAPI {
   @Override
   @GetMapping("/{year}/{month}")
   public ResponseEntity<Page<IncomeDto>> readByYearAndMonth(
-      @Min(1970) @Max(2099) @PathVariable int year,
-      @Min(1) @Max(12) @PathVariable int month,
+      @PathVariable(name = "year") int year,
+      @PathVariable(name = "month") int month,
       @PageableDefault(sort = "date", direction = Direction.DESC, page = 0, size = 10) Pageable pageable) {
     Page<IncomeDto> incomesDto = incomeService.readByYearAndMonthAndUser(year, month, pageable);
     return ResponseEntity.status(HttpStatus.OK)
@@ -80,9 +80,7 @@ public class IncomeController implements IncomeControllerOpenAPI {
 
   @Override
   @PutMapping("/{id}")
-  @Transactional
-  public ResponseEntity<IncomeDto> update(@PathVariable Long id, @Valid @RequestBody IncomeForm incomeForm) {
-
+  public ResponseEntity<IncomeDto> update(@PathVariable(name = "id") long id, @RequestBody @Valid IncomeForm incomeForm) {
     IncomeDto incomeDto = incomeService.update(id, incomeForm);
     return ResponseEntity.status(HttpStatus.OK).header(headerName, headerValue)
         .body(incomeDto);
@@ -90,7 +88,7 @@ public class IncomeController implements IncomeControllerOpenAPI {
 
   @Override
   @DeleteMapping("/{id}")
-  public ResponseEntity<Void> delete(@PathVariable Long id) {
+  public ResponseEntity<Void> delete(@PathVariable(name = "id") Long id) {
     incomeService.deleteById(id);
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }

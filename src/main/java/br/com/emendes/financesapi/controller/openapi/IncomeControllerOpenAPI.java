@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 
 @SecurityRequirement(name = "bearer-key")
 @Tag(name = "Receitas")
@@ -46,7 +48,7 @@ public interface IncomeControllerOpenAPI {
       @ApiResponse(responseCode = "404", description = "Nenhuma receita encontrada",
           content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDto.class))}),
   })
-  ResponseEntity<Page<IncomeDto>> read(String description, @ParameterObject() Pageable pageable);
+  ResponseEntity<Page<IncomeDto>> read(String description, @ParameterObject Pageable pageable);
 
   @Operation(summary = "Buscar receita por id")
   @ApiResponses(value = {
@@ -66,20 +68,23 @@ public interface IncomeControllerOpenAPI {
       @ApiResponse(responseCode = "404", description = "Nenhuma receita encontrada",
           content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDto.class))}),
   })
-  ResponseEntity<Page<IncomeDto>> readByYearAndMonth(int year, int month, @ParameterObject Pageable pageable);
+  ResponseEntity<Page<IncomeDto>> readByYearAndMonth(
+      @Min(1970) @Max(2099) int year,
+      @Min(1) @Max(12) int month,
+      @ParameterObject Pageable pageable);
 
   @Operation(summary = "Atualizar receita por id")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "Atualizado com sucesso"),
       @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
-      @ApiResponse(responseCode = "400", description = "Bad request - Algum parâmetro do corpo da requisição inválido", content = {
-          @Content(mediaType = "application/json", schema = @Schema(implementation = FormErrorDto.class))}),
+      @ApiResponse(responseCode = "400", description = "Bad request - Algum parâmetro do corpo da requisição inválido",
+          content = {@Content(mediaType = "application/json", schema = @Schema(implementation = FormErrorDto.class))}),
       @ApiResponse(responseCode = "404", description = "Receita não encontrada", content = {
           @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDto.class))}),
-      @ApiResponse(responseCode = "409", description = "Já existe receita com essa descrição no mesmo mês e ano", content = {
-          @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDto.class))}),
+      @ApiResponse(responseCode = "409", description = "Já existe receita com essa descrição no mesmo mês e ano",
+          content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDto.class))}),
   })
-  ResponseEntity<IncomeDto> update(Long id, IncomeForm incomeForm);
+  ResponseEntity<IncomeDto> update(long id, IncomeForm incomeForm);
 
   @Operation(summary = "Deletar receita por id")
   @ApiResponses(value = {

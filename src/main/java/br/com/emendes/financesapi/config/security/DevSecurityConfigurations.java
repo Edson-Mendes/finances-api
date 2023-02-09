@@ -1,9 +1,8 @@
 package br.com.emendes.financesapi.config.security;
 
-import br.com.emendes.financesapi.service.AuthenticationService;
-import br.com.emendes.financesapi.service.TokenService;
+import br.com.emendes.financesapi.config.security.service.TokenService;
 import br.com.emendes.financesapi.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -16,11 +15,14 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.data.repository.query.SecurityEvaluationContextExtension;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+// TODO: Refatorar as config de segurança.
+@RequiredArgsConstructor
 @EnableWebSecurity
 @Configuration
 @Profile("dev")
@@ -28,14 +30,11 @@ public class DevSecurityConfigurations extends WebSecurityConfigurerAdapter {
 
   private static final String ROLE_ADMIN = "ADMIN";
 
-  @Autowired
-  private AuthenticationService authenticationService;
+  private final UserDetailsService userDetailsService;
 
-  @Autowired
-  private TokenService tokenService;
+  private final TokenService tokenService;
 
-  @Autowired
-  private UserService userService;
+  private final UserService userService;
 
   @Override
   @Bean
@@ -46,7 +45,7 @@ public class DevSecurityConfigurations extends WebSecurityConfigurerAdapter {
   // Configurações de autenticação
   @Override
   protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-    auth.userDetailsService(authenticationService).passwordEncoder(new BCryptPasswordEncoder());
+    auth.userDetailsService(userDetailsService).passwordEncoder(new BCryptPasswordEncoder());
   }
 
   // Configurações de autorização
@@ -61,8 +60,7 @@ public class DevSecurityConfigurations extends WebSecurityConfigurerAdapter {
         .and().csrf().disable()
         .headers().frameOptions().disable()
         .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-        .and().addFilterBefore(new AuthenticationByTokenFilter(tokenService,
-            userService),
+        .and().addFilterBefore(new AuthenticationByTokenFilter(tokenService, userService),
             UsernamePasswordAuthenticationFilter.class)
         .exceptionHandling().authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED));
   }

@@ -6,7 +6,7 @@ import java.util.Optional;
 import javax.persistence.NoResultException;
 
 import br.com.emendes.financesapi.controller.form.ChangePasswordForm;
-import br.com.emendes.financesapi.service.UserService;
+import br.com.emendes.financesapi.service.impl.UserServiceImpl;
 import br.com.emendes.financesapi.validation.exception.WrongPasswordException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,10 +36,10 @@ import br.com.emendes.financesapi.validation.exception.PasswordsDoNotMatchExcept
 
 @ExtendWith(SpringExtension.class)
 @DisplayName("Tests for UserService")
-class UserServiceTests {
+class UserServiceImplImplTests {
 
   @InjectMocks
-  private UserService userService;
+  private UserServiceImpl userServiceImpl;
   @Mock
   private UserRepository userRepositoryMock;
 
@@ -78,7 +78,7 @@ class UserServiceTests {
   void createAccount_ReturnUserDto_WhenCreateSuccessfully() {
     SignupForm signupForm = SignupFormCreator.validSignupForm();
 
-    UserDto createdUserDto = userService.createAccount(signupForm);
+    UserDto createdUserDto = userServiceImpl.createAccount(signupForm);
 
     Assertions.assertThat(createdUserDto).isNotNull();
     Assertions.assertThat(createdUserDto.getEmail()).isEqualTo(signupForm.getEmail());
@@ -94,7 +94,7 @@ class UserServiceTests {
     SignupForm signupForm = SignupFormCreator.validSignupForm();
 
     Assertions.assertThatExceptionOfType(DataConflictException.class)
-        .isThrownBy(() -> userService.createAccount(signupForm));
+        .isThrownBy(() -> userServiceImpl.createAccount(signupForm));
   }
 
   @Test
@@ -105,13 +105,13 @@ class UserServiceTests {
     signupForm.setConfirm("999999999999");
 
     Assertions.assertThatExceptionOfType(PasswordsDoNotMatchException.class)
-        .isThrownBy(() -> userService.createAccount(signupForm));
+        .isThrownBy(() -> userServiceImpl.createAccount(signupForm));
   }
 
   @Test
   @DisplayName("read must return Page of UserDto when successful")
   void read_ReturnsPageOfUserDto_WhenSuccessful() {
-    Page<UserDto> pageUserDto = userService.read(PAGEABLE);
+    Page<UserDto> pageUserDto = userServiceImpl.read(PAGEABLE);
 
     Assertions.assertThat(pageUserDto)
         .isNotEmpty()
@@ -124,7 +124,7 @@ class UserServiceTests {
   @DisplayName("readById must return User when successful")
   void readById_ReturnsUser_WhenSuccessful() {
     Long userId = 10000L;
-    User user = userService.readById(userId);
+    User user = userServiceImpl.readById(userId);
 
     Assertions.assertThat(user)
         .isNotNull();
@@ -135,7 +135,7 @@ class UserServiceTests {
   @Test
   @DisplayName("readById must return Null when not found user")
   void readById_ReturnsNull_WhenNotFoundUser() {
-    User user = userService.readById(NON_EXISTING_USER_ID);
+    User user = userServiceImpl.readById(NON_EXISTING_USER_ID);
 
     Assertions.assertThat(user)
         .isNull();
@@ -147,7 +147,7 @@ class UserServiceTests {
     Long userId = NON_EXISTING_USER_ID;
 
     Assertions.assertThatExceptionOfType(NoResultException.class)
-        .isThrownBy(() -> userService.delete(userId))
+        .isThrownBy(() -> userServiceImpl.delete(userId))
         .withMessageContaining("não existe usuário com id: ");
   }
 
@@ -159,7 +159,7 @@ class UserServiceTests {
         "123456", "1234567890", "1234567890");
 
     Assertions.assertThatExceptionOfType(NoResultException.class)
-        .isThrownBy(() -> userService.changePassword(changePasswordForm))
+        .isThrownBy(() -> userServiceImpl.changePassword(changePasswordForm))
         .withMessageContaining("Não foi possível encontrar o usuário atual");
   }
 
@@ -172,7 +172,7 @@ class UserServiceTests {
         "123456", newPassword, confirmWhichDontMatch);
 
     Assertions.assertThatExceptionOfType(PasswordsDoNotMatchException.class)
-        .isThrownBy(() -> userService.changePassword(changePasswordForm))
+        .isThrownBy(() -> userServiceImpl.changePassword(changePasswordForm))
         .withMessageContaining("as senhas não correspondem!");
   }
 
@@ -184,7 +184,7 @@ class UserServiceTests {
         oldPassword, "1234567890", "1234567890");
 
     Assertions.assertThatExceptionOfType(WrongPasswordException.class)
-        .isThrownBy(() -> userService.changePassword(changePasswordForm))
+        .isThrownBy(() -> userServiceImpl.changePassword(changePasswordForm))
         .withMessageContaining("Senha incorreta");
   }
 }

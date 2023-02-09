@@ -4,30 +4,26 @@ import br.com.emendes.financesapi.controller.dto.ExpenseDto;
 import br.com.emendes.financesapi.controller.form.ExpenseForm;
 import br.com.emendes.financesapi.controller.openapi.ExpenseControllerOpenAPI;
 import br.com.emendes.financesapi.service.ExpenseService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.transaction.Transactional;
 import javax.validation.Valid;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 import java.net.URI;
 
-@Validated
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/expenses")
 public class ExpenseController implements ExpenseControllerOpenAPI {
 
-  @Autowired
-  private ExpenseService expenseService;
+  private final ExpenseService expenseService;
 
   private static final String HEADER_NAME = "Content-Type";
   private static final String HEADER_VALUE = "application/json;charset=UTF-8";
@@ -43,7 +39,7 @@ public class ExpenseController implements ExpenseControllerOpenAPI {
   @Override
   @GetMapping
   public ResponseEntity<Page<ExpenseDto>> read(
-      @RequestParam(required = false) String description,
+      @RequestParam(name = "description", required = false) String description,
       @PageableDefault(sort = "date", direction = Direction.DESC) Pageable pageable) {
     Page<ExpenseDto> expensesDto;
 
@@ -59,7 +55,7 @@ public class ExpenseController implements ExpenseControllerOpenAPI {
 
   @Override
   @GetMapping("/{id}")
-  public ResponseEntity<ExpenseDto> readById(@PathVariable Long id) {
+  public ResponseEntity<ExpenseDto> readById(@PathVariable(name = "id") Long id) {
     ExpenseDto expenseDto = expenseService.readByIdAndUser(id);
 
     return ResponseEntity.status(HttpStatus.OK)
@@ -70,8 +66,8 @@ public class ExpenseController implements ExpenseControllerOpenAPI {
   @Override
   @GetMapping("/{year}/{month}")
   public ResponseEntity<Page<ExpenseDto>> readByYearAndMonth(
-      @Min(1970) @Max(2099) @PathVariable int year,
-      @Min(1) @Max(12) @PathVariable int month,
+      @PathVariable(name = "year") int year,
+      @PathVariable(name = "month") int month,
       @PageableDefault(sort = "date", direction = Direction.DESC) Pageable pageable) {
     Page<ExpenseDto> expensesDto = expenseService.readByYearAndMonthAndUser(year, month, pageable);
 
@@ -83,7 +79,8 @@ public class ExpenseController implements ExpenseControllerOpenAPI {
   @Override
   @PutMapping("/{id}")
   @Transactional
-  public ResponseEntity<ExpenseDto> update(@PathVariable Long id, @Valid @RequestBody ExpenseForm expenseForm) {
+  public ResponseEntity<ExpenseDto> update(
+      @PathVariable(name = "id") Long id, @Valid @RequestBody ExpenseForm expenseForm) {
     ExpenseDto expenseDto = expenseService.update(id, expenseForm);
 
     return ResponseEntity.status(HttpStatus.OK)
@@ -93,7 +90,7 @@ public class ExpenseController implements ExpenseControllerOpenAPI {
 
   @Override
   @DeleteMapping("/{id}")
-  public ResponseEntity<Void> delete(@PathVariable Long id) {
+  public ResponseEntity<Void> delete(@PathVariable(name = "id") Long id) {
     expenseService.deleteById(id);
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }

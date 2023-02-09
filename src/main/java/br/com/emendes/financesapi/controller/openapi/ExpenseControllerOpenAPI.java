@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 
 @SecurityRequirement(name = "bearer-key")
 @Tag(name = "Despesas")
@@ -66,7 +68,10 @@ public interface ExpenseControllerOpenAPI {
       @ApiResponse(responseCode = "404", description = "Nenhuma despesa encontrada",
           content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDto.class))}),
   })
-  ResponseEntity<Page<ExpenseDto>> readByYearAndMonth(int year, int month, @ParameterObject Pageable pageable);
+  ResponseEntity<Page<ExpenseDto>> readByYearAndMonth(
+      @Min(1970) @Max(2099) int year, // TODO: Adicionar essa validação na service.
+      @Min(1) @Max(12) int month,
+      @ParameterObject Pageable pageable);
 
   @Operation(summary = "Atualizar despesa por id")
   @ApiResponses(value = {

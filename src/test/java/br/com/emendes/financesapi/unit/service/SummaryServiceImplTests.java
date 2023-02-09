@@ -3,9 +3,9 @@ package br.com.emendes.financesapi.unit.service;
 import br.com.emendes.financesapi.controller.dto.SummaryDto;
 import br.com.emendes.financesapi.controller.dto.ValueByCategoryDto;
 import br.com.emendes.financesapi.model.Category;
-import br.com.emendes.financesapi.service.ExpenseService;
-import br.com.emendes.financesapi.service.IncomeService;
-import br.com.emendes.financesapi.service.SummaryService;
+import br.com.emendes.financesapi.service.impl.ExpenseServiceImpl;
+import br.com.emendes.financesapi.service.impl.IncomeServiceImpl;
+import br.com.emendes.financesapi.service.impl.SummaryServiceImpl;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -24,14 +24,14 @@ import java.util.List;
 
 @ExtendWith(SpringExtension.class)
 @DisplayName("Tests for SummaryService")
-class SummaryServiceTests {
+class SummaryServiceImplTests {
 
   @InjectMocks
-  private SummaryService summaryService;
+  private SummaryServiceImpl summaryServiceImpl;
   @Mock
-  private ExpenseService expenseServiceMock;
+  private ExpenseServiceImpl expenseServiceImplMock;
   @Mock
-  private IncomeService incomeServiceMock;
+  private IncomeServiceImpl incomeServiceImplMock;
 
   @BeforeEach
   public void setUp() {
@@ -42,24 +42,24 @@ class SummaryServiceTests {
 
     List<ValueByCategoryDto> valuesByCategory = List.of(valueMoradia, valueAlimentacao, valueTransporte);
 
-    BDDMockito.when(incomeServiceMock.getTotalValueByMonthAndYearAndUserId(2022, 1))
+    BDDMockito.when(incomeServiceImplMock.getTotalValueByMonthAndYearAndUserId(2022, 1))
         .thenReturn(incomeTotalValue);
-    BDDMockito.when(expenseServiceMock.getValuesByCategoryOnMonthAndYearByUser(2022, 1))
+    BDDMockito.when(expenseServiceImplMock.getValuesByCategoryOnMonthAndYearByUser(2022, 1))
         .thenReturn(valuesByCategory);
 
-    BDDMockito.when(incomeServiceMock.getTotalValueByMonthAndYearAndUserId(2022, 2))
+    BDDMockito.when(incomeServiceImplMock.getTotalValueByMonthAndYearAndUserId(2022, 2))
         .thenReturn(incomeTotalValue);
-    BDDMockito.when(expenseServiceMock.getValuesByCategoryOnMonthAndYearByUser(2022, 2))
+    BDDMockito.when(expenseServiceImplMock.getValuesByCategoryOnMonthAndYearByUser(2022, 2))
         .thenReturn(Collections.EMPTY_LIST);
 
-    BDDMockito.when(incomeServiceMock.getTotalValueByMonthAndYearAndUserId(2022, 3))
+    BDDMockito.when(incomeServiceImplMock.getTotalValueByMonthAndYearAndUserId(2022, 3))
         .thenReturn(BigDecimal.ZERO);
-    BDDMockito.when(expenseServiceMock.getValuesByCategoryOnMonthAndYearByUser(2022, 3))
+    BDDMockito.when(expenseServiceImplMock.getValuesByCategoryOnMonthAndYearByUser(2022, 3))
         .thenReturn(valuesByCategory);
 
-    BDDMockito.when(incomeServiceMock.getTotalValueByMonthAndYearAndUserId(2022, 4))
+    BDDMockito.when(incomeServiceImplMock.getTotalValueByMonthAndYearAndUserId(2022, 4))
         .thenReturn(BigDecimal.ZERO);
-    BDDMockito.when(expenseServiceMock.getValuesByCategoryOnMonthAndYearByUser(2022, 4))
+    BDDMockito.when(expenseServiceImplMock.getValuesByCategoryOnMonthAndYearByUser(2022, 4))
         .thenReturn(Collections.EMPTY_LIST);
   }
 
@@ -69,7 +69,7 @@ class SummaryServiceTests {
     int year = 2022;
     int month = 1;
 
-    SummaryDto summaryDto = summaryService.monthSummary(year, month);
+    SummaryDto summaryDto = summaryServiceImpl.monthSummary(year, month);
 
     Assertions.assertThat(summaryDto).isNotNull();
     Assertions.assertThat(summaryDto.getIncomeTotalValue()).isEqualTo(new BigDecimal("2500.00"));
@@ -84,7 +84,7 @@ class SummaryServiceTests {
     int year = 2022;
     int month = 2;
 
-    SummaryDto summaryDto = summaryService.monthSummary(year, month);
+    SummaryDto summaryDto = summaryServiceImpl.monthSummary(year, month);
 
     Assertions.assertThat(summaryDto).isNotNull();
     Assertions.assertThat(summaryDto.getIncomeTotalValue()).isEqualTo(new BigDecimal("2500.00"));
@@ -99,7 +99,7 @@ class SummaryServiceTests {
     int year = 2022;
     int month = 3;
 
-    SummaryDto summaryDto = summaryService.monthSummary(year, month);
+    SummaryDto summaryDto = summaryServiceImpl.monthSummary(year, month);
 
     Assertions.assertThat(summaryDto).isNotNull();
     Assertions.assertThat(summaryDto.getIncomeTotalValue()).isEqualTo(BigDecimal.ZERO);
@@ -115,7 +115,7 @@ class SummaryServiceTests {
     int month = 4;
 
     Assertions.assertThatExceptionOfType(NoResultException.class)
-        .isThrownBy(() -> summaryService.monthSummary(year, month))
+        .isThrownBy(() -> summaryServiceImpl.monthSummary(year, month))
         .withMessage(String.format("Não há receitas e despesas para %s %d", Month.of(month), year));
   }
 

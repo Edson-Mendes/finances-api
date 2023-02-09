@@ -5,8 +5,8 @@ import br.com.emendes.financesapi.controller.dto.TokenDto;
 import br.com.emendes.financesapi.controller.dto.UserDto;
 import br.com.emendes.financesapi.controller.form.LoginForm;
 import br.com.emendes.financesapi.controller.form.SignupForm;
-import br.com.emendes.financesapi.service.SigninService;
-import br.com.emendes.financesapi.service.UserService;
+import br.com.emendes.financesapi.service.impl.SigninServiceImpl;
+import br.com.emendes.financesapi.service.impl.UserServiceImpl;
 import br.com.emendes.financesapi.util.creator.LoginFormCreator;
 import br.com.emendes.financesapi.util.creator.SignupFormCreator;
 import org.assertj.core.api.Assertions;
@@ -30,9 +30,9 @@ class AuthenticationControllerTests {
   @InjectMocks
   private AuthenticationController authenticationController;
   @Mock
-  private SigninService signinServiceMock;
+  private SigninServiceImpl signinServiceImplMock;
   @Mock
-  private UserService userServiceMock;
+  private UserServiceImpl userServiceImplImplMock;
 
   private final LoginForm VALID_LOGIN_FORM = LoginFormCreator.validLoginForm();
   private final UriComponentsBuilder URI_BUILDER = UriComponentsBuilder.fromHttpUrl("http://localhost:8080");
@@ -40,10 +40,10 @@ class AuthenticationControllerTests {
   @BeforeEach
   public void setUp() {
     UserDto userDto = new UserDto(55L, "Lorem Ipsum", "lorem@email.com");
-    BDDMockito.when(signinServiceMock.login(VALID_LOGIN_FORM))
+    BDDMockito.when(signinServiceImplMock.login(VALID_LOGIN_FORM))
         .thenReturn(new TokenDto("thisIsAFakeToken12345", "Bearer"));
 
-    BDDMockito.when(userServiceMock.createAccount(ArgumentMatchers.any(SignupForm.class)))
+    BDDMockito.when(userServiceImplImplMock.createAccount(ArgumentMatchers.any(SignupForm.class)))
         .thenReturn(userDto);
 
   }

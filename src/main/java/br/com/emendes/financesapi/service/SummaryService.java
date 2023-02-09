@@ -1,34 +1,9 @@
 package br.com.emendes.financesapi.service;
 
 import br.com.emendes.financesapi.controller.dto.SummaryDto;
-import br.com.emendes.financesapi.controller.dto.ValueByCategoryDto;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
-import javax.persistence.NoResultException;
-import java.math.BigDecimal;
-import java.time.Month;
-import java.util.List;
+public interface SummaryService {
 
-@Service
-public class SummaryService {
-
-  @Autowired
-  private ExpenseService expenseService;
-  @Autowired
-  private IncomeService incomeService;
-
-  public SummaryDto monthSummary(int year, int month) {
-    BigDecimal incomeTotalValue = incomeService.getTotalValueByMonthAndYearAndUserId(year, month);
-    List<ValueByCategoryDto> valuesByCategory = expenseService.getValuesByCategoryOnMonthAndYearByUser(year, month);
-
-    if (incomeTotalValue.equals(BigDecimal.ZERO) && valuesByCategory.isEmpty()){
-      throw new NoResultException(String.format("Não há receitas e despesas para %s %d", Month.of(month), year));
-    }
-    BigDecimal expenseTotalValue = valuesByCategory
-        .stream().map(ValueByCategoryDto::getValue).reduce(BigDecimal.ZERO, BigDecimal::add);
-
-    return new SummaryDto(incomeTotalValue, expenseTotalValue, valuesByCategory);
-  }
+  SummaryDto monthSummary(int year, int month);
 
 }

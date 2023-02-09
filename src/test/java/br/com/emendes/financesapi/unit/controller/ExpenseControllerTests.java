@@ -3,7 +3,7 @@ package br.com.emendes.financesapi.unit.controller;
 import br.com.emendes.financesapi.controller.ExpenseController;
 import br.com.emendes.financesapi.controller.dto.ExpenseDto;
 import br.com.emendes.financesapi.controller.form.ExpenseForm;
-import br.com.emendes.financesapi.service.ExpenseService;
+import br.com.emendes.financesapi.service.impl.ExpenseServiceImpl;
 import br.com.emendes.financesapi.util.creator.ExpenseDtoCreator;
 import br.com.emendes.financesapi.util.creator.ExpenseFormCreator;
 import org.assertj.core.api.Assertions;
@@ -35,7 +35,7 @@ class ExpenseControllerTests {
   @InjectMocks
   private ExpenseController expenseController;
   @Mock
-  private ExpenseService expenseServiceMock;
+  private ExpenseServiceImpl expenseServiceImplMock;
 
   private final UriComponentsBuilder URI_BUILDER = UriComponentsBuilder.fromHttpUrl("http://localhost:8080");
   private final ExpenseForm EXPENSE_FORM = ExpenseFormCreator.validExpenseForm();
@@ -46,26 +46,26 @@ class ExpenseControllerTests {
     ExpenseDto expenseDto = ExpenseDtoCreator.validExpenseDto();
     Page<ExpenseDto> pageExpenseDto = new PageImpl<>(List.of(expenseDto));
 
-    BDDMockito.when(expenseServiceMock.create(
+    BDDMockito.when(expenseServiceImplMock.create(
             ArgumentMatchers.any(ExpenseForm.class)))
         .thenReturn(expenseDto);
 
-    BDDMockito.when(expenseServiceMock.readAllByUser(PAGEABLE))
+    BDDMockito.when(expenseServiceImplMock.readAllByUser(PAGEABLE))
         .thenReturn(pageExpenseDto);
 
-    BDDMockito.when(expenseServiceMock.readByDescriptionAndUser("Gaso", PAGEABLE))
+    BDDMockito.when(expenseServiceImplMock.readByDescriptionAndUser("Gaso", PAGEABLE))
         .thenReturn(pageExpenseDto);
 
-    BDDMockito.when(expenseServiceMock.readByIdAndUser(expenseDto.getId()))
+    BDDMockito.when(expenseServiceImplMock.readByIdAndUser(expenseDto.getId()))
         .thenReturn(expenseDto);
 
-    BDDMockito.when(expenseServiceMock.readByYearAndMonthAndUser(2022, 1, PAGEABLE))
+    BDDMockito.when(expenseServiceImplMock.readByYearAndMonthAndUser(2022, 1, PAGEABLE))
             .thenReturn(pageExpenseDto);
 
-    BDDMockito.when(expenseServiceMock.update(expenseDto.getId(), EXPENSE_FORM))
+    BDDMockito.when(expenseServiceImplMock.update(expenseDto.getId(), EXPENSE_FORM))
         .thenReturn(expenseDto);
 
-    BDDMockito.doNothing().when(expenseServiceMock).deleteById(expenseDto.getId());
+    BDDMockito.doNothing().when(expenseServiceImplMock).deleteById(expenseDto.getId());
   }
 
   @Test
