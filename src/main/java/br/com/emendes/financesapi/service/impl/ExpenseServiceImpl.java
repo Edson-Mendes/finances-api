@@ -9,7 +9,6 @@ import br.com.emendes.financesapi.repository.ExpenseRepository;
 import br.com.emendes.financesapi.service.ExpenseService;
 import br.com.emendes.financesapi.util.Formatter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -112,7 +111,7 @@ public class ExpenseServiceImpl implements ExpenseService {
    * @throws ResponseStatusException se existir despesa.
    */
   private boolean existsIncomeWithSameDescriptionOnMonthYear(ExpenseForm form) {
-    LocalDate date = form.parseDateToLocalDate();
+    LocalDate date = LocalDate.parse(form.getDate());
     boolean exists = expenseRepository.existsByDescriptionAndMonthAndYearAndUser(
         form.getDescription(),
         date.getMonthValue(),
@@ -139,14 +138,14 @@ public class ExpenseServiceImpl implements ExpenseService {
    * @throws ResponseStatusException se existir despesa.
    */
   private boolean existsAnotherExpenseWithSameDescriptionOnMonthYear(ExpenseForm form, Long id) {
-    LocalDate date = LocalDate.parse(form.getDate(), Formatter.dateFormatter);
+    LocalDate date = LocalDate.parse(form.getDate());
     boolean exists = expenseRepository.existsByDescriptionAndMonthAndYearAndNotIdAndUser(
         form.getDescription(),
         date.getMonthValue(),
         date.getYear(),
         id);
     if (exists) {
-      String message = "Outra despesa com essa descrição já existe em "  + date.getMonth().name().toLowerCase() + " "
+      String message = "Outra despesa com essa descrição já existe em " + date.getMonth().name().toLowerCase() + " "
           + date.getYear();
       throw new ResponseStatusException(
           HttpStatus.CONFLICT, message, null);

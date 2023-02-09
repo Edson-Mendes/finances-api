@@ -6,7 +6,6 @@ import br.com.emendes.financesapi.model.entity.Income;
 import br.com.emendes.financesapi.model.entity.User;
 import br.com.emendes.financesapi.repository.IncomeRepository;
 import br.com.emendes.financesapi.service.IncomeService;
-import br.com.emendes.financesapi.util.Formatter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -110,7 +109,7 @@ public class IncomeServiceImpl implements IncomeService {
    * @throws ResponseStatusException se existir receita.
    */
   private boolean existsIncomeWithSameDescriptionOnMonthYear(IncomeForm incomeForm) {
-    LocalDate date = incomeForm.parseDateToLocalDate();
+    LocalDate date = LocalDate.parse(incomeForm.getDate());
     boolean exists = incomeRepository.existsByDescriptionAndMonthAndYearAndUser(
         incomeForm.getDescription(), date.getMonthValue(), date.getYear());
     if (exists) {
@@ -134,7 +133,7 @@ public class IncomeServiceImpl implements IncomeService {
    * @throws ResponseStatusException se existir receita.
    */
   private boolean existsAnotherIncomeWithSameDescriptionOnMonthYear(IncomeForm incomeForm, Long incomeId) {
-    LocalDate date = LocalDate.parse(incomeForm.getDate(), Formatter.dateFormatter);
+    LocalDate date = LocalDate.parse(incomeForm.getDate());
     boolean exists = incomeRepository.existsByDescriptionAndMonthAndYearAndNotIdAndUser(
         incomeForm.getDescription(), date.getMonthValue(), date.getYear(), incomeId);
     if (exists) {
@@ -145,4 +144,5 @@ public class IncomeServiceImpl implements IncomeService {
     }
     return false;
   }
+
 }

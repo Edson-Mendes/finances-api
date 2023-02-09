@@ -1,7 +1,6 @@
 package br.com.emendes.financesapi.model.entity;
 
 import br.com.emendes.financesapi.controller.form.IncomeForm;
-import br.com.emendes.financesapi.util.Formatter;
 import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
@@ -41,7 +40,7 @@ public class Income {
   // TODO: Criar um Mapper com um método merge.
   public void setParams(IncomeForm incomeForm) {
     this.description = incomeForm.getDescription();
-    this.date = LocalDate.parse(incomeForm.getDate(), Formatter.dateFormatter);
+    this.date = LocalDate.parse(incomeForm.getDate());
     this.value = incomeForm.getValue();
   }
 }

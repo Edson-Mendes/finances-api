@@ -25,7 +25,7 @@ public class IncomeForm {
   @NotBlank
   private String description;
 
-  @Schema(pattern = "dd/MM/yyyy", type = "string", example = "05/01/2022")
+  @Schema(pattern = "yyyy-MM-dd", type = "string", example = "2023-01-04")
   @NotNull
   @DateValidation
   private String date;
@@ -38,12 +38,11 @@ public class IncomeForm {
 
   // FIXME: Usar um mapper para isso.
   public Income convert(Long userId) {
-    LocalDate date = parseDateToLocalDate();
     User user = new User(userId);
-    Income income = new Income(description, value, date, user);
-    return income;
+    return new Income(description, value, LocalDate.parse(this.date), user);
   }
 
+  // TODO: remover! não será mais utilizado.
   public LocalDate parseDateToLocalDate() {
     return LocalDate.parse(this.date, Formatter.dateFormatter);
   }

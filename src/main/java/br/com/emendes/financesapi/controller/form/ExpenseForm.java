@@ -26,7 +26,7 @@ public class ExpenseForm {
   @NotBlank
   private String description;
 
-  @Schema(pattern = "dd/MM/yyyy", type = "string", example = "17/01/2022")
+  @Schema(pattern = "yyyy-MM-dd", type = "string", example = "2023-04-15")
   @NotNull
   @DateValidation
   private String date;
@@ -41,16 +41,16 @@ public class ExpenseForm {
   @Schema(example = "ALIMENTACAO")
   private Category category;
 
+  // FIXME: Em vez de ter um converter aqui, adicionar alguma biblioteca mapper.
   public Expense convert(Long userId) {
-    LocalDate date = parseDateToLocalDate();
     if (category == null) {
       category = Category.OUTRAS;
     }
     User user = new User(userId);
-    Expense expense = new Expense(description, value, date, category, user);
-    return expense;
+    return new Expense(description, value, LocalDate.parse(this.date), category, user);
   }
 
+  // TODO: remover! não será mais utilizado.
   public LocalDate parseDateToLocalDate() {
     return LocalDate.parse(this.date, Formatter.dateFormatter);
   }
