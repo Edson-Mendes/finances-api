@@ -1,8 +1,8 @@
 package br.com.emendes.financesapi.service.impl;
 
-import br.com.emendes.financesapi.dto.response.UserResponse;
 import br.com.emendes.financesapi.controller.form.ChangePasswordForm;
 import br.com.emendes.financesapi.dto.request.SignupRequest;
+import br.com.emendes.financesapi.dto.response.UserResponse;
 import br.com.emendes.financesapi.model.entity.User;
 import br.com.emendes.financesapi.repository.UserRepository;
 import br.com.emendes.financesapi.service.UserService;
@@ -32,10 +32,10 @@ public class UserServiceImpl implements UserService {
       try {
         return new UserResponse(userRepository.save(user));
       } catch (DataIntegrityViolationException e) {
-        throw new DataConflictException("Email inserido já está em uso!");
+        throw new DataConflictException("Email is already in use");
       }
     }
-    throw new PasswordsDoNotMatchException("As senhas não correspondem!");
+    throw new PasswordsDoNotMatchException("Password and confirm do not match");
   }
 
   @Override
