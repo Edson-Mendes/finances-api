@@ -6,10 +6,11 @@ import br.com.emendes.financesapi.model.entity.Income;
 import br.com.emendes.financesapi.model.entity.User;
 import br.com.emendes.financesapi.repository.IncomeRepository;
 import br.com.emendes.financesapi.service.IncomeService;
+import br.com.emendes.financesapi.util.AuthenticationFacade;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.NoResultException;
@@ -23,10 +24,17 @@ import java.util.Optional;
 public class IncomeServiceImpl implements IncomeService {
 
   private final IncomeRepository incomeRepository;
+  private final AuthenticationFacade authenticationFacade;
 
   @Override
   public IncomeDto create(IncomeForm incomeForm) {
-    Long userId = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
+    Authentication authentication = authenticationFacade.getAuthentication();
+    // Apenas uma precaução caso não tenha usuário logado.
+    if (!authentication.isAuthenticated()) {
+      throw new RuntimeException("User not found");
+    }
+    Long userId = ((User) authentication.getPrincipal()).getId();
+
     Income income = incomeForm.convert(userId);
     incomeRepository.save(income);
 
