@@ -10,10 +10,10 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import br.com.emendes.financesapi.controller.form.LoginForm;
+import br.com.emendes.financesapi.dto.request.SignInRequest;
 
 @DisplayName("Tests for LoginForm")
-public class LoginFormTests {
+public class SignInRequestTests {
 
   private final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
@@ -23,9 +23,9 @@ public class LoginFormTests {
     String email = "lorem@email.com";
     String password = "123456789O";
 
-    LoginForm loginForm = new LoginForm(email, password);
+    SignInRequest signInRequest = new SignInRequest(email, password);
 
-    Set<ConstraintViolation<LoginForm>> violations = validator.validate(loginForm);
+    Set<ConstraintViolation<SignInRequest>> violations = validator.validate(signInRequest);
 
     Assertions.assertThat(violations).isEmpty();
   }
@@ -36,9 +36,9 @@ public class LoginFormTests {
     String email = "invalidemailcom";
     String password = "123456789O";
 
-    LoginForm loginForm = new LoginForm(email, password);
+    SignInRequest signInRequest = new SignInRequest(email, password);
 
-    Set<ConstraintViolation<LoginForm>> violations = validator.validate(loginForm);
+    Set<ConstraintViolation<SignInRequest>> violations = validator.validate(signInRequest);
 
     Assertions.assertThat(violations)
         .isNotEmpty()
@@ -51,9 +51,9 @@ public class LoginFormTests {
     String email = null;
     String password = "123456789O";
 
-    LoginForm loginForm = new LoginForm(email, password);
+    SignInRequest signInRequest = new SignInRequest(email, password);
 
-    Set<ConstraintViolation<LoginForm>> violations = validator.validate(loginForm);
+    Set<ConstraintViolation<SignInRequest>> violations = validator.validate(signInRequest);
 
     Assertions.assertThat(violations)
         .isNotEmpty()
@@ -66,9 +66,9 @@ public class LoginFormTests {
     String email = "lorem@email.com";
     String password = null;
 
-    LoginForm loginForm = new LoginForm(email, password);
+    SignInRequest signInRequest = new SignInRequest(email, password);
 
-    Set<ConstraintViolation<LoginForm>> violations = validator.validate(loginForm);
+    Set<ConstraintViolation<SignInRequest>> violations = validator.validate(signInRequest);
 
     Assertions.assertThat(violations)
         .isNotEmpty()
@@ -81,9 +81,9 @@ public class LoginFormTests {
     String email = "lorem@email.com";
     String password = "";
 
-    LoginForm loginForm = new LoginForm(email, password);
+    SignInRequest signInRequest = new SignInRequest(email, password);
 
-    Set<ConstraintViolation<LoginForm>> violations = validator.validate(loginForm);
+    Set<ConstraintViolation<SignInRequest>> violations = validator.validate(signInRequest);
 
     Assertions.assertThat(violations)
         .isNotEmpty()

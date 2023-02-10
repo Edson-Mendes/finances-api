@@ -1,6 +1,6 @@
 package br.com.emendes.financesapi.controller;
 
-import br.com.emendes.financesapi.controller.dto.UserDto;
+import br.com.emendes.financesapi.dto.response.UserResponse;
 import br.com.emendes.financesapi.controller.form.ChangePasswordForm;
 import br.com.emendes.financesapi.controller.openapi.UserControllerOpenAPI;
 import br.com.emendes.financesapi.service.UserService;
@@ -26,9 +26,9 @@ public class UserController implements UserControllerOpenAPI {
 
   @Override
   @GetMapping
-  public ResponseEntity<Page<UserDto>> readAll(
+  public ResponseEntity<Page<UserResponse>> readAll(
       @ParameterObject @PageableDefault(sort = "id", direction = Direction.ASC) Pageable pageable) {
-    Page<UserDto> usersDto = userService.read(pageable);
+    Page<UserResponse> usersDto = userService.read(pageable);
     return ResponseEntity.ok(usersDto);
   }
 

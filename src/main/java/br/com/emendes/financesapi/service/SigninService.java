@@ -1,10 +1,10 @@
 package br.com.emendes.financesapi.service;
 
-import br.com.emendes.financesapi.controller.dto.TokenDto;
-import br.com.emendes.financesapi.controller.form.LoginForm;
+import br.com.emendes.financesapi.dto.response.TokenResponse;
+import br.com.emendes.financesapi.dto.request.SignInRequest;
 
 public interface SigninService {
 
-  TokenDto login(LoginForm loginForm);
+  TokenResponse login(SignInRequest signInRequest);
 
 }

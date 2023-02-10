@@ -10,10 +10,10 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import br.com.emendes.financesapi.controller.form.SignupForm;
+import br.com.emendes.financesapi.dto.request.SignupRequest;
 
 @DisplayName("Tests for SignupForm")
-public class SignupFormTests {
+public class SignupRequestTests {
 
   private final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
@@ -24,9 +24,9 @@ public class SignupFormTests {
     String email = "lorem@email.com";
     String password = "123456789O";
     String confirm = "123456789O";
-    SignupForm signupForm = new SignupForm(name, email, password, confirm);
+    SignupRequest signupRequest = new SignupRequest(name, email, password, confirm);
 
-    Set<ConstraintViolation<SignupForm>> violations = validator.validate(signupForm);
+    Set<ConstraintViolation<SignupRequest>> violations = validator.validate(signupRequest);
 
     Assertions.assertThat(violations).isEmpty();
   }
@@ -38,9 +38,9 @@ public class SignupFormTests {
     String email = "lorem@email.com";
     String password = "123456789O";
     String confirm = "123456789O";
-    SignupForm signupForm = new SignupForm(name, email, password, confirm);
+    SignupRequest signupRequest = new SignupRequest(name, email, password, confirm);
 
-    Set<ConstraintViolation<SignupForm>> violations = validator.validate(signupForm);
+    Set<ConstraintViolation<SignupRequest>> violations = validator.validate(signupRequest);
 
     Assertions.assertThat(violations)
         .isNotEmpty()
@@ -54,9 +54,9 @@ public class SignupFormTests {
     String email = "lorem@email.com";
     String password = "123456789O";
     String confirm = "123456789O";
-    SignupForm signupForm = new SignupForm(name, email, password, confirm);
+    SignupRequest signupRequest = new SignupRequest(name, email, password, confirm);
 
-    Set<ConstraintViolation<SignupForm>> violations = validator.validate(signupForm);
+    Set<ConstraintViolation<SignupRequest>> violations = validator.validate(signupRequest);
 
     Assertions.assertThat(violations)
         .isNotEmpty()
@@ -70,9 +70,9 @@ public class SignupFormTests {
     String email = "lorememailcom";
     String password = "123456789O";
     String confirm = "123456789O";
-    SignupForm signupForm = new SignupForm(name, email, password, confirm);
+    SignupRequest signupRequest = new SignupRequest(name, email, password, confirm);
 
-    Set<ConstraintViolation<SignupForm>> violations = validator.validate(signupForm);
+    Set<ConstraintViolation<SignupRequest>> violations = validator.validate(signupRequest);
 
     Assertions.assertThat(violations)
         .isNotEmpty()
@@ -86,9 +86,9 @@ public class SignupFormTests {
     String email = null;
     String password = "123456789O";
     String confirm = "123456789O";
-    SignupForm signupForm = new SignupForm(name, email, password, confirm);
+    SignupRequest signupRequest = new SignupRequest(name, email, password, confirm);
 
-    Set<ConstraintViolation<SignupForm>> violations = validator.validate(signupForm);
+    Set<ConstraintViolation<SignupRequest>> violations = validator.validate(signupRequest);
 
     Assertions.assertThat(violations)
         .isNotEmpty()
@@ -102,9 +102,9 @@ public class SignupFormTests {
     String email = "";
     String password = "123456789O";
     String confirm = "123456789O";
-    SignupForm signupForm = new SignupForm(name, email, password, confirm);
+    SignupRequest signupRequest = new SignupRequest(name, email, password, confirm);
 
-    Set<ConstraintViolation<SignupForm>> violations = validator.validate(signupForm);
+    Set<ConstraintViolation<SignupRequest>> violations = validator.validate(signupRequest);
 
     Assertions.assertThat(violations)
         .isNotEmpty()
@@ -118,9 +118,9 @@ public class SignupFormTests {
     String email = "lorem@email.com";
     String password = "abcdefghij";
     String confirm = "abcdefghij";
-    SignupForm signupForm = new SignupForm(name, email, password, confirm);
+    SignupRequest signupRequest = new SignupRequest(name, email, password, confirm);
 
-    Set<ConstraintViolation<SignupForm>> violations = validator.validate(signupForm);
+    Set<ConstraintViolation<SignupRequest>> violations = validator.validate(signupRequest);
 
     Assertions.assertThat(violations)
         .isNotEmpty()
@@ -134,9 +134,9 @@ public class SignupFormTests {
     String email = "lorem@email.com";
     String password = null;
     String confirm = "abcdefghij";
-    SignupForm signupForm = new SignupForm(name, email, password, confirm);
+    SignupRequest signupRequest = new SignupRequest(name, email, password, confirm);
 
-    Set<ConstraintViolation<SignupForm>> violations = validator.validate(signupForm);
+    Set<ConstraintViolation<SignupRequest>> violations = validator.validate(signupRequest);
 
     Assertions.assertThat(violations)
         .isNotEmpty()
@@ -150,9 +150,9 @@ public class SignupFormTests {
     String email = "lorem@email.com";
     String password = "abcdefghij0";
     String confirm = null;
-    SignupForm signupForm = new SignupForm(name, email, password, confirm);
+    SignupRequest signupRequest = new SignupRequest(name, email, password, confirm);
 
-    Set<ConstraintViolation<SignupForm>> violations = validator.validate(signupForm);
+    Set<ConstraintViolation<SignupRequest>> violations = validator.validate(signupRequest);
 
     Assertions.assertThat(violations)
         .isNotEmpty()
@@ -166,9 +166,9 @@ public class SignupFormTests {
     String email = "lorem@email.com";
     String password = "abcdefghij0";
     String confirm = "     ";
-    SignupForm signupForm = new SignupForm(name, email, password, confirm);
+    SignupRequest signupRequest = new SignupRequest(name, email, password, confirm);
 
-    Set<ConstraintViolation<SignupForm>> violations = validator.validate(signupForm);
+    Set<ConstraintViolation<SignupRequest>> violations = validator.validate(signupRequest);
 
     Assertions.assertThat(violations)
         .isNotEmpty()

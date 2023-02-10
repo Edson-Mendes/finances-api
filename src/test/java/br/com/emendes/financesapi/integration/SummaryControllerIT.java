@@ -1,9 +1,9 @@
 package br.com.emendes.financesapi.integration;
 
 import br.com.emendes.financesapi.controller.dto.SummaryDto;
-import br.com.emendes.financesapi.controller.dto.TokenDto;
+import br.com.emendes.financesapi.dto.response.TokenResponse;
 import br.com.emendes.financesapi.controller.dto.error.ErrorDto;
-import br.com.emendes.financesapi.controller.form.LoginForm;
+import br.com.emendes.financesapi.dto.request.SignInRequest;
 import br.com.emendes.financesapi.model.entity.Expense;
 import br.com.emendes.financesapi.model.entity.Income;
 import br.com.emendes.financesapi.repository.ExpenseRepository;
@@ -48,9 +48,9 @@ class SummaryControllerIT {
     String email = "user@email.com";
     String password = "123456";
 
-    HttpEntity<LoginForm> requestBody = new HttpEntity<>(new LoginForm(email, password));
+    HttpEntity<SignInRequest> requestBody = new HttpEntity<>(new SignInRequest(email, password));
 
-    ResponseEntity<TokenDto> response = testRestTemplate.exchange(
+    ResponseEntity<TokenResponse> response = testRestTemplate.exchange(
         "/auth/signin", HttpMethod.POST, requestBody, new ParameterizedTypeReference<>() {});
 
     HEADERS.add("Authorization", "Bearer "+response.getBody().getToken());

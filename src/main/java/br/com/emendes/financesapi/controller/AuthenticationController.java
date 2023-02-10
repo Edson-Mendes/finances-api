@@ -1,12 +1,11 @@
 package br.com.emendes.financesapi.controller;
 
-import br.com.emendes.financesapi.controller.dto.TokenDto;
-import br.com.emendes.financesapi.controller.dto.UserDto;
-import br.com.emendes.financesapi.controller.form.LoginForm;
-import br.com.emendes.financesapi.controller.form.SignupForm;
+import br.com.emendes.financesapi.dto.response.TokenResponse;
+import br.com.emendes.financesapi.dto.response.UserResponse;
+import br.com.emendes.financesapi.dto.request.SignInRequest;
+import br.com.emendes.financesapi.dto.request.SignupRequest;
 import br.com.emendes.financesapi.controller.openapi.AuthenticationControllerOpenAPI;
-import br.com.emendes.financesapi.service.SigninService;
-import br.com.emendes.financesapi.service.impl.UserServiceImpl;
+import br.com.emendes.financesapi.service.AuthenticationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,25 +22,22 @@ import java.net.URI;
 @RequestMapping("/api/auth")
 public class AuthenticationController implements AuthenticationControllerOpenAPI {
 
-  private final UserServiceImpl userServiceImpl;
-  private final SigninService signinService;
-
+  private final AuthenticationService authService;
 
   @Override
   @PostMapping("/signin")
-  public ResponseEntity<TokenDto> auth(@RequestBody @Valid LoginForm form) {
-    TokenDto tokenDto = signinService.login(form);
+  public ResponseEntity<TokenResponse> signIn(@RequestBody @Valid SignInRequest form) {
+    TokenResponse tokenResponse = authService.signIn(form);
 
-    return ResponseEntity.ok(tokenDto);
-
+    return ResponseEntity.ok(tokenResponse);
   }
 
   @Override
   @PostMapping("/signup")
-  public ResponseEntity<UserDto> register(@RequestBody @Valid SignupForm signupForm, UriComponentsBuilder uriBuilder) {
-    UserDto userDto = userServiceImpl.createAccount(signupForm);
-    URI uri = uriBuilder.path("/user/{id}").buildAndExpand(userDto.getId()).toUri();
-    return ResponseEntity.created(uri).body(userDto);
+  public ResponseEntity<UserResponse> register(@RequestBody @Valid SignupRequest signupRequest, UriComponentsBuilder uriBuilder) {
+    UserResponse userResponse = authService.register(signupRequest);
+    URI uri = uriBuilder.path("/user/{id}").buildAndExpand(userResponse.getId()).toUri();
+    return ResponseEntity.created(uri).body(userResponse);
   }
 
 }

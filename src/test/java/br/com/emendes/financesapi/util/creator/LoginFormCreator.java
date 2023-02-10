@@ -1,14 +1,14 @@
 package br.com.emendes.financesapi.util.creator;
 
-import br.com.emendes.financesapi.controller.form.LoginForm;
+import br.com.emendes.financesapi.dto.request.SignInRequest;
 
 public class LoginFormCreator {
 
-  public static LoginForm validLoginForm() {
+  public static SignInRequest validLoginForm() {
     String email = "lorem@email.com";
     String password = "123456789O";
 
-    return new LoginForm(email, password);
+    return new SignInRequest(email, password);
   }
 
 }

@@ -1,6 +1,6 @@
 package br.com.emendes.financesapi.controller.openapi;
 
-import br.com.emendes.financesapi.controller.dto.UserDto;
+import br.com.emendes.financesapi.dto.response.UserResponse;
 import br.com.emendes.financesapi.controller.form.ChangePasswordForm;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -24,7 +24,7 @@ public interface UserControllerOpenAPI {
       @ApiResponse(responseCode = "403", description = "Forbidden, usuário não tem permissão de acesso",
           content = @Content),
   })
-  ResponseEntity<Page<UserDto>> readAll(@ParameterObject Pageable pageable);
+  ResponseEntity<Page<UserResponse>> readAll(@ParameterObject Pageable pageable);
 
   @Operation(summary = "Deletar usuário por id")
   @ApiResponses(value = {

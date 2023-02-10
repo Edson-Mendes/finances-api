@@ -1,9 +1,9 @@
 package br.com.emendes.financesapi.controller.openapi;
 
-import br.com.emendes.financesapi.controller.dto.TokenDto;
-import br.com.emendes.financesapi.controller.dto.UserDto;
-import br.com.emendes.financesapi.controller.form.LoginForm;
-import br.com.emendes.financesapi.controller.form.SignupForm;
+import br.com.emendes.financesapi.dto.response.TokenResponse;
+import br.com.emendes.financesapi.dto.response.UserResponse;
+import br.com.emendes.financesapi.dto.request.SignInRequest;
+import br.com.emendes.financesapi.dto.request.SignupRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -20,20 +20,20 @@ public interface AuthenticationControllerOpenAPI {
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200",
           description = "Logado com sucesso, retorna o token que deve ser enviado a cada requisição.",
-          content = {@Content(mediaType = "application/json", schema = @Schema(implementation = TokenDto.class))}),
+          content = {@Content(mediaType = "application/json", schema = @Schema(implementation = TokenResponse.class))}),
       @ApiResponse(responseCode = "400", description = "Bad request - Algum parâmetro do corpo da requisição inválido",
           content = @Content),
   })
-  ResponseEntity<TokenDto> auth(LoginForm form);
+  ResponseEntity<TokenResponse> signIn(SignInRequest form);
 
   @Operation(summary = "Cadastrar um usuário")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "201", description = "Cadastrado com sucesso", content = {
-          @Content(mediaType = "application/json", schema = @Schema(implementation = UserDto.class))}),
+          @Content(mediaType = "application/json", schema = @Schema(implementation = UserResponse.class))}),
       @ApiResponse(responseCode = "400", description = "Bad request - Algum parâmetro do corpo da requisição inválido.",
           content = @Content),
       @ApiResponse(responseCode = "409", description = "Email inserido já está em uso", content = @Content)
   })
-  ResponseEntity<UserDto> register(SignupForm signupForm, UriComponentsBuilder uriBuilder);
+  ResponseEntity<UserResponse> register(SignupRequest signupRequest, UriComponentsBuilder uriBuilder);
 
 }

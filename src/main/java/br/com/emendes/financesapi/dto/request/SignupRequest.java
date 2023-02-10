@@ -1,4 +1,4 @@
-package br.com.emendes.financesapi.controller.form;
+package br.com.emendes.financesapi.dto.request;
 
 import br.com.emendes.financesapi.model.entity.User;
 import br.com.emendes.financesapi.validation.annotation.ValidPassword;
@@ -13,7 +13,7 @@ import javax.validation.constraints.NotBlank;
 @Getter
 @Setter
 @Builder
-public class SignupForm {
+public class SignupRequest {
 
   @Schema(example = "Mei")
   @NotBlank

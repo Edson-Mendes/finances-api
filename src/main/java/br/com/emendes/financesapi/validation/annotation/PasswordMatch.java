@@ -9,7 +9,7 @@ import javax.validation.Constraint;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-import br.com.emendes.financesapi.controller.form.SignupForm;
+import br.com.emendes.financesapi.dto.request.SignupRequest;
 
 // TODO: Pensar em como fazer valer para os campos de password e confirm.
 @Target(ElementType.FIELD)
@@ -26,10 +26,10 @@ public @interface PasswordMatch {
   // Class<? extends Payload>[] payload() default {};
 }
 
-class PassValidator implements ConstraintValidator<PasswordMatch, SignupForm> {
+class PassValidator implements ConstraintValidator<PasswordMatch, SignupRequest> {
 
   @Override
-  public boolean isValid(SignupForm signForm, ConstraintValidatorContext context) {
+  public boolean isValid(SignupRequest signForm, ConstraintValidatorContext context) {
     String pass = signForm.getPassword();
     String confirm = signForm.getConfirm();
 

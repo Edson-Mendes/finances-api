@@ -20,7 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import br.com.emendes.financesapi.controller.dto.UserDto;
+import br.com.emendes.financesapi.dto.response.UserResponse;
 import br.com.emendes.financesapi.controller.form.ChangePasswordForm;
 import br.com.emendes.financesapi.service.impl.UserServiceImpl;
 
@@ -34,11 +34,11 @@ class UserControllerTests {
   private UserServiceImpl userServiceImplImplMock;
 
   private final Pageable PAGEABLE = PageRequest.of(0, 10, Direction.ASC, "id");
-  private final UserDto USER_DTO = new UserDto(1000L, "Lorem Ipsum", "lorem@email.com");
+  private final UserResponse USER_DTO = new UserResponse(1000L, "Lorem Ipsum", "lorem@email.com");
 
   @BeforeEach
   public void setUp() {
-    Page<UserDto> pageUserDto = new PageImpl<>(List.of(USER_DTO));
+    Page<UserResponse> pageUserDto = new PageImpl<>(List.of(USER_DTO));
     ChangePasswordForm changeForm = new ChangePasswordForm(
         "123456", "123456789O", "123456789O");
 
@@ -53,7 +53,7 @@ class UserControllerTests {
   @Test
   @DisplayName("read must returns ResponseEntity<Page<UserDto>> when successful")
   void read_ReturnsResponseEntityPageUserDto_WhenSuccessful() {
-    ResponseEntity<Page<UserDto>> response = userController.readAll(PAGEABLE);
+    ResponseEntity<Page<UserResponse>> response = userController.readAll(PAGEABLE);
 
     Assertions.assertThat(response.getStatusCodeValue()).isEqualTo(200);
     Assertions.assertThat(response.getBody()).isNotNull();

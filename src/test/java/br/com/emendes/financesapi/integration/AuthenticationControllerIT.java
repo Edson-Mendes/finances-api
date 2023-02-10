@@ -1,11 +1,11 @@
 package br.com.emendes.financesapi.integration;
 
-import br.com.emendes.financesapi.controller.dto.TokenDto;
-import br.com.emendes.financesapi.controller.dto.UserDto;
+import br.com.emendes.financesapi.dto.response.TokenResponse;
+import br.com.emendes.financesapi.dto.response.UserResponse;
 import br.com.emendes.financesapi.controller.dto.error.ErrorDto;
 import br.com.emendes.financesapi.controller.dto.error.FormErrorDto;
-import br.com.emendes.financesapi.controller.form.LoginForm;
-import br.com.emendes.financesapi.controller.form.SignupForm;
+import br.com.emendes.financesapi.dto.request.SignInRequest;
+import br.com.emendes.financesapi.dto.request.SignupRequest;
 import br.com.emendes.financesapi.util.creator.SignupFormCreator;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -39,14 +39,14 @@ class AuthenticationControllerIT {
   void auth_ReturnsStatus200AndTokenDto_WhenSuccessful() {
     String email = "user@email.com";
     String password = "123456";
-    HttpEntity<LoginForm> requestBody = new HttpEntity<>(new LoginForm(email, password));
+    HttpEntity<SignInRequest> requestBody = new HttpEntity<>(new SignInRequest(email, password));
 
-    ResponseEntity<TokenDto> response = testRestTemplate.exchange(
+    ResponseEntity<TokenResponse> response = testRestTemplate.exchange(
         BASE_URI + "/signin", HttpMethod.POST, requestBody, new ParameterizedTypeReference<>() {
         });
 
     HttpStatus statusCode = response.getStatusCode();
-    TokenDto responseBody = response.getBody();
+    TokenResponse responseBody = response.getBody();
 
     Assertions.assertThat(statusCode).isEqualByComparingTo(HttpStatus.OK);
     Assertions.assertThat(responseBody).isNotNull();
@@ -59,7 +59,7 @@ class AuthenticationControllerIT {
   void auth_Returns400AndErrorDto_WhenPasswordIsWrong() {
     String email = "user@email.com";
     String password = "1234";
-    HttpEntity<LoginForm> requestBody = new HttpEntity<>(new LoginForm(email, password));
+    HttpEntity<SignInRequest> requestBody = new HttpEntity<>(new SignInRequest(email, password));
 
     ResponseEntity<ErrorDto> response = testRestTemplate.exchange(
         BASE_URI + "/signin", HttpMethod.POST, requestBody, new ParameterizedTypeReference<>() {
@@ -79,7 +79,7 @@ class AuthenticationControllerIT {
   void auth_Returns400AndErrorDto_WhenEmailIsWrong() {
     String email = "invalid@email.com";
     String password = "123456";
-    HttpEntity<LoginForm> requestBody = new HttpEntity<>(new LoginForm(email, password));
+    HttpEntity<SignInRequest> requestBody = new HttpEntity<>(new SignInRequest(email, password));
 
     ResponseEntity<ErrorDto> response = testRestTemplate.exchange(
         BASE_URI + "/signin", HttpMethod.POST, requestBody, new ParameterizedTypeReference<>() {
@@ -99,7 +99,7 @@ class AuthenticationControllerIT {
   void auth_Returns400AndListFormErrorDto_WhenEmailIsInvalid() {
     String email = "invalidemailcom";
     String password = "123456";
-    HttpEntity<LoginForm> requestBody = new HttpEntity<>(new LoginForm(email, password));
+    HttpEntity<SignInRequest> requestBody = new HttpEntity<>(new SignInRequest(email, password));
 
     ResponseEntity<List<FormErrorDto>> response = testRestTemplate.exchange(
         BASE_URI + "/signin", HttpMethod.POST, requestBody, new ParameterizedTypeReference<>() {
@@ -119,14 +119,14 @@ class AuthenticationControllerIT {
   void register_ReturnsStatus200AndUserDto_WhenCreatedSuccessful() {
     String name = "New User";
     String email = "newuser@email.com";
-    HttpEntity<SignupForm> requestBody = new HttpEntity<>(SignupFormCreator.withNameAndEmail(name, email));
+    HttpEntity<SignupRequest> requestBody = new HttpEntity<>(SignupFormCreator.withNameAndEmail(name, email));
 
-    ResponseEntity<UserDto> response = testRestTemplate.exchange(
+    ResponseEntity<UserResponse> response = testRestTemplate.exchange(
         BASE_URI + "/signup", HttpMethod.POST, requestBody, new ParameterizedTypeReference<>() {
         });
 
     HttpStatus statusCode = response.getStatusCode();
-    UserDto responseBody = response.getBody();
+    UserResponse responseBody = response.getBody();
 
     Assertions.assertThat(statusCode).isEqualByComparingTo(HttpStatus.CREATED);
     Assertions.assertThat(responseBody).isNotNull();
@@ -142,7 +142,7 @@ class AuthenticationControllerIT {
     String password = "1234";
     String confirm = "";
 
-    HttpEntity<SignupForm> requestBody = new HttpEntity<>(new SignupForm(name, email, password, confirm));
+    HttpEntity<SignupRequest> requestBody = new HttpEntity<>(new SignupRequest(name, email, password, confirm));
 
     ResponseEntity<List<FormErrorDto>> response = testRestTemplate.exchange(
         BASE_URI + "/signup", HttpMethod.POST, requestBody, new ParameterizedTypeReference<>() {
@@ -169,7 +169,7 @@ class AuthenticationControllerIT {
     String password = "1234567890";
     String confirm = "1234567800";
 
-    HttpEntity<SignupForm> requestBody = new HttpEntity<>(new SignupForm(name, email, password, confirm));
+    HttpEntity<SignupRequest> requestBody = new HttpEntity<>(new SignupRequest(name, email, password, confirm));
 
     ResponseEntity<ErrorDto> response = testRestTemplate.exchange(
         BASE_URI + "/signup", HttpMethod.POST, requestBody, new ParameterizedTypeReference<>() {
@@ -192,7 +192,7 @@ class AuthenticationControllerIT {
     String password = "1234567890";
     String confirm = "1234567890";
 
-    HttpEntity<SignupForm> requestBody = new HttpEntity<>(new SignupForm(name, email, password, confirm));
+    HttpEntity<SignupRequest> requestBody = new HttpEntity<>(new SignupRequest(name, email, password, confirm));
 
     ResponseEntity<ErrorDto> response = testRestTemplate.exchange(
         BASE_URI + "/signup", HttpMethod.POST, requestBody, new ParameterizedTypeReference<>() {

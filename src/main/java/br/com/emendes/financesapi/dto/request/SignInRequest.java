@@ -1,4 +1,4 @@
-package br.com.emendes.financesapi.controller.form;
+package br.com.emendes.financesapi.dto.request;
 
 import lombok.*;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -11,7 +11,7 @@ import javax.validation.constraints.NotBlank;
 @Getter
 @Setter
 @Builder
-public class LoginForm {
+public class SignInRequest {
 
   @NotBlank
   @Email(message = "deve ser um e-mail bem formado")

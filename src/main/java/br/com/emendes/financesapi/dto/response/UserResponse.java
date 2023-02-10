@@ -1,4 +1,4 @@
-package br.com.emendes.financesapi.controller.dto;
+package br.com.emendes.financesapi.dto.response;
 
 import br.com.emendes.financesapi.model.entity.User;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -12,7 +12,7 @@ import org.springframework.data.domain.Page;
 @EqualsAndHashCode
 @ToString
 @Builder
-public class UserDto {
+public class UserResponse {
 
   @Schema(example = "13")
   private Long id;
@@ -23,14 +23,14 @@ public class UserDto {
   @Schema(example = "mei@email.com")
   private String email;
 
-  public UserDto(User user) {
+  public UserResponse(User user) {
     this.id = user.getId();
     this.name = user.getName();
     this.email = user.getEmail();
   }
 
-  public static Page<UserDto> convert(Page<User> users) {
-    return users.map(UserDto::new);
+  public static Page<UserResponse> convert(Page<User> users) {
+    return users.map(UserResponse::new);
   }
 
 }

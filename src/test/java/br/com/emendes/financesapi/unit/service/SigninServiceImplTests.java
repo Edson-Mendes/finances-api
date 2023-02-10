@@ -1,7 +1,7 @@
 package br.com.emendes.financesapi.unit.service;
 
-import br.com.emendes.financesapi.controller.dto.TokenDto;
-import br.com.emendes.financesapi.controller.form.LoginForm;
+import br.com.emendes.financesapi.dto.response.TokenResponse;
+import br.com.emendes.financesapi.dto.request.SignInRequest;
 import br.com.emendes.financesapi.service.impl.SigninServiceImpl;
 import br.com.emendes.financesapi.config.security.service.TokenServiceImpl;
 import br.com.emendes.financesapi.util.creator.LoginFormCreator;
@@ -31,12 +31,12 @@ class SigninServiceImplTests {
 
   @BeforeEach
   public void setUp() {
-    LoginForm loginForm = LoginFormCreator.validLoginForm();
-    BDDMockito.when(authManagerMock.authenticate(ArgumentMatchers.any(loginForm.converter().getClass())))
-        .thenReturn(loginForm.converter());
+    SignInRequest signInRequest = LoginFormCreator.validLoginForm();
+    BDDMockito.when(authManagerMock.authenticate(ArgumentMatchers.any(signInRequest.converter().getClass())))
+        .thenReturn(signInRequest.converter());
 
     String token = "thisIsAFakeToken12345";
-    BDDMockito.when(tokenServiceImplMock.generateToken(ArgumentMatchers.any(loginForm.converter().getClass())))
+    BDDMockito.when(tokenServiceImplMock.generateToken(ArgumentMatchers.any(signInRequest.converter().getClass())))
         .thenReturn(token);
 
   }
@@ -44,25 +44,25 @@ class SigninServiceImplTests {
   @Test
   @DisplayName("login must returns TokenDto when successful")
   void login_ReturnsTokenDto_WhenSucessful(){
-    LoginForm loginForm = new LoginForm("user@email.com", "123456");
+    SignInRequest signInRequest = new SignInRequest("user@email.com", "123456");
 
-    TokenDto tokenDto = signinServiceImpl.login(loginForm);
+    TokenResponse tokenResponse = signinServiceImpl.login(signInRequest);
 
-    Assertions.assertThat(tokenDto).isNotNull();
-    Assertions.assertThat(tokenDto.getType()).isEqualTo("Bearer");
-    Assertions.assertThat(tokenDto.getToken()).isEqualTo("thisIsAFakeToken12345");
+    Assertions.assertThat(tokenResponse).isNotNull();
+    Assertions.assertThat(tokenResponse.getType()).isEqualTo("Bearer");
+    Assertions.assertThat(tokenResponse.getToken()).isEqualTo("thisIsAFakeToken12345");
   }
 
   @Test
   @DisplayName("login must throws BadCredentialsException when credentials are invalid")
   void login_ThrowsBadCredentialsException_WhenCredentialsAreInvalid(){
-    LoginForm loginForm = new LoginForm("user@email.com", "wrong_password");
+    SignInRequest signInRequest = new SignInRequest("user@email.com", "wrong_password");
 
     BDDMockito.willThrow(BadCredentialsException.class)
-        .given(authManagerMock).authenticate(ArgumentMatchers.any(loginForm.converter().getClass()));
+        .given(authManagerMock).authenticate(ArgumentMatchers.any(signInRequest.converter().getClass()));
 
     Assertions.assertThatExceptionOfType(BadCredentialsException.class)
-        .isThrownBy(() -> signinServiceImpl.login(loginForm));
+        .isThrownBy(() -> signinServiceImpl.login(signInRequest));
 
   }
 }

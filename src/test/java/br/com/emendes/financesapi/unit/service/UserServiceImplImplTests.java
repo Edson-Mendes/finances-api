@@ -25,8 +25,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import br.com.emendes.financesapi.controller.dto.UserDto;
-import br.com.emendes.financesapi.controller.form.SignupForm;
+import br.com.emendes.financesapi.dto.response.UserResponse;
+import br.com.emendes.financesapi.dto.request.SignupRequest;
 import br.com.emendes.financesapi.util.creator.SignupFormCreator;
 import br.com.emendes.financesapi.util.creator.UserCreator;
 import br.com.emendes.financesapi.model.entity.User;
@@ -76,13 +76,13 @@ class UserServiceImplImplTests {
   @Test
   @DisplayName("createAccount must return UserDto when create successfully")
   void createAccount_ReturnUserDto_WhenCreateSuccessfully() {
-    SignupForm signupForm = SignupFormCreator.validSignupForm();
+    SignupRequest signupRequest = SignupFormCreator.validSignupForm();
 
-    UserDto createdUserDto = userServiceImpl.createAccount(signupForm);
+    UserResponse createdUserResponse = userServiceImpl.createAccount(signupRequest);
 
-    Assertions.assertThat(createdUserDto).isNotNull();
-    Assertions.assertThat(createdUserDto.getEmail()).isEqualTo(signupForm.getEmail());
-    Assertions.assertThat(createdUserDto.getName()).isEqualTo(signupForm.getName());
+    Assertions.assertThat(createdUserResponse).isNotNull();
+    Assertions.assertThat(createdUserResponse.getEmail()).isEqualTo(signupRequest.getEmail());
+    Assertions.assertThat(createdUserResponse.getName()).isEqualTo(signupRequest.getName());
   }
 
   @Test
@@ -91,27 +91,27 @@ class UserServiceImplImplTests {
     BDDMockito.when(userRepositoryMock.save(ArgumentMatchers.any()))
         .thenThrow(new DataConflictException("Email inserido já está em uso!"));
 
-    SignupForm signupForm = SignupFormCreator.validSignupForm();
+    SignupRequest signupRequest = SignupFormCreator.validSignupForm();
 
     Assertions.assertThatExceptionOfType(DataConflictException.class)
-        .isThrownBy(() -> userServiceImpl.createAccount(signupForm));
+        .isThrownBy(() -> userServiceImpl.createAccount(signupRequest));
   }
 
   @Test
   @DisplayName("createAccount must throws PasswordsDoNotMatchException when password don't match")
   void createAccount_ThrowsPasswordsDoNotMatchException_WhenPassDontMatch() {
 
-    SignupForm signupForm = SignupFormCreator.validSignupForm();
-    signupForm.setConfirm("999999999999");
+    SignupRequest signupRequest = SignupFormCreator.validSignupForm();
+    signupRequest.setConfirm("999999999999");
 
     Assertions.assertThatExceptionOfType(PasswordsDoNotMatchException.class)
-        .isThrownBy(() -> userServiceImpl.createAccount(signupForm));
+        .isThrownBy(() -> userServiceImpl.createAccount(signupRequest));
   }
 
   @Test
   @DisplayName("read must return Page of UserDto when successful")
   void read_ReturnsPageOfUserDto_WhenSuccessful() {
-    Page<UserDto> pageUserDto = userServiceImpl.read(PAGEABLE);
+    Page<UserResponse> pageUserDto = userServiceImpl.read(PAGEABLE);
 
     Assertions.assertThat(pageUserDto)
         .isNotEmpty()

@@ -1,8 +1,8 @@
 package br.com.emendes.financesapi.service.impl;
 
-import br.com.emendes.financesapi.controller.dto.UserDto;
+import br.com.emendes.financesapi.dto.response.UserResponse;
 import br.com.emendes.financesapi.controller.form.ChangePasswordForm;
-import br.com.emendes.financesapi.controller.form.SignupForm;
+import br.com.emendes.financesapi.dto.request.SignupRequest;
 import br.com.emendes.financesapi.model.entity.User;
 import br.com.emendes.financesapi.repository.UserRepository;
 import br.com.emendes.financesapi.service.UserService;
@@ -26,11 +26,11 @@ public class UserServiceImpl implements UserService {
   private final UserRepository userRepository;
 
   @Override
-  public UserDto createAccount(SignupForm signupForm) {
-    if (signupForm.passwordMatch()) {
-      User user = signupForm.toUser();
+  public UserResponse createAccount(SignupRequest signupRequest) {
+    if (signupRequest.passwordMatch()) {
+      User user = signupRequest.toUser();
       try {
-        return new UserDto(userRepository.save(user));
+        return new UserResponse(userRepository.save(user));
       } catch (DataIntegrityViolationException e) {
         throw new DataConflictException("Email inserido já está em uso!");
       }
@@ -39,9 +39,9 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public Page<UserDto> read(Pageable pageable) {
+  public Page<UserResponse> read(Pageable pageable) {
     Page<User> users = userRepository.findAll(pageable);
-    return UserDto.convert(users);
+    return UserResponse.convert(users);
   }
 
   @Override

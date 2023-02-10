@@ -1,11 +1,11 @@
 package br.com.emendes.financesapi.integration;
 
-import br.com.emendes.financesapi.controller.dto.TokenDto;
-import br.com.emendes.financesapi.controller.dto.UserDto;
+import br.com.emendes.financesapi.dto.response.TokenResponse;
+import br.com.emendes.financesapi.dto.response.UserResponse;
 import br.com.emendes.financesapi.controller.dto.error.ErrorDto;
 import br.com.emendes.financesapi.controller.dto.error.FormErrorDto;
 import br.com.emendes.financesapi.controller.form.ChangePasswordForm;
-import br.com.emendes.financesapi.controller.form.LoginForm;
+import br.com.emendes.financesapi.dto.request.SignInRequest;
 import br.com.emendes.financesapi.model.entity.User;
 import br.com.emendes.financesapi.repository.UserRepository;
 import br.com.emendes.financesapi.util.wrapper.PageableResponse;
@@ -47,14 +47,14 @@ class UserControllerIT {
     String adminEmail = "admin@email.com";
     String adminPassword = "123456";
 
-    ResponseEntity<TokenDto> responseAdmin = requestToSignIn(new LoginForm(adminEmail, adminPassword));
+    ResponseEntity<TokenResponse> responseAdmin = requestToSignIn(new SignInRequest(adminEmail, adminPassword));
 
     HEADERS_ADMIN.add("Authorization", "Bearer "+responseAdmin.getBody().getToken());
 
     String userEmail = "user@email.com";
     String userPassword = "123456";
 
-    ResponseEntity<TokenDto> responseUser = requestToSignIn(new LoginForm(userEmail, userPassword));
+    ResponseEntity<TokenResponse> responseUser = requestToSignIn(new SignInRequest(userEmail, userPassword));
 
     HEADERS_USER.add("Authorization", "Bearer "+responseUser.getBody().getToken());
   }
@@ -63,11 +63,11 @@ class UserControllerIT {
   @DisplayName("readAll must returns Page<UserDto> when role is admin")
   void readAll_ReturnsPageUserDto_WhenRoleIsAdmin(){
     HttpEntity<Void> requestEntity = new HttpEntity<>(HEADERS_ADMIN);
-    ResponseEntity<PageableResponse<UserDto>> response = testRestTemplate
+    ResponseEntity<PageableResponse<UserResponse>> response = testRestTemplate
         .exchange(BASE_URI, HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>(){});
 
     HttpStatus statusCode = response.getStatusCode();
-    Page<UserDto> responseBody = response.getBody();
+    Page<UserResponse> responseBody = response.getBody();
 
     Assertions.assertThat(statusCode).isEqualTo(HttpStatus.OK);
     Assertions.assertThat(responseBody).isNotNull().isNotEmpty().hasSize(2);
@@ -148,7 +148,7 @@ class UserControllerIT {
     String userEmail = "user@email.com";
     String userPassword = "123456";
 
-    HttpEntity<LoginForm> requestBodyAdmin = new HttpEntity<>(new LoginForm(userEmail, userPassword));
+    HttpEntity<SignInRequest> requestBodyAdmin = new HttpEntity<>(new SignInRequest(userEmail, userPassword));
 
     ResponseEntity<ErrorDto> responseUser = testRestTemplate.exchange(
         "/auth/signin", HttpMethod.POST, requestBodyAdmin, new ParameterizedTypeReference<>() {
@@ -194,8 +194,8 @@ class UserControllerIT {
         .isNotNull().contains(new FormErrorDto("newPassword", "Senha inválida"));
   }
 
-  private ResponseEntity<TokenDto> requestToSignIn(LoginForm loginForm){
-    HttpEntity<LoginForm> requestBodyAdmin = new HttpEntity<>(loginForm);
+  private ResponseEntity<TokenResponse> requestToSignIn(SignInRequest signInRequest){
+    HttpEntity<SignInRequest> requestBodyAdmin = new HttpEntity<>(signInRequest);
 
     return testRestTemplate.exchange(
         "/auth/signin", HttpMethod.POST, requestBodyAdmin, new ParameterizedTypeReference<>() {});

@@ -2,7 +2,7 @@ package br.com.emendes.financesapi.unit.service;
 
 import java.util.Optional;
 
-import br.com.emendes.financesapi.config.security.service.AuthenticationService;
+import br.com.emendes.financesapi.config.security.service.CustomUserDetailsService;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -21,10 +21,10 @@ import br.com.emendes.financesapi.repository.UserRepository;
 
 @ExtendWith(SpringExtension.class)
 @DisplayName("Tests for AuthenticationService")
-public class AuthenticationServiceTests {
+public class CustomUserDetailsServiceTests {
 
   @InjectMocks
-  private AuthenticationService authenticationService;
+  private CustomUserDetailsService customUserDetailsService;
 
   @Mock
   private UserRepository userRepositoryMock;
@@ -47,7 +47,7 @@ public class AuthenticationServiceTests {
   void loadUserByUsername_ReturnsUserDetails_WhenSuccessful() {
     String email = UserCreator.validUserForExpenseRepositoryTest().getEmail();
 
-    UserDetails userDetails = authenticationService.loadUserByUsername(email);
+    UserDetails userDetails = customUserDetailsService.loadUserByUsername(email);
 
     Assertions.assertThat(userDetails).isNotNull();
     Assertions.assertThat(userDetails.getUsername()).isEqualTo(email);
@@ -59,7 +59,7 @@ public class AuthenticationServiceTests {
     String email = EMAIL_NOT_EXISTING;
 
     Assertions.assertThatExceptionOfType(UsernameNotFoundException.class)
-        .isThrownBy(() -> authenticationService.loadUserByUsername(email))
+        .isThrownBy(() -> customUserDetailsService.loadUserByUsername(email))
         .withMessage("Dados inválidos!");
   }
 

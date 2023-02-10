@@ -1,21 +1,21 @@
 package br.com.emendes.financesapi.util.creator;
 
-import br.com.emendes.financesapi.controller.form.SignupForm;
+import br.com.emendes.financesapi.dto.request.SignupRequest;
 
 public class SignupFormCreator {
 
-  public static SignupForm validSignupForm() {
+  public static SignupRequest validSignupForm() {
     String name = "Ipsum Dolor";
     String email = "ipsum@email.com";
     String password = "123456";
     String confirm = "123456";
-    return new SignupForm(name, email, password, confirm);
+    return new SignupRequest(name, email, password, confirm);
   }
 
-  public static SignupForm withNameAndEmail(String name, String email){
+  public static SignupRequest withNameAndEmail(String name, String email){
     String password = "1234567890";
     String confirm = "1234567890";
-    return new SignupForm(name, email, password, confirm);
+    return new SignupRequest(name, email, password, confirm);
   }
 
 }

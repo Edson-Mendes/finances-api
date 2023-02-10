@@ -1,4 +1,4 @@
-package br.com.emendes.financesapi.controller.dto;
+package br.com.emendes.financesapi.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
@@ -9,7 +9,7 @@ import lombok.*;
 @EqualsAndHashCode
 @ToString
 @Builder
-public class TokenDto {
+public class TokenResponse {
 
   @Schema(example = "3x3mp10-70k3n-p4r4-4u73n71c4c40")
   private String token;
