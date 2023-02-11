@@ -5,6 +5,8 @@ import javax.validation.ConstraintValidatorContext;
 
 import br.com.emendes.financesapi.validation.annotation.ValidPassword;
 
+// TODO: Excluir
+@Deprecated
 public class PasswordValidator implements ConstraintValidator<ValidPassword, String> {
 
   @Override

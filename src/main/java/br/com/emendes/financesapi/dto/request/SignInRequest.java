@@ -13,11 +13,11 @@ import javax.validation.constraints.NotBlank;
 @Builder
 public class SignInRequest {
 
-  @NotBlank
-  @Email(message = "deve ser um e-mail bem formado")
+  @NotBlank(message = "email must not be null or blank")
+  @Email(message = "must be a well formed email")
   private String email;
 
-  @NotBlank
+  @NotBlank(message = "password must not be null or blank")
   private String password;
 
   // FIXME: ISSO NÃO DEVERIA ESTAR AQUI!

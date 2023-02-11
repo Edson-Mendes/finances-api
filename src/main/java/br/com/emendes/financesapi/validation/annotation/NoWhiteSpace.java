@@ -1,6 +1,6 @@
 package br.com.emendes.financesapi.validation.annotation;
 
-import br.com.emendes.financesapi.validation.validator.PasswordValidator;
+import br.com.emendes.financesapi.validation.validator.WhiteSpaceValidator;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
@@ -9,13 +9,18 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-// TODO: Excluir
+/**
+ * The string must not contain whitespace, tab or newline.
+ * Accepts only {@code String}.
+ * <p>
+ * {@code null} elements are considered valid.
+ */
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = PasswordValidator.class)
-@Deprecated
-public @interface ValidPassword {
-  String message() default "Invalid password";
+@Constraint(validatedBy = WhiteSpaceValidator.class)
+public @interface NoWhiteSpace {
+
+  String message() default "must not contain whitespace";
 
   Class<?>[] groups() default {};
 

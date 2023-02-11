@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 // TODO: Excluir!
 @RequiredArgsConstructor
 @Service
+@Deprecated
 public class SigninServiceImpl implements SigninService {
 
   private final AuthenticationManager authManager;
