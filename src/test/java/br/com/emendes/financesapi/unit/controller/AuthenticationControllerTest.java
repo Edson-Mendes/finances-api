@@ -37,13 +37,14 @@ class AuthenticationControllerTest {
   private final String AUTH_BASE_URI = "/api/auth";
 
   @Nested
+  @DisplayName("Tests for SignIn endpoint")
   class signInEndpoint {
 
     private final String URI = AUTH_BASE_URI + "/signin";
 
     @Test
-    @DisplayName("signIn must return ResponseEntity<TokenResponse> when sign in successfully")
-    void signIn_MustReturnResponseEntityTokenResponse_WhenSignInSuccessfully() throws Exception {
+    @DisplayName("signIn must return TokenResponse when sign in successfully")
+    void signIn_MustReturnTokenResponse_WhenSignInSuccessfully() throws Exception {
       TokenResponse tokenResponse = TokenResponse.builder()
           .type("Bearer")
           .token("dfuehf08743hf8374hf80he8f9ahsd9fasgdf976gsda7f9gsa7gfsa76dgf9asgfd97sagfs")
@@ -89,13 +90,14 @@ class AuthenticationControllerTest {
   }
 
   @Nested
+  @DisplayName("Tests for SignUp endpoint")
   class signUpEndpoint {
 
     private final String URI = AUTH_BASE_URI + "/signup";
 
     @Test
-    @DisplayName("signup must return ResponseEntity<UserResponse> when sign up successfully")
-    void signUp_MustReturnResponseEntityUserResponse_WhenSignUnSuccessfully() throws Exception {
+    @DisplayName("signup must return UserResponse when sign up successfully")
+    void signUp_MustReturnUserResponse_WhenSignUnSuccessfully() throws Exception {
       UserResponse userResponse = UserResponse.builder()
           .id(1000L)
           .email("lorem@email.com")
@@ -123,8 +125,8 @@ class AuthenticationControllerTest {
     }
 
     @Test
-    @DisplayName("signup must return ResponseEntity<List<FormErrorDto>> when request body is invalid")
-    void signUp_MustReturnResponseEntityListFormErrorDto_WhenRequestBodyIsInvalid() throws Exception {
+    @DisplayName("signup must return List<FormErrorDto> when request body is invalid")
+    void signUp_MustReturnListFormErrorDto_WhenRequestBodyIsInvalid() throws Exception {
       String requestBody = """
           {
             "name" : "",

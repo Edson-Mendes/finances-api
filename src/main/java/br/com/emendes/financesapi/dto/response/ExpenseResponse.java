@@ -1,4 +1,4 @@
-package br.com.emendes.financesapi.controller.dto;
+package br.com.emendes.financesapi.dto.response;
 
 import br.com.emendes.financesapi.model.Category;
 import br.com.emendes.financesapi.model.entity.Expense;
@@ -10,12 +10,13 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
 @EqualsAndHashCode
 @ToString
 @Builder
-public class ExpenseDto {
+public class ExpenseResponse {
 
   @Schema(example = "8")
   private Long id;
@@ -32,7 +33,7 @@ public class ExpenseDto {
   @Schema(example = "MORADIA")
   private Category category;
 
-  public ExpenseDto(Expense expense) {
+  public ExpenseResponse(Expense expense) {
     this.id = expense.getId();
     this.description = expense.getDescription();
     this.date = expense.getDate();
@@ -40,8 +41,8 @@ public class ExpenseDto {
     this.category = expense.getCategory();
   }
 
-  public static Page<ExpenseDto> convert(Page<Expense> expenses) {
-    return expenses.map(ExpenseDto::new);
+  public static Page<ExpenseResponse> convert(Page<Expense> expenses) {
+    return expenses.map(ExpenseResponse::new);
   }
 
 }

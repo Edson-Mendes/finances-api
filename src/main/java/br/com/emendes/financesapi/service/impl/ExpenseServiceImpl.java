@@ -1,8 +1,8 @@
 package br.com.emendes.financesapi.service.impl;
 
-import br.com.emendes.financesapi.controller.dto.ExpenseDto;
 import br.com.emendes.financesapi.controller.dto.ValueByCategoryDto;
-import br.com.emendes.financesapi.controller.form.ExpenseForm;
+import br.com.emendes.financesapi.dto.request.ExpenseRequest;
+import br.com.emendes.financesapi.dto.response.ExpenseResponse;
 import br.com.emendes.financesapi.model.entity.Expense;
 import br.com.emendes.financesapi.model.entity.User;
 import br.com.emendes.financesapi.repository.ExpenseRepository;
@@ -26,7 +26,7 @@ public class ExpenseServiceImpl implements ExpenseService {
   private final AuthenticationFacade authenticationFacade;
 
   @Override
-  public ExpenseDto create(ExpenseForm expenseForm) {
+  public ExpenseResponse create(ExpenseRequest expenseRequest) {
     Authentication authentication = authenticationFacade.getAuthentication();
     // Apenas uma precaução caso não tenha usuário logado.
     if (!authentication.isAuthenticated()) {
@@ -34,51 +34,52 @@ public class ExpenseServiceImpl implements ExpenseService {
     }
     Long userId = ((User) authentication.getPrincipal()).getId();
 
-    Expense expense = expenseForm.convert(userId);
+    Expense expense = expenseRequest.convert(userId);
     expenseRepository.save(expense);
 
-    return new ExpenseDto(expense);
+    return new ExpenseResponse(expense);
   }
 
   @Override
-  public Page<ExpenseDto> readAllByUser(Pageable pageable) {
+  public Page<ExpenseResponse> readAllByUser(Pageable pageable) {
     Page<Expense> expenses = expenseRepository.findAllByUser(pageable);
     if (expenses.getTotalElements() == 0) {
-      throw new NoResultException("O usuário não possui despesas");
+      // TODO: Criar uma exception para ser lançada aqui!
+      throw new NoResultException("The user has no expenses");
     }
-    return ExpenseDto.convert(expenses);
+    return ExpenseResponse.convert(expenses);
   }
 
   @Override
-  public Page<ExpenseDto> readByDescriptionAndUser(String description, Pageable pageable) {
+  public Page<ExpenseResponse> readByDescriptionAndUser(String description, Pageable pageable) {
     Page<Expense> expenses = expenseRepository.findByDescriptionAndUser(description, pageable);
     if (expenses.getTotalElements() == 0) {
-      throw new NoResultException("O usuário não possui despesas com descrição similar a " + description);
+      throw new NoResultException("The user has no expenses with a description similar to " + description);
     }
-    return ExpenseDto.convert(expenses);
+    return ExpenseResponse.convert(expenses);
   }
 
   @Override
-  public ExpenseDto readByIdAndUser(Long id) {
-    return new ExpenseDto(findByIdAndUser(id));
+  public ExpenseResponse readByIdAndUser(Long id) {
+    return new ExpenseResponse(findByIdAndUser(id));
   }
 
   @Override
-  public Page<ExpenseDto> readByYearAndMonthAndUser(int year, int month, Pageable pageable) {
+  public Page<ExpenseResponse> readByYearAndMonthAndUser(int year, int month, Pageable pageable) {
     Page<Expense> expenses = expenseRepository.findByYearAndMonthAndUser(year, month, pageable);
 
     if (expenses.getTotalElements() == 0) {
-      throw new NoResultException(String.format("Não há despesas para o ano %d e mês %d", year, month));
+      throw new NoResultException(String.format("Has no expenses for year %d and month %d", year, month));
     }
-    return ExpenseDto.convert(expenses);
+    return ExpenseResponse.convert(expenses);
   }
 
   @Override
-  public ExpenseDto update(Long id, ExpenseForm expenseForm) {
+  public ExpenseResponse update(Long id, ExpenseRequest expenseRequest) {
     Expense expenseToBeUpdated = findByIdAndUser(id);
 
-    expenseToBeUpdated.setParams(expenseForm);
-    return new ExpenseDto(expenseToBeUpdated);
+    expenseToBeUpdated.setParams(expenseRequest);
+    return new ExpenseResponse(expenseToBeUpdated);
   }
 
   @Override
@@ -96,7 +97,7 @@ public class ExpenseServiceImpl implements ExpenseService {
     Optional<Expense> optionalExpense = expenseRepository.findByIdAndUser(id);
 
     return optionalExpense.orElseThrow(
-        () -> new NoResultException(String.format("Nenhuma despesa com id = %d para esse usuário", id)));
+        () -> new NoResultException("Expense not found"));
   }
 
 }

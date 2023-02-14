@@ -1,8 +1,8 @@
 package br.com.emendes.financesapi.controller;
 
-import br.com.emendes.financesapi.controller.dto.ExpenseDto;
-import br.com.emendes.financesapi.controller.form.ExpenseForm;
 import br.com.emendes.financesapi.controller.openapi.ExpenseControllerOpenAPI;
+import br.com.emendes.financesapi.dto.request.ExpenseRequest;
+import br.com.emendes.financesapi.dto.response.ExpenseResponse;
 import br.com.emendes.financesapi.service.ExpenseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -20,28 +20,25 @@ import java.net.URI;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/expenses")
+@RequestMapping(value = "/api/expenses", produces = "application/json;charset=UTF-8")
 public class ExpenseController implements ExpenseControllerOpenAPI {
 
   private final ExpenseService expenseService;
 
-  private static final String HEADER_NAME = "Content-Type";
-  private static final String HEADER_VALUE = "application/json;charset=UTF-8";
-
   @Override
   @PostMapping
-  public ResponseEntity<ExpenseDto> create(@Valid @RequestBody ExpenseForm form, UriComponentsBuilder uriBuilder) {
-    ExpenseDto expenseDto = expenseService.create(form);
-    URI uri = uriBuilder.path("/despesas/{id}").buildAndExpand(expenseDto.getId()).toUri();
-    return ResponseEntity.created(uri).body(expenseDto);
+  public ResponseEntity<ExpenseResponse> create(@Valid @RequestBody ExpenseRequest form, UriComponentsBuilder uriBuilder) {
+    ExpenseResponse expenseResponse = expenseService.create(form);
+    URI uri = uriBuilder.path("/api/expenses/{id}").buildAndExpand(expenseResponse.getId()).toUri();
+    return ResponseEntity.created(uri).body(expenseResponse);
   }
 
   @Override
   @GetMapping
-  public ResponseEntity<Page<ExpenseDto>> read(
+  public ResponseEntity<Page<ExpenseResponse>> read(
       @RequestParam(name = "description", required = false) String description,
       @PageableDefault(sort = "date", direction = Direction.DESC) Pageable pageable) {
-    Page<ExpenseDto> expensesDto;
+    Page<ExpenseResponse> expensesDto;
 
     if (description == null) {
       expensesDto = expenseService.readAllByUser(pageable);
@@ -49,43 +46,39 @@ public class ExpenseController implements ExpenseControllerOpenAPI {
       expensesDto = expenseService.readByDescriptionAndUser(description, pageable);
     }
     return ResponseEntity.status(HttpStatus.OK)
-        .header(HEADER_NAME, HEADER_VALUE)
         .body(expensesDto);
   }
 
   @Override
   @GetMapping("/{id}")
-  public ResponseEntity<ExpenseDto> readById(@PathVariable(name = "id") Long id) {
-    ExpenseDto expenseDto = expenseService.readByIdAndUser(id);
+  public ResponseEntity<ExpenseResponse> readById(@PathVariable(name = "id") Long id) {
+    ExpenseResponse expenseResponse = expenseService.readByIdAndUser(id);
 
     return ResponseEntity.status(HttpStatus.OK)
-        .header(HEADER_NAME, HEADER_VALUE)
-        .body(expenseDto);
+        .body(expenseResponse);
   }
 
   @Override
   @GetMapping("/{year}/{month}")
-  public ResponseEntity<Page<ExpenseDto>> readByYearAndMonth(
+  public ResponseEntity<Page<ExpenseResponse>> readByYearAndMonth(
       @PathVariable(name = "year") int year,
       @PathVariable(name = "month") int month,
       @PageableDefault(sort = "date", direction = Direction.DESC) Pageable pageable) {
-    Page<ExpenseDto> expensesDto = expenseService.readByYearAndMonthAndUser(year, month, pageable);
+    Page<ExpenseResponse> expensesDto = expenseService.readByYearAndMonthAndUser(year, month, pageable);
 
     return ResponseEntity.status(HttpStatus.OK)
-        .header(HEADER_NAME, HEADER_VALUE)
         .body(expensesDto);
   }
 
   @Override
   @PutMapping("/{id}")
   @Transactional
-  public ResponseEntity<ExpenseDto> update(
-      @PathVariable(name = "id") Long id, @Valid @RequestBody ExpenseForm expenseForm) {
-    ExpenseDto expenseDto = expenseService.update(id, expenseForm);
+  public ResponseEntity<ExpenseResponse> update(
+      @PathVariable(name = "id") Long id, @Valid @RequestBody ExpenseRequest expenseRequest) {
+    ExpenseResponse expenseResponse = expenseService.update(id, expenseRequest);
 
     return ResponseEntity.status(HttpStatus.OK)
-        .header(HEADER_NAME, HEADER_VALUE)
-        .body(expenseDto);
+        .body(expenseResponse);
   }
 
   @Override

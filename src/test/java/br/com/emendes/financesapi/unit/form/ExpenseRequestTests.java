@@ -11,21 +11,21 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import br.com.emendes.financesapi.controller.form.ExpenseForm;
+import br.com.emendes.financesapi.dto.request.ExpenseRequest;
 import br.com.emendes.financesapi.util.creator.ExpenseFormCreator;
 import br.com.emendes.financesapi.model.Category;
 
 @DisplayName("Tests for ExpenseForm")
-public class ExpenseFormTests {
+public class ExpenseRequestTests {
 
   private final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
   @Test
   @DisplayName("Must return empty violations when ExpenseForm is valid")
   void mustReturnEmptyViolations_WhenExpenseFormIsValid() {
-    ExpenseForm validExpenseForm = ExpenseFormCreator.validExpenseForm();
+    ExpenseRequest validExpenseRequest = ExpenseFormCreator.validExpenseForm();
 
-    Set<ConstraintViolation<ExpenseForm>> violations = validator.validate(validExpenseForm);
+    Set<ConstraintViolation<ExpenseRequest>> violations = validator.validate(validExpenseRequest);
 
     Assertions.assertThat(violations).isEmpty();
   }
@@ -38,9 +38,9 @@ public class ExpenseFormTests {
     BigDecimal value = new BigDecimal("250.00");
     Category category = null;
 
-    ExpenseForm invalidExpenseForm = new ExpenseForm(description, date, value, category);
+    ExpenseRequest invalidExpenseRequest = new ExpenseRequest(description, date, value, category);
 
-    Set<ConstraintViolation<ExpenseForm>> violations = validator.validate(invalidExpenseForm);
+    Set<ConstraintViolation<ExpenseRequest>> violations = validator.validate(invalidExpenseRequest);
 
     Assertions.assertThat(violations).isEmpty();
   }
@@ -53,9 +53,9 @@ public class ExpenseFormTests {
     BigDecimal value = new BigDecimal("250.00");
     Category category = Category.ALIMENTACAO;
 
-    ExpenseForm invalidExpenseForm = new ExpenseForm(description, invalidDate, value, category);
+    ExpenseRequest invalidExpenseRequest = new ExpenseRequest(description, invalidDate, value, category);
 
-    Set<ConstraintViolation<ExpenseForm>> violations = validator.validate(invalidExpenseForm);
+    Set<ConstraintViolation<ExpenseRequest>> violations = validator.validate(invalidExpenseRequest);
 
     Assertions.assertThat(violations)
         .isNotEmpty()
@@ -72,9 +72,9 @@ public class ExpenseFormTests {
     BigDecimal invalidValue = new BigDecimal("2500000.00");
     Category category = Category.ALIMENTACAO;
 
-    ExpenseForm invalidExpenseForm = new ExpenseForm(description, date, invalidValue, category);
+    ExpenseRequest invalidExpenseRequest = new ExpenseRequest(description, date, invalidValue, category);
 
-    Set<ConstraintViolation<ExpenseForm>> violations = validator.validate(invalidExpenseForm);
+    Set<ConstraintViolation<ExpenseRequest>> violations = validator.validate(invalidExpenseRequest);
 
     Assertions.assertThat(violations)
         .isNotEmpty()
@@ -89,9 +89,9 @@ public class ExpenseFormTests {
     BigDecimal invalidValue = new BigDecimal("-250.00");
     Category category = Category.ALIMENTACAO;
 
-    ExpenseForm invalidExpenseForm = new ExpenseForm(description, date, invalidValue, category);
+    ExpenseRequest invalidExpenseRequest = new ExpenseRequest(description, date, invalidValue, category);
 
-    Set<ConstraintViolation<ExpenseForm>> violations = validator.validate(invalidExpenseForm);
+    Set<ConstraintViolation<ExpenseRequest>> violations = validator.validate(invalidExpenseRequest);
 
     Assertions.assertThat(violations)
         .isNotEmpty()
@@ -106,9 +106,9 @@ public class ExpenseFormTests {
     BigDecimal value = new BigDecimal("250.00");
     Category category = Category.ALIMENTACAO;
 
-    ExpenseForm invalidExpenseForm = new ExpenseForm(description, date, value, category);
+    ExpenseRequest invalidExpenseRequest = new ExpenseRequest(description, date, value, category);
 
-    Set<ConstraintViolation<ExpenseForm>> violations = validator.validate(invalidExpenseForm);
+    Set<ConstraintViolation<ExpenseRequest>> violations = validator.validate(invalidExpenseRequest);
 
     Assertions.assertThat(violations)
         .isNotEmpty()
@@ -123,9 +123,9 @@ public class ExpenseFormTests {
     BigDecimal value = new BigDecimal("250.00");
     Category category = Category.ALIMENTACAO;
 
-    ExpenseForm invalidExpenseForm = new ExpenseForm(description, date, value, category);
+    ExpenseRequest invalidExpenseRequest = new ExpenseRequest(description, date, value, category);
 
-    Set<ConstraintViolation<ExpenseForm>> violations = validator.validate(invalidExpenseForm);
+    Set<ConstraintViolation<ExpenseRequest>> violations = validator.validate(invalidExpenseRequest);
 
     Assertions.assertThat(violations)
         .isNotEmpty()
@@ -140,9 +140,9 @@ public class ExpenseFormTests {
     BigDecimal value = null;
     Category category = Category.ALIMENTACAO;
 
-    ExpenseForm invalidExpenseForm = new ExpenseForm(description, date, value, category);
+    ExpenseRequest invalidExpenseRequest = new ExpenseRequest(description, date, value, category);
 
-    Set<ConstraintViolation<ExpenseForm>> violations = validator.validate(invalidExpenseForm);
+    Set<ConstraintViolation<ExpenseRequest>> violations = validator.validate(invalidExpenseRequest);
 
     Assertions.assertThat(violations)
         .isNotEmpty()

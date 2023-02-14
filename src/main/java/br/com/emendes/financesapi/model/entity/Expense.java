@@ -1,6 +1,6 @@
 package br.com.emendes.financesapi.model.entity;
 
-import br.com.emendes.financesapi.controller.form.ExpenseForm;
+import br.com.emendes.financesapi.dto.request.ExpenseRequest;
 import br.com.emendes.financesapi.model.Category;
 import lombok.*;
 import org.hibernate.annotations.OnDelete;
@@ -47,12 +47,12 @@ public class Expense {
   }
 
   // TODO: Criar um Mapper com um método merge.
-  public void setParams(ExpenseForm expenseForm) {
-    this.description = expenseForm.getDescription();
-    this.date = LocalDate.parse(expenseForm.getDate());
-    this.value = expenseForm.getValue();
-    if (expenseForm.getCategory() != null) {
-      this.category = expenseForm.getCategory();
+  public void setParams(ExpenseRequest expenseRequest) {
+    this.description = expenseRequest.getDescription();
+    this.date = LocalDate.parse(expenseRequest.getDate());
+    this.value = expenseRequest.getValue();
+    if (expenseRequest.getCategory() != null) {
+      this.category = expenseRequest.getCategory();
     }
   }
 

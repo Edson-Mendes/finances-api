@@ -1,9 +1,9 @@
 package br.com.emendes.financesapi.controller.openapi;
 
-import br.com.emendes.financesapi.controller.dto.ExpenseDto;
+import br.com.emendes.financesapi.dto.response.ExpenseResponse;
 import br.com.emendes.financesapi.controller.dto.error.ErrorDto;
 import br.com.emendes.financesapi.controller.dto.error.FormErrorDto;
-import br.com.emendes.financesapi.controller.form.ExpenseForm;
+import br.com.emendes.financesapi.dto.request.ExpenseRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -30,14 +30,14 @@ public interface ExpenseControllerOpenAPI {
   @Operation(summary = "Salvar uma despesa")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "201", description = "Despesa salva", content = {
-          @Content(mediaType = "application/json", schema = @Schema(implementation = ExpenseDto.class))}),
+          @Content(mediaType = "application/json", schema = @Schema(implementation = ExpenseResponse.class))}),
       @ApiResponse(responseCode = "400", description = "Bad request - Algum parâmetro do corpo da requisição inválido",
           content = {@Content(mediaType = "application/json", schema = @Schema(implementation = FormErrorDto.class))}),
       @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
       @ApiResponse(responseCode = "409", description = "Já existe despesa com essa descrição no mesmo mês e ano",
           content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDto.class))}),
   })
-  ResponseEntity<ExpenseDto> create(ExpenseForm form, UriComponentsBuilder uriBuilder);
+  ResponseEntity<ExpenseResponse> create(ExpenseRequest form, UriComponentsBuilder uriBuilder);
 
   @Operation(summary = "Buscar todas as despesas do usuário, opcional buscar por descrição")
   @ApiResponses(value = {
@@ -48,7 +48,7 @@ public interface ExpenseControllerOpenAPI {
       @ApiResponse(responseCode = "404", description = "Nenhuma despesa encontrada",
           content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDto.class))}),
   })
-  ResponseEntity<Page<ExpenseDto>> read(String description, @ParameterObject Pageable pageable);
+  ResponseEntity<Page<ExpenseResponse>> read(String description, @ParameterObject Pageable pageable);
 
   @Operation(summary = "Buscar despesa por id")
   @ApiResponses(value = {
@@ -57,7 +57,7 @@ public interface ExpenseControllerOpenAPI {
       @ApiResponse(responseCode = "404", description = "Despesa não encontrada",
           content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDto.class))}),
   })
-  ResponseEntity<ExpenseDto> readById(Long id);
+  ResponseEntity<ExpenseResponse> readById(Long id);
 
   @Operation(summary = "Buscar despesas do usuário por ano e mês")
   @ApiResponses(value = {
@@ -68,7 +68,7 @@ public interface ExpenseControllerOpenAPI {
       @ApiResponse(responseCode = "404", description = "Nenhuma despesa encontrada",
           content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDto.class))}),
   })
-  ResponseEntity<Page<ExpenseDto>> readByYearAndMonth(
+  ResponseEntity<Page<ExpenseResponse>> readByYearAndMonth(
       @Min(1970) @Max(2099) int year, // TODO: Adicionar essa validação na service.
       @Min(1) @Max(12) int month,
       @ParameterObject Pageable pageable);
@@ -84,7 +84,7 @@ public interface ExpenseControllerOpenAPI {
       @ApiResponse(responseCode = "409", description = "Já existe despesa com essa descrição no mesmo mês e ano",
           content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDto.class))}),
   })
-  ResponseEntity<ExpenseDto> update(@PathVariable Long id, @Valid @RequestBody ExpenseForm expenseForm);
+  ResponseEntity<ExpenseResponse> update(@PathVariable Long id, @Valid @RequestBody ExpenseRequest expenseRequest);
 
   @Operation(summary = "Deletar despesa por id")
   @ApiResponses(value = {

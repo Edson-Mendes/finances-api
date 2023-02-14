@@ -4,18 +4,18 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
-import br.com.emendes.financesapi.controller.dto.ExpenseDto;
+import br.com.emendes.financesapi.dto.response.ExpenseResponse;
 import br.com.emendes.financesapi.model.Category;
 
 public class ExpenseDtoCreator {
 
-  public static ExpenseDto validExpenseDto() {
+  public static ExpenseResponse validExpenseDto() {
     Long id = 12345l;
     String description = "Gasolina";
     LocalDate date = LocalDate.parse("17/01/2022", DateTimeFormatter.ofPattern("dd/MM/yyyy"));
     BigDecimal value = new BigDecimal("250.00");
     Category category = Category.TRANSPORTE;
-    return new ExpenseDto(id, description, date, value, category);
+    return new ExpenseResponse(id, description, date, value, category);
   }
 
 }

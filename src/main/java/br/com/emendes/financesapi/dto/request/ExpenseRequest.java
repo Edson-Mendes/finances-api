@@ -1,4 +1,4 @@
-package br.com.emendes.financesapi.controller.form;
+package br.com.emendes.financesapi.dto.request;
 
 import br.com.emendes.financesapi.model.Category;
 import br.com.emendes.financesapi.model.entity.Expense;
@@ -20,7 +20,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @Builder
-public class ExpenseForm {
+public class ExpenseRequest {
 
   @Schema(example = "Mercado")
   @NotBlank

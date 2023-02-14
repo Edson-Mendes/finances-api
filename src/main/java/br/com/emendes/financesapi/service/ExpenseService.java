@@ -1,8 +1,8 @@
 package br.com.emendes.financesapi.service;
 
-import br.com.emendes.financesapi.controller.dto.ExpenseDto;
+import br.com.emendes.financesapi.dto.response.ExpenseResponse;
 import br.com.emendes.financesapi.controller.dto.ValueByCategoryDto;
-import br.com.emendes.financesapi.controller.form.ExpenseForm;
+import br.com.emendes.financesapi.dto.request.ExpenseRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -10,17 +10,17 @@ import java.util.List;
 
 public interface ExpenseService {
 
-  ExpenseDto create(ExpenseForm expenseForm);
+  ExpenseResponse create(ExpenseRequest expenseRequest);
 
-  Page<ExpenseDto> readAllByUser(Pageable pageable);
+  Page<ExpenseResponse> readAllByUser(Pageable pageable);
 
-  Page<ExpenseDto> readByDescriptionAndUser(String description, Pageable pageable);
+  Page<ExpenseResponse> readByDescriptionAndUser(String description, Pageable pageable);
 
-  ExpenseDto readByIdAndUser(Long id);
+  ExpenseResponse readByIdAndUser(Long id);
 
-  Page<ExpenseDto> readByYearAndMonthAndUser(int year, int month, Pageable pageable);
+  Page<ExpenseResponse> readByYearAndMonthAndUser(int year, int month, Pageable pageable);
 
-  ExpenseDto update(Long id, ExpenseForm expenseForm);
+  ExpenseResponse update(Long id, ExpenseRequest expenseRequest);
 
   void deleteById(Long id);
 
