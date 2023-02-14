@@ -1,7 +1,7 @@
 package br.com.emendes.financesapi.service.impl;
 
-import br.com.emendes.financesapi.controller.dto.IncomeDto;
-import br.com.emendes.financesapi.controller.form.IncomeForm;
+import br.com.emendes.financesapi.dto.response.IncomeResponse;
+import br.com.emendes.financesapi.dto.request.IncomeRequest;
 import br.com.emendes.financesapi.model.entity.Income;
 import br.com.emendes.financesapi.model.entity.User;
 import br.com.emendes.financesapi.repository.IncomeRepository;
@@ -27,7 +27,7 @@ public class IncomeServiceImpl implements IncomeService {
   private final AuthenticationFacade authenticationFacade;
 
   @Override
-  public IncomeDto create(IncomeForm incomeForm) {
+  public IncomeResponse create(IncomeRequest incomeRequest) {
     Authentication authentication = authenticationFacade.getAuthentication();
     // Apenas uma precaução caso não tenha usuário logado.
     if (!authentication.isAuthenticated()) {
@@ -35,51 +35,51 @@ public class IncomeServiceImpl implements IncomeService {
     }
     Long userId = ((User) authentication.getPrincipal()).getId();
 
-    Income income = incomeForm.convert(userId);
+    Income income = incomeRequest.convert(userId);
     incomeRepository.save(income);
 
-    return new IncomeDto(income);
+    return new IncomeResponse(income);
   }
 
   @Override
-  public Page<IncomeDto> readAllByUser(Pageable pageable) {
+  public Page<IncomeResponse> readAllByUser(Pageable pageable) {
     Page<Income> incomes = incomeRepository.findAllByUser(pageable);
 
     if (incomes.getTotalElements() == 0) {
       throw new NoResultException("O usuário não possui receitas");
     }
-    return IncomeDto.convert(incomes);
+    return IncomeResponse.convert(incomes);
   }
 
   @Override
-  public Page<IncomeDto> readByDescriptionAndUser(String description, Pageable pageable) {
+  public Page<IncomeResponse> readByDescriptionAndUser(String description, Pageable pageable) {
     Page<Income> incomes = incomeRepository.findByDescriptionAndUser(description, pageable);
     if (incomes.getTotalElements() == 0) {
       throw new NoResultException("O usuário não possui receitas com descrição similar a " + description);
     }
-    return IncomeDto.convert(incomes);
+    return IncomeResponse.convert(incomes);
   }
 
   @Override
-  public IncomeDto readByIdAndUser(Long incomeId) {
-    return new IncomeDto(findByIdAndUser(incomeId));
+  public IncomeResponse readByIdAndUser(Long incomeId) {
+    return new IncomeResponse(findByIdAndUser(incomeId));
   }
 
   @Override
-  public Page<IncomeDto> readByYearAndMonthAndUser(int year, int month, Pageable pageable) {
+  public Page<IncomeResponse> readByYearAndMonthAndUser(int year, int month, Pageable pageable) {
     Page<Income> incomes = incomeRepository.findByYearAndMonthAndUser(year, month, pageable);
     if (incomes.getTotalElements() == 0) {
       throw new NoResultException("Não há receitas para o ano " + year + " e mês " + month);
     }
-    return IncomeDto.convert(incomes);
+    return IncomeResponse.convert(incomes);
   }
 
   @Override
-  public IncomeDto update(Long id, IncomeForm incomeForm) {
+  public IncomeResponse update(Long id, IncomeRequest incomeRequest) {
     Income incomeToBeUpdated = findByIdAndUser(id);
 
-    incomeToBeUpdated.setParams(incomeForm);
-    return new IncomeDto(incomeToBeUpdated);
+    incomeToBeUpdated.setParams(incomeRequest);
+    return new IncomeResponse(incomeToBeUpdated);
   }
 
   @Override

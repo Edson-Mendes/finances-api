@@ -1,7 +1,7 @@
 package br.com.emendes.financesapi.unit.service;
 
-import br.com.emendes.financesapi.controller.dto.IncomeDto;
-import br.com.emendes.financesapi.controller.form.IncomeForm;
+import br.com.emendes.financesapi.dto.response.IncomeResponse;
+import br.com.emendes.financesapi.dto.request.IncomeRequest;
 import br.com.emendes.financesapi.model.entity.Income;
 import br.com.emendes.financesapi.model.entity.User;
 import br.com.emendes.financesapi.repository.IncomeRepository;
@@ -50,7 +50,7 @@ class IncomeServiceImplTests {
   private final Pageable PAGEABLE_WITH_PAGE_ONE = PageRequest.of(1, 10, Direction.DESC, "date");
   private final Authentication AUTHENTICATION = mock(Authentication.class);
   private final SecurityContext SECURITY_CONTEXT = mock(SecurityContext.class);
-  private final IncomeForm INCOME_FORM = IncomeFormCreator.validIncomeForm();
+  private final IncomeRequest INCOME_FORM = IncomeFormCreator.validIncomeForm();
   @BeforeEach
   public void setUp() {
     Income incomeToBeSaved = IncomeCreator.validIncomeWithUser(new User(100L));
@@ -113,13 +113,13 @@ class IncomeServiceImplTests {
   @Test
   @DisplayName("Create must returns IncomeDto when created successfully")
   void create_ReturnsIncomeDto_WhenSuccessful() {
-    IncomeForm incomeForm = IncomeFormCreator.validIncomeForm();
+    IncomeRequest incomeRequest = IncomeFormCreator.validIncomeForm();
 
-    IncomeDto incomeDto = this.incomeServiceImpl.create(incomeForm);
+    IncomeResponse incomeResponse = this.incomeServiceImpl.create(incomeRequest);
 
-    Assertions.assertThat(incomeDto).isNotNull();
-    Assertions.assertThat(incomeDto.getDescription()).isEqualTo(incomeForm.getDescription());
-    Assertions.assertThat(incomeDto.getValue()).isEqualTo(incomeForm.getValue());
+    Assertions.assertThat(incomeResponse).isNotNull();
+    Assertions.assertThat(incomeResponse.getDescription()).isEqualTo(incomeRequest.getDescription());
+    Assertions.assertThat(incomeResponse.getValue()).isEqualTo(incomeRequest.getValue());
   }
 
   @Test
@@ -130,16 +130,16 @@ class IncomeServiceImplTests {
         INCOME_FORM.parseDateToLocalDate().getMonthValue(),
         INCOME_FORM.parseDateToLocalDate().getYear())).thenReturn(true);
 
-    IncomeForm incomeForm = IncomeFormCreator.validIncomeForm();
+    IncomeRequest incomeRequest = IncomeFormCreator.validIncomeForm();
     Assertions.assertThatExceptionOfType(ResponseStatusException.class)
-        .isThrownBy(() -> this.incomeServiceImpl.create(incomeForm))
+        .isThrownBy(() -> this.incomeServiceImpl.create(incomeRequest))
         .withMessageContaining("Uma receita com essa descrição já existe em ");
   }
 
   @Test
   @DisplayName("readAllByUser must returns page of incomeDto when successful")
   void readAllByUser_ReturnsPageOfIncomeDto_WhenSuccessful() {
-    Page<IncomeDto> pageIncomeDto = incomeServiceImpl.readAllByUser(PAGEABLE);
+    Page<IncomeResponse> pageIncomeDto = incomeServiceImpl.readAllByUser(PAGEABLE);
 
     Assertions.assertThat(pageIncomeDto).isNotEmpty();
     Assertions.assertThat(pageIncomeDto.getNumberOfElements()).isEqualTo(1);
@@ -159,7 +159,7 @@ class IncomeServiceImplTests {
   @Test
   @DisplayName("readAllByUser must returns empty page when user has incomes but request a page without data")
   void readAllByUser_ReturnsEmptyPage_WhenUserHasIncomesButRequestAPageWithoutData(){
-    Page<IncomeDto> pageIncomeDto = incomeServiceImpl.readAllByUser(PAGEABLE_WITH_PAGE_ONE);
+    Page<IncomeResponse> pageIncomeDto = incomeServiceImpl.readAllByUser(PAGEABLE_WITH_PAGE_ONE);
 
     Assertions.assertThat(pageIncomeDto).isEmpty();
     Assertions.assertThat(pageIncomeDto.getTotalElements()).isEqualTo(4L);
@@ -170,7 +170,7 @@ class IncomeServiceImplTests {
   void readByDescriptionAndUser_ReturnsPageOfIncomeDto_WhenSuccessful() {
     String description = "ario";
 
-    Page<IncomeDto> pageIncomeDto = incomeServiceImpl.readByDescriptionAndUser(description, PAGEABLE);
+    Page<IncomeResponse> pageIncomeDto = incomeServiceImpl.readByDescriptionAndUser(description, PAGEABLE);
 
     Assertions.assertThat(pageIncomeDto).isNotEmpty();
     Assertions.assertThat(pageIncomeDto.getNumberOfElements()).isEqualTo(1);
@@ -190,7 +190,7 @@ class IncomeServiceImplTests {
   @DisplayName("readByDescriptionAndUser must returns empty page when user has incomes but request a page without data")
   void readByDescriptionAndUser_ReturnsEmptyPage_WhenUserHasIncomesButRequestAPageWithoutData(){
     String description = "venda";
-    Page<IncomeDto> pageIncomeDto = incomeServiceImpl.readByDescriptionAndUser(description, PAGEABLE_WITH_PAGE_ONE);
+    Page<IncomeResponse> pageIncomeDto = incomeServiceImpl.readByDescriptionAndUser(description, PAGEABLE_WITH_PAGE_ONE);
 
     Assertions.assertThat(pageIncomeDto).isNotNull().isEmpty();
     Assertions.assertThat(pageIncomeDto.getTotalElements()).isEqualTo(4L);
@@ -201,10 +201,10 @@ class IncomeServiceImplTests {
   void readByIdAndUser_ReturnsOptionalIncomeDto_WhenSuccessful() {
     Long id = IncomeCreator.incomeWithAllArgs().getId();
 
-    IncomeDto incomeDto = incomeServiceImpl.readByIdAndUser(id);
+    IncomeResponse incomeResponse = incomeServiceImpl.readByIdAndUser(id);
 
-    Assertions.assertThat(incomeDto).isNotNull();
-    Assertions.assertThat(incomeDto.getId()).isEqualTo(id);
+    Assertions.assertThat(incomeResponse).isNotNull();
+    Assertions.assertThat(incomeResponse.getId()).isEqualTo(id);
   }
 
   @Test
@@ -223,7 +223,7 @@ class IncomeServiceImplTests {
     int month = 1;
     int year = 2022;
 
-    Page<IncomeDto> pageIncomeDto = incomeServiceImpl.readByYearAndMonthAndUser(year, month, PAGEABLE);
+    Page<IncomeResponse> pageIncomeDto = incomeServiceImpl.readByYearAndMonthAndUser(year, month, PAGEABLE);
 
     Assertions.assertThat(pageIncomeDto).isNotEmpty();
     Assertions.assertThat(pageIncomeDto.getNumberOfElements()).isEqualTo(1);
@@ -245,7 +245,7 @@ class IncomeServiceImplTests {
   void readByYearAndMonthAndUser_ReturnsEmptyPage_WhenUserHasIncomesButRequestAPageWithoutData(){
     int year = 2023;
     int month = 9;
-    Page<IncomeDto> pageIncomeDto = incomeServiceImpl.readByYearAndMonthAndUser(year, month, PAGEABLE_WITH_PAGE_ONE);
+    Page<IncomeResponse> pageIncomeDto = incomeServiceImpl.readByYearAndMonthAndUser(year, month, PAGEABLE_WITH_PAGE_ONE);
 
     Assertions.assertThat(pageIncomeDto).isEmpty();
     Assertions.assertThat(pageIncomeDto.getTotalElements()).isEqualTo(4L);
@@ -255,13 +255,13 @@ class IncomeServiceImplTests {
   @DisplayName("update must returns IncomeDto updated when successful")
   void update_ReturnsIncomeDtoUpdated_WhenSuccessful() {
     Long id = IncomeCreator.incomeWithAllArgs().getId();
-    IncomeForm incomeForm = IncomeFormCreator.validIncomeForm();
+    IncomeRequest incomeRequest = IncomeFormCreator.validIncomeForm();
 
-    IncomeDto updateIncome = incomeServiceImpl.update(id, incomeForm);
+    IncomeResponse updateIncome = incomeServiceImpl.update(id, incomeRequest);
 
     Assertions.assertThat(updateIncome).isNotNull();
     Assertions.assertThat(updateIncome.getId()).isEqualTo(id);
-    Assertions.assertThat(updateIncome.getDescription()).isEqualTo(incomeForm.getDescription());
+    Assertions.assertThat(updateIncome.getDescription()).isEqualTo(incomeRequest.getDescription());
   }
 
   @Test
@@ -274,20 +274,20 @@ class IncomeServiceImplTests {
         1000L)).thenReturn(true);
 
     Long id = IncomeCreator.incomeWithAllArgs().getId();
-    IncomeForm incomeForm = IncomeFormCreator.validIncomeForm();
+    IncomeRequest incomeRequest = IncomeFormCreator.validIncomeForm();
 
     Assertions.assertThatExceptionOfType(ResponseStatusException.class)
-        .isThrownBy(() -> incomeServiceImpl.update(id, incomeForm))
+        .isThrownBy(() -> incomeServiceImpl.update(id, incomeRequest))
         .withMessageContaining("Outra receita com essa descrição já existe em ");
   }
 
   @Test
   @DisplayName("update must throws NoResultException when income don't exists")
   void update_ThrowsNoResultException_WhenIncomeDontExists() {
-    IncomeForm incomeForm = IncomeFormCreator.validIncomeForm();
+    IncomeRequest incomeRequest = IncomeFormCreator.validIncomeForm();
 
     Assertions.assertThatExceptionOfType(NoResultException.class)
-        .isThrownBy(() -> incomeServiceImpl.update(NON_EXISTING_INCOME_ID, incomeForm))
+        .isThrownBy(() -> incomeServiceImpl.update(NON_EXISTING_INCOME_ID, incomeRequest))
         .withMessage(String.format("Nenhuma receita com id = %d para esse usuário", NON_EXISTING_INCOME_ID));
   }
 

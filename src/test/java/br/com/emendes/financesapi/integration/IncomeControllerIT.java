@@ -1,10 +1,10 @@
 package br.com.emendes.financesapi.integration;
 
-import br.com.emendes.financesapi.controller.dto.IncomeDto;
+import br.com.emendes.financesapi.dto.response.IncomeResponse;
 import br.com.emendes.financesapi.dto.response.TokenResponse;
 import br.com.emendes.financesapi.controller.dto.error.ErrorDto;
 import br.com.emendes.financesapi.controller.dto.error.FormErrorDto;
-import br.com.emendes.financesapi.controller.form.IncomeForm;
+import br.com.emendes.financesapi.dto.request.IncomeRequest;
 import br.com.emendes.financesapi.dto.request.SignInRequest;
 import br.com.emendes.financesapi.model.entity.Income;
 import br.com.emendes.financesapi.repository.IncomeRepository;
@@ -59,23 +59,23 @@ class IncomeControllerIT {
   @Test
   @DisplayName("create must returns status 201 and IncomeDto when created successful")
   void create_ReturnsStatus201AndIncomeDto_WhenCreatedSuccessful(){
-    IncomeForm incomeForm = IncomeFormCreator.validIncomeForm();
+    IncomeRequest incomeRequest = IncomeFormCreator.validIncomeForm();
 
-    HttpEntity<IncomeForm> requestEntity = new HttpEntity<>(incomeForm, HEADERS);
+    HttpEntity<IncomeRequest> requestEntity = new HttpEntity<>(incomeRequest, HEADERS);
 
-    ResponseEntity<IncomeDto> response = testRestTemplate.exchange(
+    ResponseEntity<IncomeResponse> response = testRestTemplate.exchange(
         BASE_URI, HttpMethod.POST, requestEntity, new ParameterizedTypeReference<>() {});
 
     HttpStatus statusCode = response.getStatusCode();
-    IncomeDto responseBody = response.getBody();
+    IncomeResponse responseBody = response.getBody();
 
     Assertions.assertThat(statusCode).isEqualByComparingTo(HttpStatus.CREATED);
     Assertions.assertThat(responseBody).isNotNull();
     Assertions.assertThat(responseBody.getId()).isNotNull();
-    Assertions.assertThat(responseBody.getDescription()).isEqualTo(incomeForm.getDescription());
+    Assertions.assertThat(responseBody.getDescription()).isEqualTo(incomeRequest.getDescription());
     Assertions.assertThat(responseBody.getDate())
-        .isEqualTo(LocalDate.parse(incomeForm.getDate(), Formatter.dateFormatter));
-    Assertions.assertThat(responseBody.getDescription()).isEqualTo(incomeForm.getDescription());
+        .isEqualTo(LocalDate.parse(incomeRequest.getDate(), Formatter.dateFormatter));
+    Assertions.assertThat(responseBody.getDescription()).isEqualTo(incomeRequest.getDescription());
   }
 
   @Test
@@ -90,9 +90,9 @@ class IncomeControllerIT {
   @Test
   @DisplayName("create must returns status 400 and List<FormErrorDto> when body is invalid")
   void create_ReturnsStatus400AndListFormErrorDto_WhenBodyIsInvalid(){
-    IncomeForm incomeForm = IncomeFormCreator.withBlankDescription();
+    IncomeRequest incomeRequest = IncomeFormCreator.withBlankDescription();
 
-    HttpEntity<IncomeForm> requestEntity = new HttpEntity<>(incomeForm, HEADERS);
+    HttpEntity<IncomeRequest> requestEntity = new HttpEntity<>(incomeRequest, HEADERS);
 
     ResponseEntity<List<FormErrorDto>> response = testRestTemplate.exchange(
         BASE_URI, HttpMethod.POST, requestEntity, new ParameterizedTypeReference<>() {});
@@ -109,9 +109,9 @@ class IncomeControllerIT {
   @Test
   @DisplayName("create must returns status 409 and ErrorDto when has conflict")
   void create_ReturnsStatus409AndErrorDto_WhenHasConflict(){
-    IncomeForm incomeForm = IncomeFormCreator.validIncomeForm();
+    IncomeRequest incomeRequest = IncomeFormCreator.validIncomeForm();
 
-    HttpEntity<IncomeForm> requestEntity = new HttpEntity<>(incomeForm, HEADERS);
+    HttpEntity<IncomeRequest> requestEntity = new HttpEntity<>(incomeRequest, HEADERS);
 
     testRestTemplate.exchange(
         BASE_URI, HttpMethod.POST, requestEntity, new ParameterizedTypeReference<>() {});
@@ -135,11 +135,11 @@ class IncomeControllerIT {
     incomeRepository.save(IncomeCreator.withDescription("Venda Smartphone velho"));
 
     HttpEntity<Void> requestEntity = new HttpEntity<>(HEADERS);
-    ResponseEntity<PageableResponse<IncomeDto>> response = testRestTemplate
+    ResponseEntity<PageableResponse<IncomeResponse>> response = testRestTemplate
         .exchange(BASE_URI, HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {});
 
     HttpStatus statusCode = response.getStatusCode();
-    Page<IncomeDto> responseBody = response.getBody();
+    Page<IncomeResponse> responseBody = response.getBody();
 
     Assertions.assertThat(statusCode).isEqualByComparingTo(HttpStatus.OK);
     Assertions.assertThat(responseBody).isNotNull().isNotEmpty().hasSize(2);
@@ -154,11 +154,11 @@ class IncomeControllerIT {
     incomeRepository.save(IncomeCreator.withDescription("Venda Smartphone velho"));
 
     HttpEntity<Void> requestEntity = new HttpEntity<>(HEADERS);
-    ResponseEntity<PageableResponse<IncomeDto>> response = testRestTemplate
+    ResponseEntity<PageableResponse<IncomeResponse>> response = testRestTemplate
         .exchange(BASE_URI+"?page=1", HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {});
 
     HttpStatus statusCode = response.getStatusCode();
-    Page<IncomeDto> responseBody = response.getBody();
+    Page<IncomeResponse> responseBody = response.getBody();
 
     Assertions.assertThat(statusCode).isEqualByComparingTo(HttpStatus.OK);
     Assertions.assertThat(responseBody).isNotNull().isEmpty();
@@ -197,11 +197,11 @@ class IncomeControllerIT {
     incomeRepository.save(IncomeCreator.withDescription("Venda Smartphone velho"));
 
     HttpEntity<Void> requestEntity = new HttpEntity<>(HEADERS);
-    ResponseEntity<PageableResponse<IncomeDto>> response = testRestTemplate
+    ResponseEntity<PageableResponse<IncomeResponse>> response = testRestTemplate
         .exchange(BASE_URI+"?description=sal", HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {});
 
     HttpStatus statusCode = response.getStatusCode();
-    Page<IncomeDto> responseBody = response.getBody();
+    Page<IncomeResponse> responseBody = response.getBody();
 
     Assertions.assertThat(statusCode).isEqualByComparingTo(HttpStatus.OK);
     Assertions.assertThat(responseBody).isNotNull().isNotEmpty().hasSize(1);
@@ -215,11 +215,11 @@ class IncomeControllerIT {
     incomeRepository.save(IncomeCreator.withDescription("Venda Smartphone velho"));
 
     HttpEntity<Void> requestEntity = new HttpEntity<>(HEADERS);
-    ResponseEntity<PageableResponse<IncomeDto>> response = testRestTemplate
+    ResponseEntity<PageableResponse<IncomeResponse>> response = testRestTemplate
         .exchange(BASE_URI+"?description=sal&page=1", HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {});
 
     HttpStatus statusCode = response.getStatusCode();
-    Page<IncomeDto> responseBody = response.getBody();
+    Page<IncomeResponse> responseBody = response.getBody();
 
     Assertions.assertThat(statusCode).isEqualByComparingTo(HttpStatus.OK);
     Assertions.assertThat(responseBody).isNotNull().isEmpty();
@@ -249,11 +249,11 @@ class IncomeControllerIT {
 
     HttpEntity<Void> requestEntity = new HttpEntity<>(HEADERS);
 
-    ResponseEntity<IncomeDto> response = testRestTemplate.exchange(
+    ResponseEntity<IncomeResponse> response = testRestTemplate.exchange(
         BASE_URI+"/1", HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {});
 
     HttpStatus statusCode = response.getStatusCode();
-    IncomeDto responseBody = response.getBody();
+    IncomeResponse responseBody = response.getBody();
 
     Assertions.assertThat(statusCode).isEqualByComparingTo(HttpStatus.OK);
     Assertions.assertThat(responseBody).isNotNull();
@@ -298,11 +298,11 @@ class IncomeControllerIT {
 
     HttpEntity<Void> requestEntity = new HttpEntity<>(HEADERS);
 
-    ResponseEntity<PageableResponse<IncomeDto>> response = testRestTemplate.exchange(
+    ResponseEntity<PageableResponse<IncomeResponse>> response = testRestTemplate.exchange(
         BASE_URI+"/2022/01", HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {});
 
     HttpStatus statusCode = response.getStatusCode();
-    Page<IncomeDto> responseBody = response.getBody();
+    Page<IncomeResponse> responseBody = response.getBody();
 
     Assertions.assertThat(statusCode).isEqualByComparingTo(HttpStatus.OK);
     Assertions.assertThat(responseBody).isNotNull().hasSize(2);
@@ -318,11 +318,11 @@ class IncomeControllerIT {
 
     HttpEntity<Void> requestEntity = new HttpEntity<>(HEADERS);
 
-    ResponseEntity<PageableResponse<IncomeDto>> response = testRestTemplate.exchange(
+    ResponseEntity<PageableResponse<IncomeResponse>> response = testRestTemplate.exchange(
         BASE_URI+"/2022/01?page=1", HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {});
 
     HttpStatus statusCode = response.getStatusCode();
-    Page<IncomeDto> responseBody = response.getBody();
+    Page<IncomeResponse> responseBody = response.getBody();
 
     Assertions.assertThat(statusCode).isEqualByComparingTo(HttpStatus.OK);
     Assertions.assertThat(responseBody).isNotNull().isEmpty();
@@ -379,15 +379,15 @@ class IncomeControllerIT {
   @DisplayName("update must returns status 200 and IncomeDto when updated successful")
   void update_ReturnsStatus200AndIncomeDto_WhenUpdatedSuccessful(){
     incomeRepository.save(IncomeCreator.withDescription("Salário"));
-    IncomeForm incomeToBeUpdated = IncomeFormCreator.withDescription("Salário baixo e sofrido");
+    IncomeRequest incomeToBeUpdated = IncomeFormCreator.withDescription("Salário baixo e sofrido");
 
-    HttpEntity<IncomeForm> requestEntity = new HttpEntity<>(incomeToBeUpdated, HEADERS);
+    HttpEntity<IncomeRequest> requestEntity = new HttpEntity<>(incomeToBeUpdated, HEADERS);
 
-    ResponseEntity<IncomeDto> response = testRestTemplate.exchange(
+    ResponseEntity<IncomeResponse> response = testRestTemplate.exchange(
         BASE_URI+"/1", HttpMethod.PUT, requestEntity, new ParameterizedTypeReference<>() {});
 
     HttpStatus statusCode = response.getStatusCode();
-    IncomeDto responseBody = response.getBody();
+    IncomeResponse responseBody = response.getBody();
 
     Assertions.assertThat(statusCode).isEqualByComparingTo(HttpStatus.OK);
     Assertions.assertThat(responseBody).isNotNull();
@@ -409,8 +409,8 @@ class IncomeControllerIT {
   @Test
   @DisplayName("update must returns status 404 and ErrorDto when id don't exists")
   void update_ReturnsStatus404AndErrorDto_WhenIdDontExists(){
-    IncomeForm incomeToBeUpdated = IncomeFormCreator.withDescription("Salário baixo e sofrido");
-    HttpEntity<IncomeForm> requestEntity = new HttpEntity<>(incomeToBeUpdated, HEADERS);
+    IncomeRequest incomeToBeUpdated = IncomeFormCreator.withDescription("Salário baixo e sofrido");
+    HttpEntity<IncomeRequest> requestEntity = new HttpEntity<>(incomeToBeUpdated, HEADERS);
 
     ResponseEntity<ErrorDto> response = testRestTemplate.exchange(
         BASE_URI+"/10000", HttpMethod.PUT, requestEntity, new ParameterizedTypeReference<>() {});
@@ -428,8 +428,8 @@ class IncomeControllerIT {
   @Test
   @DisplayName("update must returns status 400 and List<FormErrorDto> when body is invalid")
   void update_ReturnsStatus400AndListFormErrorDto_WhenBodyIsInvalid(){
-    IncomeForm incomeForm = IncomeFormCreator.withBlankDescription();
-    HttpEntity<IncomeForm> requestEntity = new HttpEntity<>(incomeForm, HEADERS);
+    IncomeRequest incomeRequest = IncomeFormCreator.withBlankDescription();
+    HttpEntity<IncomeRequest> requestEntity = new HttpEntity<>(incomeRequest, HEADERS);
 
     ResponseEntity<List<FormErrorDto>> response = testRestTemplate.exchange(
         BASE_URI+"/1", HttpMethod.PUT, requestEntity, new ParameterizedTypeReference<>() {});
@@ -449,8 +449,8 @@ class IncomeControllerIT {
     incomeRepository.save(IncomeCreator.withDescription("Salário"));
     incomeRepository.save(IncomeCreator.withDescription("Loteria"));
 
-    IncomeForm incomeForm = IncomeFormCreator.withDescription("Salário");
-    HttpEntity<IncomeForm> requestEntity = new HttpEntity<>(incomeForm, HEADERS);
+    IncomeRequest incomeRequest = IncomeFormCreator.withDescription("Salário");
+    HttpEntity<IncomeRequest> requestEntity = new HttpEntity<>(incomeRequest, HEADERS);
 
     ResponseEntity<ErrorDto> response = testRestTemplate.exchange(
         BASE_URI+"/2", HttpMethod.PUT, requestEntity, new ParameterizedTypeReference<>() {});
@@ -468,9 +468,9 @@ class IncomeControllerIT {
   @DisplayName("delete must returns status 204 when deleted successful")
   void delete_ReturnsStatus204_WhenDeletedSuccessful(){
     incomeRepository.save(IncomeCreator.withDescription("Salário"));
-    HttpEntity<IncomeForm> requestEntity = new HttpEntity<>(HEADERS);
+    HttpEntity<IncomeRequest> requestEntity = new HttpEntity<>(HEADERS);
 
-    ResponseEntity<IncomeDto> response = testRestTemplate.exchange(
+    ResponseEntity<IncomeResponse> response = testRestTemplate.exchange(
         BASE_URI+"/1", HttpMethod.DELETE, requestEntity, new ParameterizedTypeReference<>() {});
 
     HttpStatus statusCode = response.getStatusCode();
@@ -495,7 +495,7 @@ class IncomeControllerIT {
   @Test
   @DisplayName("delete must returns status 404 and ErrorDto when id don't exists")
   void delete_ReturnsStatus404AndErrorDto_WhenIdDontExists(){
-    HttpEntity<IncomeForm> requestEntity = new HttpEntity<>(HEADERS);
+    HttpEntity<IncomeRequest> requestEntity = new HttpEntity<>(HEADERS);
     ResponseEntity<ErrorDto> response = testRestTemplate.exchange(
         BASE_URI+"/10000", HttpMethod.DELETE, requestEntity, new ParameterizedTypeReference<>() {});
 

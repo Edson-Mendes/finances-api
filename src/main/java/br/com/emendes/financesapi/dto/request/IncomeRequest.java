@@ -1,4 +1,4 @@
-package br.com.emendes.financesapi.controller.form;
+package br.com.emendes.financesapi.dto.request;
 
 import br.com.emendes.financesapi.model.entity.Income;
 import br.com.emendes.financesapi.model.entity.User;
@@ -19,7 +19,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @Builder
-public class IncomeForm {
+public class IncomeRequest {
 
   @Schema(example = "Salário")
   @NotBlank

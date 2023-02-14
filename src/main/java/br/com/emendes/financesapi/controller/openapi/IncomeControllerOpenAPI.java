@@ -1,9 +1,9 @@
 package br.com.emendes.financesapi.controller.openapi;
 
-import br.com.emendes.financesapi.controller.dto.IncomeDto;
+import br.com.emendes.financesapi.dto.response.IncomeResponse;
 import br.com.emendes.financesapi.controller.dto.error.ErrorDto;
 import br.com.emendes.financesapi.controller.dto.error.FormErrorDto;
-import br.com.emendes.financesapi.controller.form.IncomeForm;
+import br.com.emendes.financesapi.dto.request.IncomeRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -30,14 +30,14 @@ public interface IncomeControllerOpenAPI {
   @Operation(summary = "Salvar uma receita")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "201", description = "Receita salva",
-          content = {@Content(mediaType = "application/json", schema = @Schema(implementation = IncomeDto.class))}),
+          content = {@Content(mediaType = "application/json", schema = @Schema(implementation = IncomeResponse.class))}),
       @ApiResponse(responseCode = "400", description = "Bad request - Algum parâmetro do corpo da requisição inválido",
           content = {@Content(mediaType = "application/json", schema = @Schema(implementation = FormErrorDto.class))}),
       @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
       @ApiResponse(responseCode = "409", description = "Já existe receita com essa descrição no mesmo mês e ano",
           content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDto.class))}),
   })
-  ResponseEntity<IncomeDto> create(@Valid @RequestBody IncomeForm form, UriComponentsBuilder uriBuilder);
+  ResponseEntity<IncomeResponse> create(@Valid @RequestBody IncomeRequest form, UriComponentsBuilder uriBuilder);
 
   @Operation(summary = "Buscar todas as receitas do usuário, opcional buscar por descrição")
   @ApiResponses(value = {
@@ -48,7 +48,7 @@ public interface IncomeControllerOpenAPI {
       @ApiResponse(responseCode = "404", description = "Nenhuma receita encontrada",
           content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDto.class))}),
   })
-  ResponseEntity<Page<IncomeDto>> read(String description, @ParameterObject Pageable pageable);
+  ResponseEntity<Page<IncomeResponse>> read(String description, @ParameterObject Pageable pageable);
 
   @Operation(summary = "Buscar receita por id")
   @ApiResponses(value = {
@@ -57,7 +57,7 @@ public interface IncomeControllerOpenAPI {
       @ApiResponse(responseCode = "404", description = "Receita não encontrada",
           content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDto.class))}),
   })
-  ResponseEntity<IncomeDto> readById(Long id);
+  ResponseEntity<IncomeResponse> readById(Long id);
 
   @Operation(summary = "Buscar receitas do usuário por ano e mês")
   @ApiResponses(value = {
@@ -68,7 +68,7 @@ public interface IncomeControllerOpenAPI {
       @ApiResponse(responseCode = "404", description = "Nenhuma receita encontrada",
           content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDto.class))}),
   })
-  ResponseEntity<Page<IncomeDto>> readByYearAndMonth(
+  ResponseEntity<Page<IncomeResponse>> readByYearAndMonth(
       @Min(1970) @Max(2099) int year,
       @Min(1) @Max(12) int month,
       @ParameterObject Pageable pageable);
@@ -84,7 +84,7 @@ public interface IncomeControllerOpenAPI {
       @ApiResponse(responseCode = "409", description = "Já existe receita com essa descrição no mesmo mês e ano",
           content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDto.class))}),
   })
-  ResponseEntity<IncomeDto> update(long id, IncomeForm incomeForm);
+  ResponseEntity<IncomeResponse> update(long id, IncomeRequest incomeRequest);
 
   @Operation(summary = "Deletar receita por id")
   @ApiResponses(value = {

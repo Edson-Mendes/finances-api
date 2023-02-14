@@ -11,20 +11,20 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import br.com.emendes.financesapi.controller.form.IncomeForm;
+import br.com.emendes.financesapi.dto.request.IncomeRequest;
 import br.com.emendes.financesapi.util.creator.IncomeFormCreator;
 
 @DisplayName("Tests for IncomeForm")
-public class IncomeFormTests {
+public class IncomeRequestTests {
 
   private final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
   @Test
   @DisplayName("Must return empty violations when IncomeForm is valid")
   void mustReturnEmptyViolations_WhenIncomeFormIsValid() {
-    IncomeForm validIncomeForm = IncomeFormCreator.validIncomeForm();
+    IncomeRequest validIncomeRequest = IncomeFormCreator.validIncomeForm();
 
-    Set<ConstraintViolation<IncomeForm>> violations = validator.validate(validIncomeForm);
+    Set<ConstraintViolation<IncomeRequest>> violations = validator.validate(validIncomeRequest);
 
     Assertions.assertThat(violations).isEmpty();
   }
@@ -36,9 +36,9 @@ public class IncomeFormTests {
     String date = "23/01/2022";
     BigDecimal value = new BigDecimal("2500.00");
 
-    IncomeForm invalidIncomeForm = new IncomeForm(description, date, value);
+    IncomeRequest invalidIncomeRequest = new IncomeRequest(description, date, value);
 
-    Set<ConstraintViolation<IncomeForm>> violations = validator.validate(invalidIncomeForm);
+    Set<ConstraintViolation<IncomeRequest>> violations = validator.validate(invalidIncomeRequest);
 
     Assertions.assertThat(violations).isEmpty();
   }
@@ -50,9 +50,9 @@ public class IncomeFormTests {
     String invalidDate = "23-01-2022";
     BigDecimal value = new BigDecimal("2500.00");
 
-    IncomeForm invalidIncomeForm = new IncomeForm(description, invalidDate, value);
+    IncomeRequest invalidIncomeRequest = new IncomeRequest(description, invalidDate, value);
 
-    Set<ConstraintViolation<IncomeForm>> violations = validator.validate(invalidIncomeForm);
+    Set<ConstraintViolation<IncomeRequest>> violations = validator.validate(invalidIncomeRequest);
 
     Assertions.assertThat(violations)
         .isNotEmpty()
@@ -68,9 +68,9 @@ public class IncomeFormTests {
     String date = "23/01/2022";
     BigDecimal invalidValue = new BigDecimal("2500000.00");
 
-    IncomeForm invalidIncomeForm = new IncomeForm(description, date, invalidValue);
+    IncomeRequest invalidIncomeRequest = new IncomeRequest(description, date, invalidValue);
 
-    Set<ConstraintViolation<IncomeForm>> violations = validator.validate(invalidIncomeForm);
+    Set<ConstraintViolation<IncomeRequest>> violations = validator.validate(invalidIncomeRequest);
 
     Assertions.assertThat(violations)
         .isNotEmpty()
@@ -84,9 +84,9 @@ public class IncomeFormTests {
     String date = "23/01/2022";
     BigDecimal invalidValue = new BigDecimal("-2500.00");
 
-    IncomeForm invalidIncomeForm = new IncomeForm(description, date, invalidValue);
+    IncomeRequest invalidIncomeRequest = new IncomeRequest(description, date, invalidValue);
 
-    Set<ConstraintViolation<IncomeForm>> violations = validator.validate(invalidIncomeForm);
+    Set<ConstraintViolation<IncomeRequest>> violations = validator.validate(invalidIncomeRequest);
 
     Assertions.assertThat(violations)
         .isNotEmpty()
@@ -100,9 +100,9 @@ public class IncomeFormTests {
     String date = "23/01/2022";
     BigDecimal value = new BigDecimal("2500.00");
 
-    IncomeForm invalidIncomeForm = new IncomeForm(description, date, value);
+    IncomeRequest invalidIncomeRequest = new IncomeRequest(description, date, value);
 
-    Set<ConstraintViolation<IncomeForm>> violations = validator.validate(invalidIncomeForm);
+    Set<ConstraintViolation<IncomeRequest>> violations = validator.validate(invalidIncomeRequest);
 
     Assertions.assertThat(violations)
         .isNotEmpty()
@@ -116,9 +116,9 @@ public class IncomeFormTests {
     String date = null;
     BigDecimal value = new BigDecimal("2500.00");
 
-    IncomeForm invalidIncomeForm = new IncomeForm(description, date, value);
+    IncomeRequest invalidIncomeRequest = new IncomeRequest(description, date, value);
 
-    Set<ConstraintViolation<IncomeForm>> violations = validator.validate(invalidIncomeForm);
+    Set<ConstraintViolation<IncomeRequest>> violations = validator.validate(invalidIncomeRequest);
 
     Assertions.assertThat(violations)
         .isNotEmpty()
@@ -132,9 +132,9 @@ public class IncomeFormTests {
     String date = "23/01/2022";
     BigDecimal value = null;
 
-    IncomeForm invalidIncomeForm = new IncomeForm(description, date, value);
+    IncomeRequest invalidIncomeRequest = new IncomeRequest(description, date, value);
 
-    Set<ConstraintViolation<IncomeForm>> violations = validator.validate(invalidIncomeForm);
+    Set<ConstraintViolation<IncomeRequest>> violations = validator.validate(invalidIncomeRequest);
 
     Assertions.assertThat(violations)
         .isNotEmpty()

@@ -1,51 +1,44 @@
 package br.com.emendes.financesapi.controller;
 
-import br.com.emendes.financesapi.controller.dto.IncomeDto;
-import br.com.emendes.financesapi.controller.form.IncomeForm;
+import br.com.emendes.financesapi.dto.response.IncomeResponse;
+import br.com.emendes.financesapi.dto.request.IncomeRequest;
 import br.com.emendes.financesapi.controller.openapi.IncomeControllerOpenAPI;
 import br.com.emendes.financesapi.service.IncomeService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import javax.transaction.Transactional;
 import javax.validation.Valid;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 import java.net.URI;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/incomes")
+@RequestMapping(value = "/api/incomes", produces = "application/json;charset=UTF-8")
 public class IncomeController implements IncomeControllerOpenAPI {
 
   private final IncomeService incomeService;
-  private final String headerName = "Content-Type";
-  private final String headerValue = "application/json;charset=UTF-8";
 
   @Override
   @PostMapping
-  public ResponseEntity<IncomeDto> create(@Valid @RequestBody IncomeForm form, UriComponentsBuilder uriBuilder) {
-    IncomeDto incomeDto = incomeService.create(form);
-    URI uri = uriBuilder.path("/despesas/{id}").buildAndExpand(incomeDto.getId()).toUri();
-    return ResponseEntity.created(uri).body(incomeDto);
+  public ResponseEntity<IncomeResponse> create(@Valid @RequestBody IncomeRequest form, UriComponentsBuilder uriBuilder) {
+    IncomeResponse incomeResponse = incomeService.create(form);
+    URI uri = uriBuilder.path("/api/incomes/{id}").buildAndExpand(incomeResponse.getId()).toUri();
+    return ResponseEntity.created(uri).body(incomeResponse);
   }
 
   @Override
   @GetMapping
-  public ResponseEntity<Page<IncomeDto>> read(
+  public ResponseEntity<Page<IncomeResponse>> read(
       @RequestParam(required = false) String description,
-      @PageableDefault(sort = "date", direction = Direction.DESC, page = 0, size = 10) Pageable pageable) {
+      @PageableDefault(sort = "date", direction = Direction.DESC) Pageable pageable) {
 
-    Page<IncomeDto> incomesDto;
+    Page<IncomeResponse> incomesDto;
     if (description == null) {
       incomesDto = incomeService.readAllByUser(pageable);
     } else {
@@ -53,44 +46,41 @@ public class IncomeController implements IncomeControllerOpenAPI {
     }
 
     return ResponseEntity.status(HttpStatus.OK)
-        .header(headerName, headerValue)
         .body(incomesDto);
   }
 
   @Override
   @GetMapping("/{id}")
-  public ResponseEntity<IncomeDto> readById(@PathVariable(name = "id") Long id) {
-    IncomeDto incomeDto = incomeService.readByIdAndUser(id);
+  public ResponseEntity<IncomeResponse> readById(@PathVariable(name = "id") Long id) {
+    IncomeResponse incomeResponse = incomeService.readByIdAndUser(id);
     return ResponseEntity.status(HttpStatus.OK)
-        .header(headerName, headerValue)
-        .body(incomeDto);
+        .body(incomeResponse);
   }
 
   @Override
   @GetMapping("/{year}/{month}")
-  public ResponseEntity<Page<IncomeDto>> readByYearAndMonth(
+  public ResponseEntity<Page<IncomeResponse>> readByYearAndMonth(
       @PathVariable(name = "year") int year,
       @PathVariable(name = "month") int month,
-      @PageableDefault(sort = "date", direction = Direction.DESC, page = 0, size = 10) Pageable pageable) {
-    Page<IncomeDto> incomesDto = incomeService.readByYearAndMonthAndUser(year, month, pageable);
+      @PageableDefault(sort = "date", direction = Direction.DESC) Pageable pageable) {
+    Page<IncomeResponse> incomesDto = incomeService.readByYearAndMonthAndUser(year, month, pageable);
     return ResponseEntity.status(HttpStatus.OK)
-        .header(headerName, headerValue)
         .body(incomesDto);
   }
 
   @Override
   @PutMapping("/{id}")
-  public ResponseEntity<IncomeDto> update(@PathVariable(name = "id") long id, @RequestBody @Valid IncomeForm incomeForm) {
-    IncomeDto incomeDto = incomeService.update(id, incomeForm);
-    return ResponseEntity.status(HttpStatus.OK).header(headerName, headerValue)
-        .body(incomeDto);
+  public ResponseEntity<IncomeResponse> update(@PathVariable(name = "id") long id, @RequestBody @Valid IncomeRequest incomeRequest) {
+    IncomeResponse incomeResponse = incomeService.update(id, incomeRequest);
+    return ResponseEntity.status(HttpStatus.OK)
+        .body(incomeResponse);
   }
 
   @Override
   @DeleteMapping("/{id}")
   public ResponseEntity<Void> delete(@PathVariable(name = "id") Long id) {
     incomeService.deleteById(id);
-    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
   }
 
 }
