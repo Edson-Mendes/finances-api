@@ -32,7 +32,7 @@ class SignupRequestTest {
 
     @Test
     @DisplayName("Validate name must not return violations when name is valid")
-    void validatePassword_MustNotReturnViolations_WhenPasswordIsValid() {
+    void validateName_MustNotReturnViolations_WhenNameIsValid() {
       SignupRequest signupRequest = SignupRequest.builder()
           .name("Lorem Ipsum")
           .email(VALID_EMAIL)

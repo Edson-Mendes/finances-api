@@ -52,7 +52,7 @@ public class Expense {
     this.date = LocalDate.parse(expenseRequest.getDate());
     this.value = expenseRequest.getValue();
     if (expenseRequest.getCategory() != null) {
-      this.category = expenseRequest.getCategory();
+      this.category = Category.valueOf(expenseRequest.getCategory());
     }
   }
 

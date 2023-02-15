@@ -13,7 +13,7 @@ public class ExpenseFormCreator {
     BigDecimal value = new BigDecimal("250.00");
     Category category = Category.TRANSPORTE;
 
-    return new ExpenseRequest(description, date, value, category);
+    return new ExpenseRequest(description, date, value, category.name());
   }
 
   public static ExpenseRequest withBlankDescription() {
@@ -22,7 +22,7 @@ public class ExpenseFormCreator {
     BigDecimal value = new BigDecimal("250.00");
     Category category = Category.TRANSPORTE;
 
-    return new ExpenseRequest(description, date, value, category);
+    return new ExpenseRequest(description, date, value, category.name());
   }
 
   public static ExpenseRequest withDescription(String description) {
@@ -30,6 +30,6 @@ public class ExpenseFormCreator {
     String date = "17/01/2022";
     Category category = Category.TRANSPORTE;
 
-    return new ExpenseRequest(description, date, value, category);
+    return new ExpenseRequest(description, date, value, category.name());
   }
 }
