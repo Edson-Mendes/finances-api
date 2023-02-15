@@ -1,7 +1,7 @@
 package br.com.emendes.financesapi.service.impl;
 
-import br.com.emendes.financesapi.controller.dto.SummaryDto;
-import br.com.emendes.financesapi.controller.dto.ValueByCategoryDto;
+import br.com.emendes.financesapi.dto.response.SummaryResponse;
+import br.com.emendes.financesapi.dto.response.ValueByCategoryResponse;
 import br.com.emendes.financesapi.service.ExpenseService;
 import br.com.emendes.financesapi.service.IncomeService;
 import br.com.emendes.financesapi.service.SummaryService;
@@ -21,17 +21,18 @@ public class SummaryServiceImpl implements SummaryService {
   private final IncomeService incomeService;
 
   @Override
-  public SummaryDto monthSummary(int year, int month) {
+  public SummaryResponse monthSummary(int year, int month) {
     BigDecimal incomeTotalValue = incomeService.getTotalValueByMonthAndYearAndUserId(year, month);
-    List<ValueByCategoryDto> valuesByCategory = expenseService.getValuesByCategoryOnMonthAndYearByUser(year, month);
+    List<ValueByCategoryResponse> valuesByCategory = expenseService.getValuesByCategoryOnMonthAndYearByUser(year, month);
 
     if (incomeTotalValue.equals(BigDecimal.ZERO) && valuesByCategory.isEmpty()) {
-      throw new NoResultException(String.format("Não há receitas e despesas para %s %d", Month.of(month), year));
+      // TODO: Substituir essa Exception!
+      throw new NoResultException(String.format("Has no expenses or incomes for %s %d", Month.of(month), year));
     }
     BigDecimal expenseTotalValue = valuesByCategory
-        .stream().map(ValueByCategoryDto::getValue).reduce(BigDecimal.ZERO, BigDecimal::add);
+        .stream().map(ValueByCategoryResponse::getValue).reduce(BigDecimal.ZERO, BigDecimal::add);
 
-    return new SummaryDto(incomeTotalValue, expenseTotalValue, valuesByCategory);
+    return new SummaryResponse(incomeTotalValue, expenseTotalValue, valuesByCategory);
   }
 
 }

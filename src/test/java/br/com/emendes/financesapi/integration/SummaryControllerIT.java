@@ -1,6 +1,6 @@
 package br.com.emendes.financesapi.integration;
 
-import br.com.emendes.financesapi.controller.dto.SummaryDto;
+import br.com.emendes.financesapi.dto.response.SummaryResponse;
 import br.com.emendes.financesapi.dto.response.TokenResponse;
 import br.com.emendes.financesapi.controller.dto.error.ErrorDto;
 import br.com.emendes.financesapi.dto.request.SignInRequest;
@@ -75,11 +75,11 @@ class SummaryControllerIT {
 
     HttpEntity<Void> requestEntity = new HttpEntity<>(HEADERS);
 
-    ResponseEntity<SummaryDto> response = testRestTemplate.exchange(
+    ResponseEntity<SummaryResponse> response = testRestTemplate.exchange(
         BASE_URI+"/2022/01", HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {});
 
     HttpStatus statusCode = response.getStatusCode();
-    SummaryDto responseBody = response.getBody();
+    SummaryResponse responseBody = response.getBody();
 
     Assertions.assertThat(statusCode).isEqualByComparingTo(HttpStatus.OK);
     Assertions.assertThat(responseBody).isNotNull();

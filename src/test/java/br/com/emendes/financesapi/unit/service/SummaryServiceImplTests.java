@@ -1,7 +1,7 @@
 package br.com.emendes.financesapi.unit.service;
 
-import br.com.emendes.financesapi.controller.dto.SummaryDto;
-import br.com.emendes.financesapi.controller.dto.ValueByCategoryDto;
+import br.com.emendes.financesapi.dto.response.SummaryResponse;
+import br.com.emendes.financesapi.dto.response.ValueByCategoryResponse;
 import br.com.emendes.financesapi.model.Category;
 import br.com.emendes.financesapi.service.impl.ExpenseServiceImpl;
 import br.com.emendes.financesapi.service.impl.IncomeServiceImpl;
@@ -36,11 +36,11 @@ class SummaryServiceImplTests {
   @BeforeEach
   public void setUp() {
     BigDecimal incomeTotalValue = new BigDecimal("2500.00");
-    ValueByCategoryDto valueMoradia = new ValueByCategoryDto(Category.MORADIA, new BigDecimal("1000.00"));
-    ValueByCategoryDto valueAlimentacao = new ValueByCategoryDto(Category.ALIMENTACAO, new BigDecimal("700.00"));
-    ValueByCategoryDto valueTransporte = new ValueByCategoryDto(Category.TRANSPORTE, new BigDecimal("550.00"));
+    ValueByCategoryResponse valueMoradia = new ValueByCategoryResponse(Category.MORADIA, new BigDecimal("1000.00"));
+    ValueByCategoryResponse valueAlimentacao = new ValueByCategoryResponse(Category.ALIMENTACAO, new BigDecimal("700.00"));
+    ValueByCategoryResponse valueTransporte = new ValueByCategoryResponse(Category.TRANSPORTE, new BigDecimal("550.00"));
 
-    List<ValueByCategoryDto> valuesByCategory = List.of(valueMoradia, valueAlimentacao, valueTransporte);
+    List<ValueByCategoryResponse> valuesByCategory = List.of(valueMoradia, valueAlimentacao, valueTransporte);
 
     BDDMockito.when(incomeServiceImplMock.getTotalValueByMonthAndYearAndUserId(2022, 1))
         .thenReturn(incomeTotalValue);
@@ -69,13 +69,13 @@ class SummaryServiceImplTests {
     int year = 2022;
     int month = 1;
 
-    SummaryDto summaryDto = summaryServiceImpl.monthSummary(year, month);
+    SummaryResponse summaryResponse = summaryServiceImpl.monthSummary(year, month);
 
-    Assertions.assertThat(summaryDto).isNotNull();
-    Assertions.assertThat(summaryDto.getIncomeTotalValue()).isEqualTo(new BigDecimal("2500.00"));
-    Assertions.assertThat(summaryDto.getExpenseTotalValue()).isEqualTo(new BigDecimal("2250.00"));
-    Assertions.assertThat(summaryDto.getFinalBalance()).isEqualTo(new BigDecimal("250.00"));
-    Assertions.assertThat(summaryDto.getValuesByCategory()).hasSize(3);
+    Assertions.assertThat(summaryResponse).isNotNull();
+    Assertions.assertThat(summaryResponse.getIncomeTotalValue()).isEqualTo(new BigDecimal("2500.00"));
+    Assertions.assertThat(summaryResponse.getExpenseTotalValue()).isEqualTo(new BigDecimal("2250.00"));
+    Assertions.assertThat(summaryResponse.getFinalBalance()).isEqualTo(new BigDecimal("250.00"));
+    Assertions.assertThat(summaryResponse.getValuesByCategory()).hasSize(3);
   }
 
   @Test
@@ -84,13 +84,13 @@ class SummaryServiceImplTests {
     int year = 2022;
     int month = 2;
 
-    SummaryDto summaryDto = summaryServiceImpl.monthSummary(year, month);
+    SummaryResponse summaryResponse = summaryServiceImpl.monthSummary(year, month);
 
-    Assertions.assertThat(summaryDto).isNotNull();
-    Assertions.assertThat(summaryDto.getIncomeTotalValue()).isEqualTo(new BigDecimal("2500.00"));
-    Assertions.assertThat(summaryDto.getExpenseTotalValue()).isEqualTo(BigDecimal.ZERO);
-    Assertions.assertThat(summaryDto.getFinalBalance()).isEqualTo(new BigDecimal("2500.00"));
-    Assertions.assertThat(summaryDto.getValuesByCategory()).isEmpty();
+    Assertions.assertThat(summaryResponse).isNotNull();
+    Assertions.assertThat(summaryResponse.getIncomeTotalValue()).isEqualTo(new BigDecimal("2500.00"));
+    Assertions.assertThat(summaryResponse.getExpenseTotalValue()).isEqualTo(BigDecimal.ZERO);
+    Assertions.assertThat(summaryResponse.getFinalBalance()).isEqualTo(new BigDecimal("2500.00"));
+    Assertions.assertThat(summaryResponse.getValuesByCategory()).isEmpty();
   }
 
   @Test
@@ -99,13 +99,13 @@ class SummaryServiceImplTests {
     int year = 2022;
     int month = 3;
 
-    SummaryDto summaryDto = summaryServiceImpl.monthSummary(year, month);
+    SummaryResponse summaryResponse = summaryServiceImpl.monthSummary(year, month);
 
-    Assertions.assertThat(summaryDto).isNotNull();
-    Assertions.assertThat(summaryDto.getIncomeTotalValue()).isEqualTo(BigDecimal.ZERO);
-    Assertions.assertThat(summaryDto.getExpenseTotalValue()).isEqualTo(new BigDecimal("2250.00"));
-    Assertions.assertThat(summaryDto.getFinalBalance()).isEqualTo(new BigDecimal("-2250.00"));
-    Assertions.assertThat(summaryDto.getValuesByCategory()).hasSize(3);
+    Assertions.assertThat(summaryResponse).isNotNull();
+    Assertions.assertThat(summaryResponse.getIncomeTotalValue()).isEqualTo(BigDecimal.ZERO);
+    Assertions.assertThat(summaryResponse.getExpenseTotalValue()).isEqualTo(new BigDecimal("2250.00"));
+    Assertions.assertThat(summaryResponse.getFinalBalance()).isEqualTo(new BigDecimal("-2250.00"));
+    Assertions.assertThat(summaryResponse.getValuesByCategory()).hasSize(3);
   }
 
   @Test

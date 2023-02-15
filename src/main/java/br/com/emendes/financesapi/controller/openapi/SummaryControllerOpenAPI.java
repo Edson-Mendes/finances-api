@@ -1,7 +1,7 @@
 package br.com.emendes.financesapi.controller.openapi;
 
-import br.com.emendes.financesapi.controller.dto.SummaryDto;
 import br.com.emendes.financesapi.controller.dto.error.ErrorDto;
+import br.com.emendes.financesapi.dto.response.SummaryResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -28,7 +28,7 @@ public interface SummaryControllerOpenAPI {
           description = "Resumo não encontrado, usuário não possui receita ou despesas para o dado mês e ano",
           content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDto.class))}),
   })
-  // TODO: Adicionar essa validação na service.
-  ResponseEntity<SummaryDto> monthSummary(@Min(1970) @Max(2099) int year, @Min(1) @Max(12) int month);
+    // TODO: Adicionar essa validação na service.
+  ResponseEntity<SummaryResponse> monthSummary(@Min(1970) @Max(2099) int year, @Min(1) @Max(12) int month);
 
 }

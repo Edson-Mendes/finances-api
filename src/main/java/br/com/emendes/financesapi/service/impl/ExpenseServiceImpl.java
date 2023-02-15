@@ -1,6 +1,6 @@
 package br.com.emendes.financesapi.service.impl;
 
-import br.com.emendes.financesapi.controller.dto.ValueByCategoryDto;
+import br.com.emendes.financesapi.dto.response.ValueByCategoryResponse;
 import br.com.emendes.financesapi.dto.request.ExpenseRequest;
 import br.com.emendes.financesapi.dto.response.ExpenseResponse;
 import br.com.emendes.financesapi.model.entity.Expense;
@@ -89,7 +89,7 @@ public class ExpenseServiceImpl implements ExpenseService {
   }
 
   @Override
-  public List<ValueByCategoryDto> getValuesByCategoryOnMonthAndYearByUser(Integer year, Integer month) {
+  public List<ValueByCategoryResponse> getValuesByCategoryOnMonthAndYearByUser(Integer year, Integer month) {
     return expenseRepository.getValueByCategoryAndMonthAndYearAndUser(year, month);
   }
 

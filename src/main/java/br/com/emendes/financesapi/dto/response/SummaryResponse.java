@@ -1,4 +1,4 @@
-package br.com.emendes.financesapi.controller.dto;
+package br.com.emendes.financesapi.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
@@ -14,7 +14,7 @@ import java.util.List;
 @EqualsAndHashCode
 @ToString
 @Builder
-public class SummaryDto {
+public class SummaryResponse {
 
   @Schema(example = "5000.00")
   private BigDecimal incomeTotalValue = BigDecimal.ZERO;
@@ -25,10 +25,10 @@ public class SummaryDto {
   @Schema(example = "1300.00")
   private BigDecimal finalBalance = BigDecimal.ZERO;
 
-  private List<ValueByCategoryDto> valuesByCategory = new ArrayList<>();
+  private List<ValueByCategoryResponse> valuesByCategory = new ArrayList<>();
 
-  public SummaryDto(BigDecimal incomeTotalValue, BigDecimal expenseTotalValue,
-                    List<ValueByCategoryDto> valuesByCategory) {
+  public SummaryResponse(BigDecimal incomeTotalValue, BigDecimal expenseTotalValue,
+                         List<ValueByCategoryResponse> valuesByCategory) {
     this.incomeTotalValue = incomeTotalValue;
     this.expenseTotalValue = expenseTotalValue;
     this.finalBalance = incomeTotalValue.subtract(expenseTotalValue);

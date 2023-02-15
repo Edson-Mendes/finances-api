@@ -1,9 +1,9 @@
 package br.com.emendes.financesapi.service;
 
-import br.com.emendes.financesapi.controller.dto.SummaryDto;
+import br.com.emendes.financesapi.dto.response.SummaryResponse;
 
 public interface SummaryService {
 
-  SummaryDto monthSummary(int year, int month);
+  SummaryResponse monthSummary(int year, int month);
 
 }

@@ -1,6 +1,6 @@
 package br.com.emendes.financesapi.repository;
 
-import br.com.emendes.financesapi.controller.dto.ValueByCategoryDto;
+import br.com.emendes.financesapi.dto.response.ValueByCategoryResponse;
 import br.com.emendes.financesapi.model.entity.Expense;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -55,5 +55,5 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
       "WHERE YEAR(e.date) = :year AND MONTH(e.date) = :month " +
       "AND e.user.id = ?#{ principal?.id } " +
       "GROUP BY e.category")
-  List<ValueByCategoryDto> getValueByCategoryAndMonthAndYearAndUser(@Param("year") int year, @Param("month") int month);
+  List<ValueByCategoryResponse> getValueByCategoryAndMonthAndYearAndUser(@Param("year") int year, @Param("month") int month);
 }
