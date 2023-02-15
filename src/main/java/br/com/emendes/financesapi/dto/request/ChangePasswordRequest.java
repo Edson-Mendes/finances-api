@@ -1,4 +1,4 @@
-package br.com.emendes.financesapi.controller.form;
+package br.com.emendes.financesapi.dto.request;
 
 import br.com.emendes.financesapi.validation.annotation.ValidPassword;
 import io.swagger.v3.oas.annotations.media.Schema;

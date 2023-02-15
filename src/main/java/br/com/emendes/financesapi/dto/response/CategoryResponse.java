@@ -1,4 +1,4 @@
-package br.com.emendes.financesapi.controller.dto;
+package br.com.emendes.financesapi.dto.response;
 
 import lombok.*;
 

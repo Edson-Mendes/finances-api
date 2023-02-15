@@ -5,7 +5,7 @@ import java.util.Optional;
 
 import javax.persistence.NoResultException;
 
-import br.com.emendes.financesapi.controller.form.ChangePasswordRequest;
+import br.com.emendes.financesapi.dto.request.ChangePasswordRequest;
 import br.com.emendes.financesapi.service.impl.UserServiceImpl;
 import br.com.emendes.financesapi.validation.exception.WrongPasswordException;
 import org.assertj.core.api.Assertions;

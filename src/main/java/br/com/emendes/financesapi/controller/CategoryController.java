@@ -1,6 +1,6 @@
 package br.com.emendes.financesapi.controller;
 
-import br.com.emendes.financesapi.controller.dto.CategoryResponse;
+import br.com.emendes.financesapi.dto.response.CategoryResponse;
 import br.com.emendes.financesapi.controller.openapi.CategoryControllerOpenAPI;
 import br.com.emendes.financesapi.service.CategoryService;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +14,6 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/categories")
-// TODO: Criar testes automatizados.
 public class CategoryController implements CategoryControllerOpenAPI {
 
   private final CategoryService categoryService;

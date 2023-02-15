@@ -10,7 +10,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import br.com.emendes.financesapi.controller.form.ChangePasswordRequest;
+import br.com.emendes.financesapi.dto.request.ChangePasswordRequest;
 
 @DisplayName("Tests for ChangePasswordForm")
 class ChangePasswordRequestTests {

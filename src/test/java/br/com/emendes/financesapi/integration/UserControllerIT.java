@@ -4,7 +4,7 @@ import br.com.emendes.financesapi.dto.response.TokenResponse;
 import br.com.emendes.financesapi.dto.response.UserResponse;
 import br.com.emendes.financesapi.controller.dto.error.ErrorDto;
 import br.com.emendes.financesapi.controller.dto.error.FormErrorDto;
-import br.com.emendes.financesapi.controller.form.ChangePasswordRequest;
+import br.com.emendes.financesapi.dto.request.ChangePasswordRequest;
 import br.com.emendes.financesapi.dto.request.SignInRequest;
 import br.com.emendes.financesapi.model.entity.User;
 import br.com.emendes.financesapi.repository.UserRepository;

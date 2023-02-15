@@ -1,6 +1,6 @@
 package br.com.emendes.financesapi.controller.openapi;
 
-import br.com.emendes.financesapi.controller.dto.CategoryResponse;
+import br.com.emendes.financesapi.dto.response.CategoryResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

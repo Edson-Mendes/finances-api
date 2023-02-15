@@ -1,6 +1,6 @@
 package br.com.emendes.financesapi.controller;
 
-import br.com.emendes.financesapi.controller.form.ChangePasswordRequest;
+import br.com.emendes.financesapi.dto.request.ChangePasswordRequest;
 import br.com.emendes.financesapi.controller.openapi.UserControllerOpenAPI;
 import br.com.emendes.financesapi.dto.response.UserResponse;
 import br.com.emendes.financesapi.service.UserService;

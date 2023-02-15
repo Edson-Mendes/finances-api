@@ -1,6 +1,6 @@
 package br.com.emendes.financesapi.service;
 
-import br.com.emendes.financesapi.controller.dto.CategoryResponse;
+import br.com.emendes.financesapi.dto.response.CategoryResponse;
 
 import java.util.List;
 

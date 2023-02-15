@@ -1,6 +1,6 @@
 package br.com.emendes.financesapi.service.impl;
 
-import br.com.emendes.financesapi.controller.dto.CategoryResponse;
+import br.com.emendes.financesapi.dto.response.CategoryResponse;
 import br.com.emendes.financesapi.model.Category;
 import br.com.emendes.financesapi.service.CategoryService;
 import org.springframework.stereotype.Service;
