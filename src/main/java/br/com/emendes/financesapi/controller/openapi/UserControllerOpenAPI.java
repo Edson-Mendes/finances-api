@@ -1,7 +1,7 @@
 package br.com.emendes.financesapi.controller.openapi;
 
 import br.com.emendes.financesapi.dto.response.UserResponse;
-import br.com.emendes.financesapi.controller.form.ChangePasswordForm;
+import br.com.emendes.financesapi.controller.form.ChangePasswordRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -42,6 +42,6 @@ public interface UserControllerOpenAPI {
       @ApiResponse(responseCode = "400", description = "Algum parâmetro do corpo da requisição inválido"),
       @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
   })
-  ResponseEntity<Void> changePassword(ChangePasswordForm changeForm);
+  ResponseEntity<Void> changePassword(ChangePasswordRequest changeForm);
 
 }

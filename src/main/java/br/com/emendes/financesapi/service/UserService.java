@@ -1,7 +1,7 @@
 package br.com.emendes.financesapi.service;
 
 import br.com.emendes.financesapi.dto.response.UserResponse;
-import br.com.emendes.financesapi.controller.form.ChangePasswordForm;
+import br.com.emendes.financesapi.controller.form.ChangePasswordRequest;
 import br.com.emendes.financesapi.dto.request.SignupRequest;
 import br.com.emendes.financesapi.model.entity.User;
 import org.springframework.data.domain.Page;
@@ -17,6 +17,6 @@ public interface UserService {
 
   void delete(Long id);
 
-  void changePassword(ChangePasswordForm changeForm);
+  void changePassword(ChangePasswordRequest changeForm);
 
 }

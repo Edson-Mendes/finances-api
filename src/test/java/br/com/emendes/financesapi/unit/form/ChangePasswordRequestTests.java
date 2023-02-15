@@ -10,10 +10,10 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import br.com.emendes.financesapi.controller.form.ChangePasswordForm;
+import br.com.emendes.financesapi.controller.form.ChangePasswordRequest;
 
 @DisplayName("Tests for ChangePasswordForm")
-class ChangePasswordFormTests {
+class ChangePasswordRequestTests {
 
   private final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
@@ -23,9 +23,9 @@ class ChangePasswordFormTests {
     String oldPassword = "123456";
     String newPassword = "12345678oo";
     String confirm = "12345678oo";
-    ChangePasswordForm validChangePasswordForm = new ChangePasswordForm(oldPassword, newPassword, confirm);
+    ChangePasswordRequest validChangePasswordRequest = new ChangePasswordRequest(oldPassword, newPassword, confirm);
 
-    Set<ConstraintViolation<ChangePasswordForm>> violations = validator.validate(validChangePasswordForm);
+    Set<ConstraintViolation<ChangePasswordRequest>> violations = validator.validate(validChangePasswordRequest);
 
     Assertions.assertThat(violations).isEmpty();
   }
@@ -36,9 +36,9 @@ class ChangePasswordFormTests {
     String oldPassword = "123456";
     String newPassword = null;
     String confirm = "12345678oo";
-    ChangePasswordForm invalidChangePasswordForm = new ChangePasswordForm(oldPassword, newPassword, confirm);
+    ChangePasswordRequest invalidChangePasswordRequest = new ChangePasswordRequest(oldPassword, newPassword, confirm);
 
-    Set<ConstraintViolation<ChangePasswordForm>> violations = validator.validate(invalidChangePasswordForm);
+    Set<ConstraintViolation<ChangePasswordRequest>> violations = validator.validate(invalidChangePasswordRequest);
 
     Assertions.assertThat(violations)
         .isNotEmpty()
@@ -51,9 +51,9 @@ class ChangePasswordFormTests {
     String oldPassword = "123456";
     String newPassword = "12345678oo";
     String confirm = null;
-    ChangePasswordForm invalidChangePasswordForm = new ChangePasswordForm(oldPassword, newPassword, confirm);
+    ChangePasswordRequest invalidChangePasswordRequest = new ChangePasswordRequest(oldPassword, newPassword, confirm);
 
-    Set<ConstraintViolation<ChangePasswordForm>> violations = validator.validate(invalidChangePasswordForm);
+    Set<ConstraintViolation<ChangePasswordRequest>> violations = validator.validate(invalidChangePasswordRequest);
 
     Assertions.assertThat(violations)
         .isNotEmpty()
@@ -66,9 +66,9 @@ class ChangePasswordFormTests {
     String oldPassword = "";
     String newPassword = "12345678oo";
     String confirm = "12345678oo";
-    ChangePasswordForm invalidChangePasswordForm = new ChangePasswordForm(oldPassword, newPassword, confirm);
+    ChangePasswordRequest invalidChangePasswordRequest = new ChangePasswordRequest(oldPassword, newPassword, confirm);
 
-    Set<ConstraintViolation<ChangePasswordForm>> violations = validator.validate(invalidChangePasswordForm);
+    Set<ConstraintViolation<ChangePasswordRequest>> violations = validator.validate(invalidChangePasswordRequest);
 
     Assertions.assertThat(violations)
         .isNotEmpty()
@@ -81,9 +81,9 @@ class ChangePasswordFormTests {
     String oldPassword = null;
     String newPassword = null;
     String confirm = null;
-    ChangePasswordForm invalidChangePasswordForm = new ChangePasswordForm(oldPassword, newPassword, confirm);
+    ChangePasswordRequest invalidChangePasswordRequest = new ChangePasswordRequest(oldPassword, newPassword, confirm);
 
-    Set<ConstraintViolation<ChangePasswordForm>> violations = validator.validate(invalidChangePasswordForm);
+    Set<ConstraintViolation<ChangePasswordRequest>> violations = validator.validate(invalidChangePasswordRequest);
 
     Assertions.assertThat(violations)
         .isNotEmpty()

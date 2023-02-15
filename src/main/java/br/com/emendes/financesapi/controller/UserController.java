@@ -1,8 +1,8 @@
 package br.com.emendes.financesapi.controller;
 
-import br.com.emendes.financesapi.dto.response.UserResponse;
-import br.com.emendes.financesapi.controller.form.ChangePasswordForm;
+import br.com.emendes.financesapi.controller.form.ChangePasswordRequest;
 import br.com.emendes.financesapi.controller.openapi.UserControllerOpenAPI;
+import br.com.emendes.financesapi.dto.response.UserResponse;
 import br.com.emendes.financesapi.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.api.annotations.ParameterObject;
@@ -28,8 +28,7 @@ public class UserController implements UserControllerOpenAPI {
   @GetMapping
   public ResponseEntity<Page<UserResponse>> readAll(
       @ParameterObject @PageableDefault(sort = "id", direction = Direction.ASC) Pageable pageable) {
-    Page<UserResponse> usersDto = userService.read(pageable);
-    return ResponseEntity.ok(usersDto);
+    return ResponseEntity.ok(userService.read(pageable));
   }
 
   @Override
@@ -42,8 +41,8 @@ public class UserController implements UserControllerOpenAPI {
   @Override
   @PutMapping("/password")
   @Transactional
-  public ResponseEntity<Void> changePassword(@Valid @RequestBody ChangePasswordForm changeForm) {
-    userService.changePassword(changeForm);
+  public ResponseEntity<Void> changePassword(@Valid @RequestBody ChangePasswordRequest changeRequest) {
+    userService.changePassword(changeRequest);
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
 

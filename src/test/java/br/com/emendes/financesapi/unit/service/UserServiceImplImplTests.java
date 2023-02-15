@@ -5,7 +5,7 @@ import java.util.Optional;
 
 import javax.persistence.NoResultException;
 
-import br.com.emendes.financesapi.controller.form.ChangePasswordForm;
+import br.com.emendes.financesapi.controller.form.ChangePasswordRequest;
 import br.com.emendes.financesapi.service.impl.UserServiceImpl;
 import br.com.emendes.financesapi.validation.exception.WrongPasswordException;
 import org.assertj.core.api.Assertions;
@@ -155,11 +155,11 @@ class UserServiceImplImplTests {
   @DisplayName("changePassword must throws NoResultException when not found current user")
   void changePassword_ThrowsNoResultException_WhenNotFoundCurrentUser(){
     BDDMockito.when(userRepositoryMock.findCurrentUser()).thenReturn(Optional.empty());
-    ChangePasswordForm changePasswordForm = new ChangePasswordForm(
+    ChangePasswordRequest changePasswordRequest = new ChangePasswordRequest(
         "123456", "1234567890", "1234567890");
 
     Assertions.assertThatExceptionOfType(NoResultException.class)
-        .isThrownBy(() -> userServiceImpl.changePassword(changePasswordForm))
+        .isThrownBy(() -> userServiceImpl.changePassword(changePasswordRequest))
         .withMessageContaining("Não foi possível encontrar o usuário atual");
   }
 
@@ -168,11 +168,11 @@ class UserServiceImplImplTests {
   void changePassword_ThrowsPasswordsDoNotMatchException_WhenPasswordsDontMatch(){
     String newPassword = "1234567890";
     String confirmWhichDontMatch = "123456789";
-    ChangePasswordForm changePasswordForm = new ChangePasswordForm(
+    ChangePasswordRequest changePasswordRequest = new ChangePasswordRequest(
         "123456", newPassword, confirmWhichDontMatch);
 
     Assertions.assertThatExceptionOfType(PasswordsDoNotMatchException.class)
-        .isThrownBy(() -> userServiceImpl.changePassword(changePasswordForm))
+        .isThrownBy(() -> userServiceImpl.changePassword(changePasswordRequest))
         .withMessageContaining("as senhas não correspondem!");
   }
 
@@ -180,11 +180,11 @@ class UserServiceImplImplTests {
   @DisplayName("changePassword must throws WrongPasswordException when password is wrong")
   void changePassword_ThrowsWrongPasswordException_WhenPasswordIsWrong(){
     String oldPassword = "1234";
-    ChangePasswordForm changePasswordForm = new ChangePasswordForm(
+    ChangePasswordRequest changePasswordRequest = new ChangePasswordRequest(
         oldPassword, "1234567890", "1234567890");
 
     Assertions.assertThatExceptionOfType(WrongPasswordException.class)
-        .isThrownBy(() -> userServiceImpl.changePassword(changePasswordForm))
+        .isThrownBy(() -> userServiceImpl.changePassword(changePasswordRequest))
         .withMessageContaining("Senha incorreta");
   }
 }

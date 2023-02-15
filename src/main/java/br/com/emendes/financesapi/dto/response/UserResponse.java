@@ -29,6 +29,7 @@ public class UserResponse {
     this.email = user.getEmail();
   }
 
+  // Substituir isso por um mapper.
   public static Page<UserResponse> convert(Page<User> users) {
     return users.map(UserResponse::new);
   }

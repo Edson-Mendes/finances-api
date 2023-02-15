@@ -314,8 +314,8 @@ class IncomeControllerTest {
   class DeleteEndpoint {
 
     @Test
-    @DisplayName("delete must return status 200 when delete successfully")
-    void delete_MustReturnStatus200_WhenDeleteSuccessfully() throws Exception {
+    @DisplayName("delete must return status 204 when delete successfully")
+    void delete_MustReturnStatus204_WhenDeleteSuccessfully() throws Exception {
       BDDMockito.doNothing().when(incomeServiceMock).deleteById(50000L);
 
       mockMvc.perform(delete(INCOME_BASE_URI + "/50000"))

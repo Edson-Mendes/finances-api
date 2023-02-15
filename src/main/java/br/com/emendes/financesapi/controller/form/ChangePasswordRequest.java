@@ -12,7 +12,7 @@ import javax.validation.constraints.NotBlank;
 @Getter
 @Setter
 @Builder
-public class ChangePasswordForm {
+public class ChangePasswordRequest {
 
   @Schema(example = "myOldPassword1234")
   @NotBlank

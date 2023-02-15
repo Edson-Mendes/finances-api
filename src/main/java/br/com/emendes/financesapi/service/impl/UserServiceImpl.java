@@ -1,6 +1,6 @@
 package br.com.emendes.financesapi.service.impl;
 
-import br.com.emendes.financesapi.controller.form.ChangePasswordForm;
+import br.com.emendes.financesapi.controller.form.ChangePasswordRequest;
 import br.com.emendes.financesapi.dto.request.SignupRequest;
 import br.com.emendes.financesapi.dto.response.UserResponse;
 import br.com.emendes.financesapi.model.entity.User;
@@ -54,22 +54,22 @@ public class UserServiceImpl implements UserService {
     try {
       userRepository.deleteById(id);
     } catch (EmptyResultDataAccessException e) {
-      throw new NoResultException("não existe usuário com id: " + id);
+      throw new NoResultException("User not found with id " + id);
     }
   }
 
   @Override
-  public void changePassword(ChangePasswordForm changeForm) {
-    if (changeForm.passwordMatch()) {
+  public void changePassword(ChangePasswordRequest changeRequest) {
+    if (changeRequest.passwordMatch()) {
       User user = userRepository.findCurrentUser().orElseThrow(
-          () -> new NoResultException("Não foi possível encontrar o usuário atual"));
-      if (passwordsMatch(changeForm.getOldPassword(), user.getPassword())) {
-        user.setPassword(changeForm.generateNewPasswordEncoded());
+          () -> new NoResultException("Current user not found"));
+      if (passwordsMatch(changeRequest.getOldPassword(), user.getPassword())) {
+        user.setPassword(changeRequest.generateNewPasswordEncoded());
       } else {
-        throw new WrongPasswordException("Senha incorreta");
+        throw new WrongPasswordException("Wrong password");
       }
     } else {
-      throw new PasswordsDoNotMatchException("as senhas não correspondem!");
+      throw new PasswordsDoNotMatchException("Passwords do not match");
     }
   }
 
