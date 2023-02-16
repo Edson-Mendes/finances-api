@@ -7,10 +7,7 @@ import br.com.emendes.financesapi.validation.annotation.DateValidation;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
-import javax.validation.constraints.Digits;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
+import javax.validation.constraints.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
@@ -22,18 +19,20 @@ import java.time.LocalDate;
 public class IncomeRequest {
 
   @Schema(example = "Salário")
-  @NotBlank
+  @NotBlank(message = "description must not be null or blank")
+  @Size(max = 255, message = "description must contain max {max} characters")
   private String description;
 
   @Schema(pattern = "yyyy-MM-dd", type = "string", example = "2023-01-04")
-  @NotNull
+  @NotNull(message = "date must not be null")
   @DateValidation
   private String date;
 
   @Schema(example = "3240.59")
-  @NotNull
-  @Positive
-  @Digits(integer = 6, fraction = 2)
+  @NotNull(message = "value must not be null")
+  @Positive(message = "value must be positive")
+  @Digits(integer = 6, fraction = 2,
+      message = "Integer part must be max {integer} digits and fraction part must be max {fraction} digits")
   private BigDecimal value;
 
   // FIXME: Usar um mapper para isso.
