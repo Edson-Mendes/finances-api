@@ -1,11 +1,12 @@
 package br.com.emendes.financesapi.dto.request;
 
-import br.com.emendes.financesapi.validation.annotation.ValidPassword;
+import br.com.emendes.financesapi.validation.annotation.NoWhiteSpace;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -15,15 +16,16 @@ import javax.validation.constraints.NotBlank;
 public class ChangePasswordRequest {
 
   @Schema(example = "myOldPassword1234")
-  @NotBlank
+  @NotBlank(message = "oldPassword must not be null or blank")
   private String oldPassword;
   @Schema(example = "myNewPassword1234")
-  @ValidPassword
-  @NotBlank
+  @NoWhiteSpace(message = "newPassword must not contains whitespace, tab or newline")
+  @NotBlank(message = "newPassword must not be null or blank")
+  @Size(min = 8, max = 30, message = "must contain between {min} and {max} characters")
   private String newPassword;
 
   @Schema(example = "myNewPassword1234")
-  @NotBlank
+  @NotBlank(message = "confirm must not be null or blank")
   private String confirm;
 
   public boolean passwordMatch() {
