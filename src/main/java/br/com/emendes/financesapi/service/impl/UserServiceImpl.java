@@ -6,6 +6,7 @@ import br.com.emendes.financesapi.dto.response.UserResponse;
 import br.com.emendes.financesapi.model.entity.User;
 import br.com.emendes.financesapi.repository.UserRepository;
 import br.com.emendes.financesapi.service.UserService;
+import br.com.emendes.financesapi.util.AuthenticationFacade;
 import br.com.emendes.financesapi.validation.exception.DataConflictException;
 import br.com.emendes.financesapi.validation.exception.PasswordsDoNotMatchException;
 import br.com.emendes.financesapi.validation.exception.WrongPasswordException;
@@ -14,7 +15,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.NoResultException;
@@ -24,11 +25,14 @@ import javax.persistence.NoResultException;
 public class UserServiceImpl implements UserService {
 
   private final UserRepository userRepository;
+  private final PasswordEncoder passwordEncoder;
+  private final AuthenticationFacade authenticationFacade;
 
   @Override
   public UserResponse createAccount(SignupRequest signupRequest) {
     if (signupRequest.passwordMatch()) {
       User user = signupRequest.toUser();
+      user.setPassword(passwordEncoder.encode(signupRequest.getPassword()));
       try {
         return new UserResponse(userRepository.save(user));
       } catch (DataIntegrityViolationException e) {
@@ -54,27 +58,27 @@ public class UserServiceImpl implements UserService {
     try {
       userRepository.deleteById(id);
     } catch (EmptyResultDataAccessException e) {
+      // TODO: Substituir por outro exception
       throw new NoResultException("User not found with id " + id);
     }
   }
 
   @Override
   public void changePassword(ChangePasswordRequest changeRequest) {
-    if (changeRequest.passwordMatch()) {
-      User user = userRepository.findCurrentUser().orElseThrow(
-          () -> new NoResultException("Current user not found"));
-      if (passwordsMatch(changeRequest.getOldPassword(), user.getPassword())) {
-        user.setPassword(changeRequest.generateNewPasswordEncoded());
-      } else {
-        throw new WrongPasswordException("Wrong password");
+    User currentUser = (User) authenticationFacade.getAuthentication().getPrincipal();
+    if (passwordsMatch(changeRequest.getOldPassword(), currentUser.getPassword())) {
+      if (changeRequest.passwordMatch()) {
+        currentUser.setPassword(changeRequest.generateNewPasswordEncoded());
+        userRepository.save(currentUser);
+        return;
       }
-    } else {
       throw new PasswordsDoNotMatchException("Passwords do not match");
     }
+    throw new WrongPasswordException("Wrong password");
   }
 
   private boolean passwordsMatch(String password, String encodedPassword) {
-    return new BCryptPasswordEncoder().matches(password, encodedPassword);
+    return passwordEncoder.matches(password, encodedPassword);
   }
 
 }

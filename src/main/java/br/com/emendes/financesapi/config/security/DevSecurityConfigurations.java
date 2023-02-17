@@ -16,7 +16,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.data.repository.query.SecurityEvaluationContextExtension;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -29,12 +29,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class DevSecurityConfigurations extends WebSecurityConfigurerAdapter {
 
   private static final String ROLE_ADMIN = "ADMIN";
-
   private final UserDetailsService userDetailsService;
-
   private final TokenService tokenService;
-
   private final UserService userService;
+  private final PasswordEncoder passwordEncoder;
 
   @Override
   @Bean
@@ -45,7 +43,7 @@ public class DevSecurityConfigurations extends WebSecurityConfigurerAdapter {
   // Configurações de autenticação
   @Override
   protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-    auth.userDetailsService(userDetailsService).passwordEncoder(new BCryptPasswordEncoder());
+    auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
   }
 
   // Configurações de autorização
