@@ -21,7 +21,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     Optional<User> user = userRepository.findByEmail(email);
 
     return user.orElseThrow(() -> {
-      throw new UsernameNotFoundException("Bad Credentials");
+      throw new UsernameNotFoundException("User not found");
     });
   }
 

@@ -1,10 +1,10 @@
 package br.com.emendes.financesapi.unit.service;
 
-import java.util.Optional;
-
 import br.com.emendes.financesapi.config.security.service.CustomUserDetailsService;
+import br.com.emendes.financesapi.model.entity.Role;
+import br.com.emendes.financesapi.model.entity.User;
+import br.com.emendes.financesapi.repository.UserRepository;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,13 +15,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import br.com.emendes.financesapi.util.creator.UserCreator;
-import br.com.emendes.financesapi.model.entity.User;
-import br.com.emendes.financesapi.repository.UserRepository;
+import java.util.List;
+import java.util.Optional;
 
 @ExtendWith(SpringExtension.class)
-@DisplayName("Tests for AuthenticationService")
-public class CustomUserDetailsServiceTests {
+@DisplayName("Tests for CustomUserDetailsService")
+class CustomUserDetailsServiceTest {
 
   @InjectMocks
   private CustomUserDetailsService customUserDetailsService;
@@ -29,38 +28,35 @@ public class CustomUserDetailsServiceTests {
   @Mock
   private UserRepository userRepositoryMock;
 
-  private final String EMAIL_NOT_EXISTING = "notexists@email.com";
-
-  @BeforeEach
-  public void setUp() {
-    User validUser = UserCreator.validUserForExpenseRepositoryTest();
-
-    BDDMockito.when(userRepositoryMock.findByEmail(validUser.getEmail()))
-        .thenReturn(Optional.of(validUser));
-
-    BDDMockito.when(userRepositoryMock.findByEmail(EMAIL_NOT_EXISTING))
-        .thenReturn(Optional.empty());
-  }
+  private final User USER = User.builder()
+      .email("lorem@email.com")
+      .password("1234567890")
+      .id(100L)
+      .name("Lorem Ipsum")
+      .roles(List.of(Role.builder().id(1).name("ROLE_USER").build()))
+      .build();
 
   @Test
   @DisplayName("loadUserByUsername must returns UserDetails when successful")
   void loadUserByUsername_ReturnsUserDetails_WhenSuccessful() {
-    String email = UserCreator.validUserForExpenseRepositoryTest().getEmail();
+    BDDMockito.when(userRepositoryMock.findByEmail("lorem@email.com"))
+        .thenReturn(Optional.of(USER));
 
-    UserDetails userDetails = customUserDetailsService.loadUserByUsername(email);
+    UserDetails userDetails = customUserDetailsService.loadUserByUsername("lorem@email.com");
 
     Assertions.assertThat(userDetails).isNotNull();
-    Assertions.assertThat(userDetails.getUsername()).isEqualTo(email);
+    Assertions.assertThat(userDetails.getUsername()).isEqualTo("lorem@email.com");
   }
 
   @Test
   @DisplayName("loadUserByUsername must throw UsernameNotFoundException when is not successful")
   void loadUserByUsername_ThrowsUsernameNotFoundException_WhenIsNotSuccessful() {
-    String email = EMAIL_NOT_EXISTING;
+    BDDMockito.when(userRepositoryMock.findByEmail("notexists@email.com"))
+        .thenReturn(Optional.empty());
 
     Assertions.assertThatExceptionOfType(UsernameNotFoundException.class)
-        .isThrownBy(() -> customUserDetailsService.loadUserByUsername(email))
-        .withMessage("Dados inválidos!");
+        .isThrownBy(() -> customUserDetailsService.loadUserByUsername("notexists@email.com"))
+        .withMessage("User not found");
   }
 
 }
