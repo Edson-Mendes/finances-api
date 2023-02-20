@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import javax.persistence.NoResultException;
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
+import java.time.Month;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -29,10 +30,7 @@ public class IncomeServiceImpl implements IncomeService {
   @Override
   public IncomeResponse create(IncomeRequest incomeRequest) {
     Authentication authentication = authenticationFacade.getAuthentication();
-    // Apenas uma precaução caso não tenha usuário logado.
-    if (!authentication.isAuthenticated()) {
-      throw new RuntimeException("User not found");
-    }
+
     Long userId = ((User) authentication.getPrincipal()).getId();
 
     Income income = incomeRequest.convert(userId);
@@ -46,7 +44,7 @@ public class IncomeServiceImpl implements IncomeService {
     Page<Income> incomes = incomeRepository.findAllByUser(pageable);
 
     if (incomes.getTotalElements() == 0) {
-      throw new NoResultException("O usuário não possui receitas");
+      throw new NoResultException("The user has no incomes");
     }
     return IncomeResponse.convert(incomes);
   }
@@ -55,7 +53,7 @@ public class IncomeServiceImpl implements IncomeService {
   public Page<IncomeResponse> readByDescriptionAndUser(String description, Pageable pageable) {
     Page<Income> incomes = incomeRepository.findByDescriptionAndUser(description, pageable);
     if (incomes.getTotalElements() == 0) {
-      throw new NoResultException("O usuário não possui receitas com descrição similar a " + description);
+      throw new NoResultException("The user has no incomes with a description similar to " + description);
     }
     return IncomeResponse.convert(incomes);
   }
@@ -69,7 +67,7 @@ public class IncomeServiceImpl implements IncomeService {
   public Page<IncomeResponse> readByYearAndMonthAndUser(int year, int month, Pageable pageable) {
     Page<Income> incomes = incomeRepository.findByYearAndMonthAndUser(year, month, pageable);
     if (incomes.getTotalElements() == 0) {
-      throw new NoResultException("Não há receitas para o ano " + year + " e mês " + month);
+      throw new NoResultException(String.format("Has no incomes for year %d and month %s", year, Month.of(month)));
     }
     return IncomeResponse.convert(incomes);
   }
@@ -84,8 +82,7 @@ public class IncomeServiceImpl implements IncomeService {
 
   @Override
   public void deleteById(Long id) {
-    findByIdAndUser(id);
-    incomeRepository.deleteById(id);
+    incomeRepository.delete(findByIdAndUser(id));
   }
 
   @Override
@@ -97,7 +94,7 @@ public class IncomeServiceImpl implements IncomeService {
     Optional<Income> optionalExpense = incomeRepository.findByIdAndUser(id);
 
     return optionalExpense.orElseThrow(
-        () -> new NoResultException(String.format("Nenhuma receita com id = %d para esse usuário", id)));
+        () -> new NoResultException("Income not found"));
   }
 
 }
