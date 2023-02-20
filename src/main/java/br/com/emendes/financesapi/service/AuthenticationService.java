@@ -5,7 +5,6 @@ import br.com.emendes.financesapi.dto.response.UserResponse;
 import br.com.emendes.financesapi.dto.request.SignInRequest;
 import br.com.emendes.financesapi.dto.request.SignupRequest;
 
-// TODO: Criar uma implementação!
 public interface AuthenticationService {
 
   TokenResponse signIn(SignInRequest request);
