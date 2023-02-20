@@ -3,13 +3,10 @@ package br.com.emendes.financesapi.unit.service;
 import br.com.emendes.financesapi.dto.request.ChangePasswordRequest;
 import br.com.emendes.financesapi.dto.request.SignupRequest;
 import br.com.emendes.financesapi.dto.response.UserResponse;
-import br.com.emendes.financesapi.model.entity.Role;
 import br.com.emendes.financesapi.model.entity.User;
 import br.com.emendes.financesapi.repository.UserRepository;
 import br.com.emendes.financesapi.service.impl.UserServiceImpl;
 import br.com.emendes.financesapi.util.AuthenticationFacade;
-import br.com.emendes.financesapi.util.creator.SignupFormCreator;
-import br.com.emendes.financesapi.util.creator.UserCreator;
 import br.com.emendes.financesapi.validation.exception.DataConflictException;
 import br.com.emendes.financesapi.validation.exception.PasswordsDoNotMatchException;
 import br.com.emendes.financesapi.validation.exception.WrongPasswordException;
@@ -37,6 +34,8 @@ import javax.persistence.NoResultException;
 import java.util.List;
 import java.util.Optional;
 
+import static br.com.emendes.financesapi.util.constant.ConstantForTesting.ROLE_USER;
+import static br.com.emendes.financesapi.util.constant.ConstantForTesting.USER;
 import static org.mockito.ArgumentMatchers.any;
 
 @ExtendWith(SpringExtension.class)
@@ -54,17 +53,6 @@ class UserServiceImplTest {
 
   private final Pageable PAGEABLE = PageRequest.of(0, 10, Direction.ASC, "id");
   private final Long NON_EXISTING_USER_ID = 9999L;
-  private static final Role ROLE_USER = Role.builder()
-      .id(1)
-      .name("ROLE_USER")
-      .build();
-  private static final User USER = User.builder()
-      .id(1000L)
-      .name("Lorem Ipsum")
-      .email("lorem@email.com")
-      .password("encodedpassword")
-      .roles(List.of(ROLE_USER))
-      .build();
 
   @Nested
   @DisplayName("Tests for createAccount method")
@@ -115,8 +103,8 @@ class UserServiceImplTest {
     }
 
     @Test
-    @DisplayName("createAccount must throws PasswordsDoNotMatchException when password do not match")
-    void createAccount_MustThrowsPasswordsDoNotMatchException_WhenPassDoNotMatch() {
+    @DisplayName("createAccount must throws PasswordsDoNotMatchException when password no matches")
+    void createAccount_MustThrowsPasswordsDoNotMatchException_WhenPasswordNoMatches() {
       SignupRequest signupRequest = SignupRequest.builder()
           .name("Lorem Ipsum")
           .email("lorem@email.com")
@@ -185,8 +173,8 @@ class UserServiceImplTest {
   class DeleteMethod {
 
     @Test
-    @DisplayName("delete must call 1 time UserRepository#deleteById when called")
-    void delete_MustCall1TimeUserRepositoryDeleteById_WhenCalled() {
+    @DisplayName("delete must call 1 time UserRepository#deleteById when delete successfully")
+    void delete_MustCall1TimeUserRepositoryDeleteById_WhenDeleteSuccessfully() {
       BDDMockito.doNothing().when(userRepositoryMock).deleteById(1000L);
 
       userServiceImpl.delete(1000L);
@@ -221,7 +209,7 @@ class UserServiceImplTest {
     @DisplayName("changePassword must save user with new password when change password successfully")
     void changePassword_MustSaveUserWithNewPassword_WhenChangePasswordSuccessfully() {
       BDDMockito.when(passwordEncoderMock.matches(any(String.class), any(String.class)))
-              .thenReturn(true);
+          .thenReturn(true);
       BDDMockito.when(userRepositoryMock.save(any(User.class)))
           .thenReturn(USER);
 
@@ -254,8 +242,8 @@ class UserServiceImplTest {
     }
 
     @Test
-    @DisplayName("changePassword must throws PasswordsDoNotMatchException when password and confirm do not match")
-    void changePassword_MustThrowsPasswordsDoNotMatchException_WhenPasswordsDoNotMatch() {
+    @DisplayName("changePassword must throws PasswordsDoNotMatchException when password and confirm no matches")
+    void changePassword_MustThrowsPasswordsDoNotMatchException_WhenPasswordsAndConfirmNoMatches() {
       BDDMockito.when(passwordEncoderMock.matches(any(String.class), any(String.class)))
           .thenReturn(true);
 

@@ -1,8 +1,8 @@
 package br.com.emendes.financesapi.service.impl;
 
-import br.com.emendes.financesapi.dto.response.ValueByCategoryResponse;
 import br.com.emendes.financesapi.dto.request.ExpenseRequest;
 import br.com.emendes.financesapi.dto.response.ExpenseResponse;
+import br.com.emendes.financesapi.dto.response.ValueByCategoryResponse;
 import br.com.emendes.financesapi.model.entity.Expense;
 import br.com.emendes.financesapi.model.entity.User;
 import br.com.emendes.financesapi.repository.ExpenseRepository;
@@ -15,6 +15,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.NoResultException;
+import java.time.Month;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,10 +29,7 @@ public class ExpenseServiceImpl implements ExpenseService {
   @Override
   public ExpenseResponse create(ExpenseRequest expenseRequest) {
     Authentication authentication = authenticationFacade.getAuthentication();
-    // Apenas uma precaução caso não tenha usuário logado.
-    if (!authentication.isAuthenticated()) {
-      throw new RuntimeException("User not found");
-    }
+
     Long userId = ((User) authentication.getPrincipal()).getId();
 
     Expense expense = expenseRequest.convert(userId);
@@ -69,7 +67,7 @@ public class ExpenseServiceImpl implements ExpenseService {
     Page<Expense> expenses = expenseRepository.findByYearAndMonthAndUser(year, month, pageable);
 
     if (expenses.getTotalElements() == 0) {
-      throw new NoResultException(String.format("Has no expenses for year %d and month %d", year, month));
+      throw new NoResultException(String.format("Has no expenses for year %d and month %s", year, Month.of(month)));
     }
     return ExpenseResponse.convert(expenses);
   }
@@ -84,8 +82,8 @@ public class ExpenseServiceImpl implements ExpenseService {
 
   @Override
   public void deleteById(Long id) {
-    findByIdAndUser(id);
-    expenseRepository.deleteById(id);
+    Expense expense = findByIdAndUser(id);
+    expenseRepository.delete(expense);
   }
 
   @Override
