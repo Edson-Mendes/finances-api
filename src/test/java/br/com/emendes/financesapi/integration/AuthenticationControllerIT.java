@@ -25,14 +25,14 @@ import java.util.List;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-@ActiveProfiles("test")
+@ActiveProfiles("integration")
 @DisplayName("Integration tests for /auth/**")
 class AuthenticationControllerIT {
 
   @Autowired
   private TestRestTemplate testRestTemplate;
 
-  private final String BASE_URI = "/auth";
+  private final String BASE_URI = "/api/auth";
 
   @Test
   @DisplayName("auth must returns status 200 and TokenDto when successful")

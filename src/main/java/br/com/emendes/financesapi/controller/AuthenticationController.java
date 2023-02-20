@@ -26,8 +26,8 @@ public class AuthenticationController implements AuthenticationControllerOpenAPI
 
   @Override
   @PostMapping("/signin")
-  public ResponseEntity<TokenResponse> signIn(@RequestBody @Valid SignInRequest form) {
-    TokenResponse tokenResponse = authService.signIn(form);
+  public ResponseEntity<TokenResponse> signIn(@RequestBody @Valid SignInRequest signInRequest) {
+    TokenResponse tokenResponse = authService.signIn(signInRequest);
 
     return ResponseEntity.ok(tokenResponse);
   }

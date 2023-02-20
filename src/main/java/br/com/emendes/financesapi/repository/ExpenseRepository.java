@@ -50,7 +50,7 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
   @Query("SELECT e FROM Expense e WHERE e.id = :id AND e.user.id = ?#{ principal?.id }")
   Optional<Expense> findByIdAndUser(@Param("id") Long id);
 
-  @Query("SELECT new br.com.emendes.financesapi.controller.dto.ValueByCategoryDto(e.category, SUM(e.value)) " +
+  @Query("SELECT new br.com.emendes.financesapi.dto.response.ValueByCategoryResponse(e.category, SUM(e.value)) " +
       "FROM Expense e " +
       "WHERE YEAR(e.date) = :year AND MONTH(e.date) = :month " +
       "AND e.user.id = ?#{ principal?.id } " +

@@ -25,7 +25,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 @EnableWebSecurity
 @Configuration
-@Profile("dev")
+@Profile(value = {"dev", "integration"})
 public class DevSecurityConfigurations extends WebSecurityConfigurerAdapter {
 
   private static final String ROLE_ADMIN = "ADMIN";
