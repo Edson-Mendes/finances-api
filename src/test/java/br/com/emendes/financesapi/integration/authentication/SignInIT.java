@@ -24,7 +24,7 @@ import java.util.List;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @ActiveProfiles("integration")
-@DisplayName("Integration tests for /api/auth/signin")
+@DisplayName("Integration tests for POST /api/auth/signin")
 class SignInIT {
 
   @Autowired
@@ -35,7 +35,7 @@ class SignInIT {
   @Test
   @DisplayName("sign in must returns status 200 and TokenResponse when sign in successfully")
   @Sql(scripts = {"/sql/user/insert-user.sql"})
-  void SignIn_MustReturnsStatus200AndTokenResponse_WhenSignInSuccessfully() {
+  void signIn_MustReturnsStatus200AndTokenResponse_WhenSignInSuccessfully() {
     SignInRequest requestBody = SignInRequest.builder()
         .email("lorem@email.com")
         .password("12345678")
@@ -57,7 +57,7 @@ class SignInIT {
   @Test
   @DisplayName("sign in must returns status 400 when bad credentials")
   @Sql(scripts = {"/sql/user/insert-user.sql"})
-  void SignIn_MustReturnsStatus400_WhenBadCredentials() {
+  void signIn_MustReturnsStatus400_WhenBadCredentials() {
     SignInRequest requestBody = SignInRequest.builder()
         .email("lorem@email.com")
         .password("wrongpassword")
@@ -79,7 +79,7 @@ class SignInIT {
 
   @Test
   @DisplayName("sign in must returns status 400 when request body is invalid")
-  void SignIn_MustReturnsStatus400_WhenRequestBodyIsInvalid() {
+  void signIn_MustReturnsStatus400_WhenRequestBodyIsInvalid() {
     SignInRequest requestBody = SignInRequest.builder()
         .email("invalidemailcom")
         .password(null)

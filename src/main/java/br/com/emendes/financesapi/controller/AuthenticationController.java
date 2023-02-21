@@ -34,7 +34,8 @@ public class AuthenticationController implements AuthenticationControllerOpenAPI
 
   @Override
   @PostMapping("/signup")
-  public ResponseEntity<UserResponse> register(@RequestBody @Valid SignupRequest signupRequest, UriComponentsBuilder uriBuilder) {
+  public ResponseEntity<UserResponse> register(
+      @RequestBody @Valid SignupRequest signupRequest, UriComponentsBuilder uriBuilder) {
     UserResponse userResponse = authService.register(signupRequest);
     URI uri = uriBuilder.path("/user/{id}").buildAndExpand(userResponse.getId()).toUri();
     return ResponseEntity.created(uri).body(userResponse);
