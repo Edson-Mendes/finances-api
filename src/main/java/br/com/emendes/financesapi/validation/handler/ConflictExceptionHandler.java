@@ -1,33 +1,32 @@
 package br.com.emendes.financesapi.validation.handler;
 
+import br.com.emendes.financesapi.validation.exception.DataConflictException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.server.ResponseStatusException;
+import org.zalando.problem.Problem;
+import org.zalando.problem.Status;
 
-import br.com.emendes.financesapi.controller.dto.error.ErrorDto;
-import br.com.emendes.financesapi.validation.exception.DataConflictException;
+import java.net.URI;
+import java.time.LocalDateTime;
 
 @RestControllerAdvice
 public class ConflictExceptionHandler {
 
-  @ExceptionHandler(ResponseStatusException.class)
-  public ResponseEntity<ErrorDto> handle(ResponseStatusException exception) {
-    ErrorDto errorDto = new ErrorDto(exception.getStatus().name(), exception.getReason());
-    return conflictReturn(errorDto);
-  }
-
   @ExceptionHandler(DataConflictException.class)
-  public ResponseEntity<ErrorDto> handle(DataConflictException exception) {
-    ErrorDto errorDto = new ErrorDto("CONFLICT", exception.getMessage());
-    return conflictReturn(errorDto);
-  }
+  public ResponseEntity<Problem> handleDataConflictException(DataConflictException exception) {
+    Problem problem = Problem.builder()
+        .withType(URI.create("https://github.com/Edson-Mendes/finances-api/problem-details/data-conflict"))
+        .withTitle("Data conflict")
+        .withDetail(exception.getMessage())
+        .withStatus(Status.CONFLICT)
+        .with("timestamp", LocalDateTime.now())
+        .build();
 
-  private ResponseEntity<ErrorDto> conflictReturn(ErrorDto errorDto) {
     return ResponseEntity
         .status(HttpStatus.CONFLICT)
-        .header("Content-Type", "application/json;charset=UTF-8")
-        .body(errorDto);
+        .header("Content-Type", "application/problem+json;charset=UTF-8")
+        .body(problem);
   }
 }

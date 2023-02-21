@@ -64,6 +64,11 @@
 			<artifactId>lombok</artifactId>
 			<optional>true</optional>
 		</dependency>
+		<dependency>
+			<groupId>org.zalando</groupId>
+			<artifactId>problem-spring-web-starter</artifactId>
+			<version>0.27.0</version>
+		</dependency>
 
     <dependency>
       <groupId>org.springdoc</groupId>

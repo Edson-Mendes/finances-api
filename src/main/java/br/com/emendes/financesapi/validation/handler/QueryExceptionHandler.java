@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import br.com.emendes.financesapi.controller.dto.error.ErrorDto;
 
+// Acredito que não está sendo mais usado
+@Deprecated(since = "2023-02-21", forRemoval = true)
 @RestControllerAdvice
 public class QueryExceptionHandler {
 

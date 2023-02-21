@@ -1,19 +1,20 @@
 package br.com.emendes.financesapi.validation.handler;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.zalando.problem.Problem;
+import org.zalando.problem.Status;
 
-import br.com.emendes.financesapi.controller.dto.error.FormErrorDto;
+import java.net.URI;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class MethodArgumentNotValidExceptionHandler {
@@ -22,20 +23,27 @@ public class MethodArgumentNotValidExceptionHandler {
   private MessageSource messageSource;
 
   @ExceptionHandler(MethodArgumentNotValidException.class)
-  public ResponseEntity<List<FormErrorDto>> handle(MethodArgumentNotValidException exception) {
+  public ResponseEntity<Problem> handleMethodArgumentNotValidException(MethodArgumentNotValidException exception) {
 
-    List<FormErrorDto> listErrorDto = new ArrayList<>();
     List<FieldError> fieldErrors = exception.getBindingResult().getFieldErrors();
 
-    fieldErrors.forEach(e -> {
-      String message = messageSource.getMessage(e, LocaleContextHolder.getLocale());
-      FormErrorDto errorDto = new FormErrorDto(e.getField(), message);
-      listErrorDto.add(errorDto);
-    });
+    String fields = fieldErrors.stream().map(FieldError::getField).collect(Collectors.joining("; "));
+    String messages = fieldErrors.stream().map(FieldError::getDefaultMessage).collect(Collectors.joining("; "));
+
+    Problem problem = Problem.builder()
+        .withType(URI.create("https://github.com/Edson-Mendes/finances-api/problem-details/invalid-field"))
+        .withTitle("Invalid fields")
+        .withDetail("Some fields are invalid")
+        .withStatus(Status.BAD_REQUEST)
+        .with("timestamp", LocalDateTime.now())
+        .with("fields", fields)
+        .with("messages", messages)
+        .build();
+
     return ResponseEntity
         .status(HttpStatus.BAD_REQUEST)
-        .header("Content-Type", "application/json;charset=UTF-8")
-        .body(listErrorDto);
+        .header("Content-Type", "application/problem+json;charset=UTF-8")
+        .body(problem);
   }
 
 }

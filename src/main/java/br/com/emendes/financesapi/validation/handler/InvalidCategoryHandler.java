@@ -1,14 +1,14 @@
 package br.com.emendes.financesapi.validation.handler;
 
+import br.com.emendes.financesapi.controller.dto.error.ErrorDto;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import br.com.emendes.financesapi.controller.dto.error.ErrorDto;
-
+// Acredito que não está sendo mais usado
+@Deprecated(since = "2023-02-21", forRemoval = true)
 @RestControllerAdvice
 public class InvalidCategoryHandler {
 
