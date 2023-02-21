@@ -3,6 +3,7 @@ package br.com.emendes.financesapi.dto.response;
 import lombok.*;
 
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
 @EqualsAndHashCode

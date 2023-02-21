@@ -7,14 +7,14 @@ import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
-// TODO: Criar testes automatizados.
 @Service
 public class CategoryServiceImpl implements CategoryService {
 
   @Override
   public List<CategoryResponse> fetchAllCategories() {
-    return Arrays.stream(Category.values()).map(c -> new CategoryResponse(c.name())).toList();
+    return Arrays.stream(Category.values()).map(c -> new CategoryResponse(c.name())).collect(Collectors.toList());
   }
 
 }

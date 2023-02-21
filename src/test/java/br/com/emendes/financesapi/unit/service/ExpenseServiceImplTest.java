@@ -38,7 +38,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 
 @ExtendWith(SpringExtension.class)
-@DisplayName("Unt tests for ExpenseServiceImpl")
+@DisplayName("Unit tests for ExpenseServiceImpl")
 class ExpenseServiceImplTest {
 
   @InjectMocks
