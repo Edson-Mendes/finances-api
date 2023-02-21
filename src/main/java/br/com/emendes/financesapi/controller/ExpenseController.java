@@ -27,8 +27,9 @@ public class ExpenseController implements ExpenseControllerOpenAPI {
 
   @Override
   @PostMapping
-  public ResponseEntity<ExpenseResponse> create(@Valid @RequestBody ExpenseRequest form, UriComponentsBuilder uriBuilder) {
-    ExpenseResponse expenseResponse = expenseService.create(form);
+  public ResponseEntity<ExpenseResponse> create(
+      @Valid @RequestBody ExpenseRequest expenseRequest, UriComponentsBuilder uriBuilder) {
+    ExpenseResponse expenseResponse = expenseService.create(expenseRequest);
     URI uri = uriBuilder.path("/api/expenses/{id}").buildAndExpand(expenseResponse.getId()).toUri();
     return ResponseEntity.created(uri).body(expenseResponse);
   }
