@@ -1,7 +1,7 @@
 package br.com.emendes.financesapi.integration.authentication;
 
-import br.com.emendes.financesapi.controller.dto.error.ErrorDto;
-import br.com.emendes.financesapi.controller.dto.error.FormErrorDto;
+import br.com.emendes.financesapi.dto.problem.ProblemDetail;
+import br.com.emendes.financesapi.dto.problem.ValidationProblemDetail;
 import br.com.emendes.financesapi.dto.request.SignupRequest;
 import br.com.emendes.financesapi.dto.response.UserResponse;
 import org.assertj.core.api.Assertions;
@@ -18,8 +18,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
-
-import java.util.List;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -58,8 +56,8 @@ class SignUpIT {
   }
 
   @Test
-  @DisplayName("sign up must returns status 400 when request body is invalid")
-  void signUp_MustReturnsStatus400_WhenRequestBodyIsInvalid() {
+  @DisplayName("sign up must returns status 400 and ValidationProblemDetail when request body is invalid")
+  void signUp_MustReturnsStatus400AndValidationProblemDetail_WhenRequestBodyIsInvalid() {
     SignupRequest requestBody = SignupRequest.builder()
         .name(null)
         .email("invalidemailcom")
@@ -69,20 +67,25 @@ class SignUpIT {
 
     HttpEntity<SignupRequest> bodyAndHeaders = new HttpEntity<>(requestBody);
 
-    ResponseEntity<List<FormErrorDto>> actualResponse = testRestTemplate.exchange(
+    ResponseEntity<ValidationProblemDetail> actualResponse = testRestTemplate.exchange(
         URI, HttpMethod.POST, bodyAndHeaders, new ParameterizedTypeReference<>() {});
 
     HttpStatus actualStatusCode = actualResponse.getStatusCode();
-    List<FormErrorDto> actualResponseBody = actualResponse.getBody();
+    ValidationProblemDetail actualResponseBody = actualResponse.getBody();
 
     Assertions.assertThat(actualStatusCode).isEqualByComparingTo(HttpStatus.BAD_REQUEST);
     Assertions.assertThat(actualResponseBody).isNotNull();
-    // TODO: Após modificar o body em caso de status 4xx e 5xx, adicionar novas assertivas.
+    Assertions.assertThat(actualResponseBody.getTitle()).isEqualTo("Invalid fields");
+    Assertions.assertThat(actualResponseBody.getDetail()).isEqualTo("Some fields are invalid");
+    Assertions.assertThat(actualResponseBody.getFields()).contains("name", "email", "password", "confirm");
+    Assertions.assertThat(actualResponseBody.getMessages()).contains(
+        "name must not be null or blank", "must be a well formed email",
+        "password must not be null or blank", "confirm must not be null or blank");
   }
 
   @Test
-  @DisplayName("sign up must returns status 400 when password and confirm do not match")
-  void signUp_MustReturnsStatus400_WhenPasswordAndConfirmDoNotMatch() {
+  @DisplayName("sign up must returns status 400 and ProblemDetail when password and confirm do not match")
+  void signUp_MustReturnsStatus400AndProblemDetail_WhenPasswordAndConfirmDoNotMatch() {
     SignupRequest requestBody = SignupRequest.builder()
         .name("Lorem Ipsum")
         .email("lorem@email.com")
@@ -92,21 +95,22 @@ class SignUpIT {
 
     HttpEntity<SignupRequest> bodyAndHeaders = new HttpEntity<>(requestBody);
 
-    ResponseEntity<UserResponse> actualResponse = testRestTemplate.exchange(
+    ResponseEntity<ProblemDetail> actualResponse = testRestTemplate.exchange(
         URI, HttpMethod.POST, bodyAndHeaders, new ParameterizedTypeReference<>() {});
 
     HttpStatus actualStatusCode = actualResponse.getStatusCode();
-    UserResponse actualResponseBody = actualResponse.getBody();
+    ProblemDetail actualResponseBody = actualResponse.getBody();
 
     Assertions.assertThat(actualStatusCode).isEqualByComparingTo(HttpStatus.BAD_REQUEST);
     Assertions.assertThat(actualResponseBody).isNotNull();
-    // TODO: Adicionar novas assertivas.
+    Assertions.assertThat(actualResponseBody.getTitle()).isEqualTo("Passwords do not match");
+    Assertions.assertThat(actualResponseBody.getDetail()).isEqualTo("Password and confirm do not match");
   }
 
   @Test
-  @DisplayName("sign up must returns status 409 when informed email is already in use")
+  @DisplayName("sign up must returns status 409 and ProblemDetail when informed email is already in use")
   @Sql(scripts = {"/sql/user/insert-user.sql"})
-  void signUp_MustReturnsStatus409_WhenInformedEmailIsAlreadyInUse() {
+  void signUp_MustReturnsStatus409AndProblemDetail_WhenInformedEmailIsAlreadyInUse() {
     SignupRequest requestBody = SignupRequest.builder()
         .name("Lorem Ipsum")
         .email("lorem@email.com")
@@ -116,17 +120,17 @@ class SignUpIT {
 
     HttpEntity<SignupRequest> bodyAndHeaders = new HttpEntity<>(requestBody);
 
-    ResponseEntity<ErrorDto> actualResponse = testRestTemplate.exchange(
-        URI, HttpMethod.POST, bodyAndHeaders, new ParameterizedTypeReference<>() {});
+    ResponseEntity<ProblemDetail> actualResponse = testRestTemplate.exchange(
+        URI, HttpMethod.POST, bodyAndHeaders, new ParameterizedTypeReference<>() {
+        });
 
     HttpStatus actualStatusCode = actualResponse.getStatusCode();
-    ErrorDto actualResponseBody = actualResponse.getBody();
+    ProblemDetail actualResponseBody = actualResponse.getBody();
 
     Assertions.assertThat(actualStatusCode).isEqualByComparingTo(HttpStatus.CONFLICT);
     Assertions.assertThat(actualResponseBody).isNotNull();
-    System.out.println(actualResponseBody.getError());
-    System.out.println(actualResponseBody.getMessage());
-    // TODO: Após modificar o body em caso de status 4xx e 5xx, adicionar novas assertivas.
+    Assertions.assertThat(actualResponseBody.getTitle()).isEqualTo("Data conflict");
+    Assertions.assertThat(actualResponseBody.getDetail()).isEqualTo("Email is already in use");
   }
 
 }
