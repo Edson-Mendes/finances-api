@@ -72,8 +72,8 @@ class IncomeControllerTest {
     }
 
     @Test
-    @DisplayName("create must return List<FormErrorDto> when request body is invalid")
-    void create_MustReturnListFormErrorDto_WhenRequestBodyIsInvalid() throws Exception {
+    @DisplayName("create must return ValidationProblemDetail when request body is invalid")
+    void create_MustReturnValidationProblemDetail_WhenRequestBodyIsInvalid() throws Exception {
       String requestBody = """
           {
             "description" : "",
@@ -81,9 +81,12 @@ class IncomeControllerTest {
           }
           """;
 
-      // TODO: O response body desse tipo de erro será alterado!
       mockMvc.perform(post(INCOME_BASE_URI).contentType(CONTENT_TYPE).content(requestBody))
-          .andExpect(status().isBadRequest());
+          .andExpect(status().isBadRequest())
+          .andExpect(jsonPath("$.title").value("Invalid fields"))
+          .andExpect(jsonPath("$.detail").value("Some fields are invalid"))
+          .andExpect(jsonPath("$.fields").isString())
+          .andExpect(jsonPath("$.messages").isString());
     }
 
   }
@@ -109,13 +112,15 @@ class IncomeControllerTest {
     }
 
     @Test
-    @DisplayName("read must return ErrorDto when user has no incomes")
-    void read_MustReturnErrorDto_WhenUserHasNoIncomes() throws Exception {
+    @DisplayName("read must return ProblemDetail when user has no incomes")
+    void read_MustReturnProblemDetail_WhenUserHasNoIncomes() throws Exception {
       BDDMockito.given(incomeServiceMock.readAllByUser(any()))
           .willThrow(new NoResultException("The user has no incomes"));
 
       mockMvc.perform(get(INCOME_BASE_URI))
-          .andExpect(status().isNotFound());
+          .andExpect(status().isNotFound())
+          .andExpect(jsonPath("$.title").value("Entity not found"))
+          .andExpect(jsonPath("$.detail").value("The user has no incomes"));
     }
 
     @Test
@@ -134,13 +139,15 @@ class IncomeControllerTest {
     }
 
     @Test
-    @DisplayName("read by description must return ErrorDto when user has no incomes with description \"xxxx\"")
-    void readByDescription_MustReturnErrorDto_WhenUserHasNoIncomesWithDescriptionXxxx() throws Exception {
+    @DisplayName("read by description must return ProblemDetail when user has no incomes with description \"xxxx\"")
+    void readByDescription_MustReturnProblemDetail_WhenUserHasNoIncomesWithDescriptionXxxx() throws Exception {
       BDDMockito.given(incomeServiceMock.readByDescriptionAndUser(eq("xxxx"), any()))
           .willThrow(new NoResultException("The user has no incomes with a description similar to xxxx"));
 
       mockMvc.perform(get(INCOME_BASE_URI + "?description=xxxx"))
-          .andExpect(status().isNotFound());
+          .andExpect(status().isNotFound())
+          .andExpect(jsonPath("$.title").value("Entity not found"))
+          .andExpect(jsonPath("$.detail").value("The user has no incomes with a description similar to xxxx"));
     }
 
   }
@@ -164,20 +171,25 @@ class IncomeControllerTest {
     }
 
     @Test
-    @DisplayName("readById must return ErrorDto when user has no income with id 99999")
-    void readById_MustReturnErrorDto_WhenUserHasNoIncomeWithId99999() throws Exception {
+    @DisplayName("readById must return ProblemDetail when user has no income with id 99999")
+    void readById_MustReturnProblemDetail_WhenUserHasNoIncomeWithId99999() throws Exception {
       BDDMockito.given(incomeServiceMock.readByIdAndUser(99999L))
           .willThrow(new NoResultException("Income not found"));
 
       mockMvc.perform(get(INCOME_BASE_URI + "/99999"))
-          .andExpect(status().isNotFound());
+          .andExpect(status().isNotFound())
+
+          .andExpect(jsonPath("$.title").value("Entity not found"))
+          .andExpect(jsonPath("$.detail").value("Income not found"));
     }
 
     @Test
-    @DisplayName("readById must return ErrorDto when id is invalid")
-    void readById_MustReturnErrorDto_WhenIdIsInvalid() throws Exception {
+    @DisplayName("readById must return ProblemDetail when id is invalid")
+    void readById_MustReturnProblemDetail_WhenIdIsInvalid() throws Exception {
       mockMvc.perform(get(INCOME_BASE_URI + "/99asdf"))
-          .andExpect(status().isBadRequest());
+          .andExpect(status().isBadRequest())
+          .andExpect(jsonPath("$.title").value("Type mismatch"))
+          .andExpect(jsonPath("$.detail").value("An error occurred trying to cast String to Number"));
     }
 
   }
@@ -202,27 +214,33 @@ class IncomeControllerTest {
     }
 
     @Test
-    @DisplayName("readByYearAndMonth must return ErrorDto when year is invalid")
-    void readByYearAndMonth_MustReturnErrorDto_WhenYearIsInvalid() throws Exception {
+    @DisplayName("readByYearAndMonth must return ProblemDetail when year is invalid")
+    void readByYearAndMonth_MustReturnProblemDetail_WhenYearIsInvalid() throws Exception {
       mockMvc.perform(get(INCOME_BASE_URI + "/2o23/2"))
-          .andExpect(status().isBadRequest());
+          .andExpect(status().isBadRequest())
+          .andExpect(jsonPath("$.title").value("Type mismatch"))
+          .andExpect(jsonPath("$.detail").value("An error occurred trying to cast String to Number"));
     }
 
     @Test
-    @DisplayName("readByYearAndMonth must return ErrorDto when month is invalid")
-    void readByYearAndMonth_MustReturnErrorDto_WhenMonthIsInvalid() throws Exception {
+    @DisplayName("readByYearAndMonth must return ProblemDetail when month is invalid")
+    void readByYearAndMonth_MustReturnProblemDetail_WhenMonthIsInvalid() throws Exception {
       mockMvc.perform(get(INCOME_BASE_URI + "/2023/1o"))
-          .andExpect(status().isBadRequest());
+          .andExpect(status().isBadRequest())
+          .andExpect(jsonPath("$.title").value("Type mismatch"))
+          .andExpect(jsonPath("$.detail").value("An error occurred trying to cast String to Number"));
     }
 
     @Test
-    @DisplayName("readByYearAndMonth must return ErrorDto when user has not incomes for year and month")
-    void readByYearAndMonth_MustReturnErrorDto_WhenUserHasNotIncomesForYearAndMonth() throws Exception {
+    @DisplayName("readByYearAndMonth must return ProblemDetail when user has not incomes for year and month")
+    void readByYearAndMonth_MustReturnProblemDetail_WhenUserHasNotIncomesForYearAndMonth() throws Exception {
       BDDMockito.given(incomeServiceMock.readByYearAndMonthAndUser(eq(2023), eq(3), any()))
-          .willThrow(new NoResultException("Has no incomes for year 2023 and month 3"));
+          .willThrow(new NoResultException("Has no incomes for year 2023 and month MARCH"));
 
       mockMvc.perform(get(INCOME_BASE_URI + "/2023/03"))
-          .andExpect(status().isNotFound());
+          .andExpect(status().isNotFound())
+          .andExpect(jsonPath("$.title").value("Entity not found"))
+          .andExpect(jsonPath("$.detail").value("Has no incomes for year 2023 and month MARCH"));
     }
 
   }
@@ -261,8 +279,8 @@ class IncomeControllerTest {
     }
 
     @Test
-    @DisplayName("update must return ErrorDto when user has no incomes with id 99999")
-    void update_MustReturnErrorDto_WhenUserHasNoIncomesWithId99999() throws Exception {
+    @DisplayName("update must return ProblemDetail when user has no incomes with id 99999")
+    void update_MustReturnProblemDetail_WhenUserHasNoIncomesWithId99999() throws Exception {
       BDDMockito.given(incomeServiceMock.update(eq(99999L), any()))
           .willThrow(new NoResultException("Income not found"));
 
@@ -275,12 +293,14 @@ class IncomeControllerTest {
           """;
 
       mockMvc.perform(put(INCOME_BASE_URI + "/99999").contentType(CONTENT_TYPE).content(requestBody))
-          .andExpect(status().isNotFound());
+          .andExpect(status().isNotFound())
+          .andExpect(jsonPath("$.title").value("Entity not found"))
+          .andExpect(jsonPath("$.detail").value("Income not found"));
     }
 
     @Test
-    @DisplayName("update must return ErrorDto when request body is invalid")
-    void update_MustReturnErrorDto_WhenRequestBodyIsInvalid() throws Exception {
+    @DisplayName("update must return ValidationProblemDetail when request body is invalid")
+    void update_MustReturnValidationProblemDetail_WhenRequestBodyIsInvalid() throws Exception {
       String requestBody = """
           {
             "description" : "",
@@ -289,12 +309,16 @@ class IncomeControllerTest {
           """;
 
       mockMvc.perform(put(INCOME_BASE_URI + "/50000").contentType(CONTENT_TYPE).content(requestBody))
-          .andExpect(status().isBadRequest());
+          .andExpect(status().isBadRequest())
+          .andExpect(jsonPath("$.title").value("Invalid fields"))
+          .andExpect(jsonPath("$.detail").value("Some fields are invalid"))
+          .andExpect(jsonPath("$.fields").isString())
+          .andExpect(jsonPath("$.messages").isString());
     }
 
     @Test
-    @DisplayName("update must return ErrorDto when id is invalid")
-    void update_MustReturnErrorDto_WhenIdIsInvalid() throws Exception {
+    @DisplayName("update must return ProblemDetail when id is invalid")
+    void update_MustReturnProblemDetail_WhenIdIsInvalid() throws Exception {
       String requestBody = """
           {
             "description" : "income xpto updated",
@@ -304,7 +328,9 @@ class IncomeControllerTest {
           """;
 
       mockMvc.perform(put(INCOME_BASE_URI + "/50o00").contentType(CONTENT_TYPE).content(requestBody))
-          .andExpect(status().isBadRequest());
+          .andExpect(status().isBadRequest())
+          .andExpect(jsonPath("$.title").value("Type mismatch"))
+          .andExpect(jsonPath("$.detail").value("An error occurred trying to cast String to Number"));
     }
 
   }
@@ -323,20 +349,24 @@ class IncomeControllerTest {
     }
 
     @Test
-    @DisplayName("delete must return ErrorDto when not found income with id 99999")
-    void delete_MustReturnErrorDto_WhenNotFoundIncomeWithId99999() throws Exception {
+    @DisplayName("delete must return ProblemDetail when not found income with id 99999")
+    void delete_MustReturnProblemDetail_WhenNotFoundIncomeWithId99999() throws Exception {
       BDDMockito.willThrow(new NoResultException("Income not found"))
           .given(incomeServiceMock).deleteById(99999L);
 
       mockMvc.perform(delete(INCOME_BASE_URI + "/99999"))
-          .andExpect(status().isNotFound());
+          .andExpect(status().isNotFound())
+          .andExpect(jsonPath("$.title").value("Entity not found"))
+          .andExpect(jsonPath("$.detail").value("Income not found"));
     }
 
     @Test
-    @DisplayName("delete must return ErrorDto when id is invalid")
-    void delete_MustReturnErrorDto_WhenIdIsInvalid() throws Exception {
+    @DisplayName("delete must return ProblemDetail when id is invalid")
+    void delete_MustReturnProblemDetail_WhenIdIsInvalid() throws Exception {
       mockMvc.perform(delete(INCOME_BASE_URI + "/50oo0"))
-          .andExpect(status().isBadRequest());
+          .andExpect(status().isBadRequest())
+          .andExpect(jsonPath("$.title").value("Type mismatch"))
+          .andExpect(jsonPath("$.detail").value("An error occurred trying to cast String to Number"));
     }
 
   }

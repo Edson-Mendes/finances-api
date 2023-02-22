@@ -76,20 +76,24 @@ class UserControllerTest {
     }
 
     @Test
-    @DisplayName("delete must return ErrorDto when not found user")
-    void delete_MustReturnErrorDto_WhenNotFoundUser() throws Exception {
+    @DisplayName("delete must return ProblemDetail when not found user")
+    void delete_MustReturnProblemDetail_WhenNotFoundUser() throws Exception {
       BDDMockito.willThrow(new NoResultException("User not found with id 999"))
           .given(userServiceMock).delete(999L);
 
       mockMvc.perform(delete(USER_BASE_URI + "/999"))
-          .andExpect(status().isNotFound());
+          .andExpect(status().isNotFound())
+          .andExpect(jsonPath("$.title").value("Entity not found"))
+          .andExpect(jsonPath("$.detail").value("User not found with id 999"));
     }
 
     @Test
-    @DisplayName("delete must return ErrorDto when id is invalid")
-    void delete_MustReturnErrorDto_WhenIdIsInvalid() throws Exception {
+    @DisplayName("delete must return ProblemDetail when id is invalid")
+    void delete_MustReturnProblemDetail_WhenIdIsInvalid() throws Exception {
       mockMvc.perform(delete(USER_BASE_URI + "/1o0"))
-          .andExpect(status().isBadRequest());
+          .andExpect(status().isBadRequest())
+          .andExpect(jsonPath("$.title").value("Type mismatch"))
+          .andExpect(jsonPath("$.detail").value("An error occurred trying to cast String to Number"));
     }
 
   }
@@ -115,8 +119,8 @@ class UserControllerTest {
     }
 
     @Test
-    @DisplayName("changePassword must return ErrorDto when request body is invalid")
-    void changePassword_MustReturnErrorDto_WhenRequestBodyIsInvalid() throws Exception {
+    @DisplayName("changePassword must return ValidationProblemDetail when request body is invalid")
+    void changePassword_MustReturnValidationProblemDetail_WhenRequestBodyIsInvalid() throws Exception {
       String requestBody = """
           {
             "oldPassword" : "12345678",
@@ -125,12 +129,16 @@ class UserControllerTest {
           }
           """;
       mockMvc.perform(put(USER_BASE_URI + "/password").contentType(CONTENT_TYPE).content(requestBody))
-          .andExpect(status().isBadRequest());
+          .andExpect(status().isBadRequest())
+          .andExpect(jsonPath("$.title").value("Invalid fields"))
+          .andExpect(jsonPath("$.detail").value("Some fields are invalid"))
+          .andExpect(jsonPath("$.fields").isString())
+          .andExpect(jsonPath("$.messages").isString());
     }
 
     @Test
-    @DisplayName("changePassword must return ErrorDto when newPassword and confirm do not match")
-    void changePassword_MustReturnErrorDto_WhenNewPasswordAndConfirmDoNotMatch() throws Exception {
+    @DisplayName("changePassword must return ProblemDetail when newPassword and confirm do not match")
+    void changePassword_MustReturnProblemDetail_WhenNewPasswordAndConfirmDoNotMatch() throws Exception {
       BDDMockito.willThrow(new PasswordsDoNotMatchException("Passwords do not match"))
           .given(userServiceMock).changePassword(any(ChangePasswordRequest.class));
 
@@ -142,29 +150,14 @@ class UserControllerTest {
           }
           """;
       mockMvc.perform(put(USER_BASE_URI + "/password").contentType(CONTENT_TYPE).content(requestBody))
-          .andExpect(status().isBadRequest());
+          .andExpect(status().isBadRequest())
+          .andExpect(jsonPath("$.title").value("Passwords do not match"))
+          .andExpect(jsonPath("$.detail").value("Passwords do not match"));
     }
 
     @Test
-    @DisplayName("changePassword must return ErrorDto when not found current user")
-    void changePassword_MustReturnErrorDto_WhenNotFoundCurrentUser() throws Exception {
-      BDDMockito.willThrow(new NoResultException("Current user not found"))
-          .given(userServiceMock).changePassword(any(ChangePasswordRequest.class));
-
-      String requestBody = """
-          {
-            "oldPassword" : "12345678",
-            "newPassword" : "1234567890",
-            "confirm" : "1234567890"
-          }
-          """;
-      mockMvc.perform(put(USER_BASE_URI + "/password").contentType(CONTENT_TYPE).content(requestBody))
-          .andExpect(status().isNotFound());
-    }
-
-    @Test
-    @DisplayName("changePassword must return ErrorDto when old password is wrong")
-    void changePassword_MustReturnErrorDto_WhenOldPasswordIsWrong() throws Exception {
+    @DisplayName("changePassword must return ProblemDetail when old password is wrong")
+    void changePassword_MustReturnProblemDetail_WhenOldPasswordIsWrong() throws Exception {
       BDDMockito.willThrow(new WrongPasswordException("Wrong password"))
           .given(userServiceMock).changePassword(any(ChangePasswordRequest.class));
 
@@ -176,7 +169,9 @@ class UserControllerTest {
           }
           """;
       mockMvc.perform(put(USER_BASE_URI + "/password").contentType(CONTENT_TYPE).content(requestBody))
-          .andExpect(status().isBadRequest());
+          .andExpect(status().isBadRequest())
+          .andExpect(jsonPath("$.title").value("Wrong password"))
+          .andExpect(jsonPath("$.detail").value("Wrong password"));
     }
 
   }

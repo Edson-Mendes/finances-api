@@ -67,27 +67,33 @@ class SummaryControllerTest {
     }
 
     @Test
-    @DisplayName("monthSummary must return ErrorDto when user has no expenses or incomes for year 2023 and month 3")
-    void monthSummary_MustReturnErrorDto_WhenUserHasNoExpensesOrIncomesForYear2023AndMonth3() throws Exception {
+    @DisplayName("monthSummary must return ProblemDetail when user has no expenses or incomes for year 2023 and month 3")
+    void monthSummary_MustReturnProblemDetail_WhenUserHasNoExpensesOrIncomesForYear2023AndMonth3() throws Exception {
       BDDMockito.given(summaryServiceMock.monthSummary(2023, 3))
           .willThrow(new NoResultException("Has no expenses or incomes for MARCH 2023"));
 
       mockMvc.perform(get(SUMMARY_BASE_URI + "/2023/3"))
-          .andExpect(status().isNotFound());
+          .andExpect(status().isNotFound())
+          .andExpect(jsonPath("$.title").value("Entity not found"))
+          .andExpect(jsonPath("$.detail").value("Has no expenses or incomes for MARCH 2023"));
     }
 
     @Test
-    @DisplayName("monthSummary must return ErrorDto when year is invalid")
-    void monthSummary_MustReturnErrorDto_WhenYearIsInvalid() throws Exception {
+    @DisplayName("monthSummary must return ProblemDetail when year is invalid")
+    void monthSummary_MustReturnProblemDetail_WhenYearIsInvalid() throws Exception {
       mockMvc.perform(get(SUMMARY_BASE_URI + "/2o23/3"))
-          .andExpect(status().isBadRequest());
+          .andExpect(status().isBadRequest())
+          .andExpect(jsonPath("$.title").value("Type mismatch"))
+          .andExpect(jsonPath("$.detail").value("An error occurred trying to cast String to Number"));
     }
 
     @Test
-    @DisplayName("monthSummary must return ErrorDto when month is invalid")
-    void monthSummary_MustReturnErrorDto_WhenMonthIsInvalid() throws Exception {
+    @DisplayName("monthSummary must return ProblemDetail when month is invalid")
+    void monthSummary_MustReturnProblemDetail_WhenMonthIsInvalid() throws Exception {
       mockMvc.perform(get(SUMMARY_BASE_URI + "/2023/1o"))
-          .andExpect(status().isBadRequest());
+          .andExpect(status().isBadRequest())
+          .andExpect(jsonPath("$.title").value("Type mismatch"))
+          .andExpect(jsonPath("$.detail").value("An error occurred trying to cast String to Number"));
     }
 
   }

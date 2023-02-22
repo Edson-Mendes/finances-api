@@ -1,12 +1,11 @@
 package br.com.emendes.financesapi.validation.handler;
 
+import br.com.emendes.financesapi.dto.problem.ProblemDetail;
 import br.com.emendes.financesapi.validation.exception.DataConflictException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.zalando.problem.Problem;
-import org.zalando.problem.Status;
 
 import java.net.URI;
 import java.time.LocalDateTime;
@@ -15,17 +14,19 @@ import java.time.LocalDateTime;
 public class ConflictExceptionHandler {
 
   @ExceptionHandler(DataConflictException.class)
-  public ResponseEntity<Problem> handleDataConflictException(DataConflictException exception) {
-    Problem problem = Problem.builder()
-        .withType(URI.create("https://github.com/Edson-Mendes/finances-api/problem-details/data-conflict"))
-        .withTitle("Data conflict")
-        .withDetail(exception.getMessage())
-        .withStatus(Status.CONFLICT)
-        .with("timestamp", LocalDateTime.now())
+  public ResponseEntity<ProblemDetail> handleDataConflictException(DataConflictException exception) {
+    HttpStatus status = HttpStatus.CONFLICT;
+
+    ProblemDetail problem = ProblemDetail.builder()
+        .type(URI.create("https://github.com/Edson-Mendes/finances-api/problem-details/data-conflict"))
+        .title("Data conflict")
+        .detail(exception.getMessage())
+        .status(status.value())
+        .timestamp(LocalDateTime.now())
         .build();
 
     return ResponseEntity
-        .status(HttpStatus.CONFLICT)
+        .status(status)
         .header("Content-Type", "application/problem+json;charset=UTF-8")
         .body(problem);
   }

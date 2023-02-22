@@ -10,7 +10,6 @@ import br.com.emendes.financesapi.validation.exception.DataConflictException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
 import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
@@ -20,9 +19,11 @@ import org.springframework.http.MediaType;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ActiveProfiles(value = "test")
 @WebMvcTest(value = AuthenticationController.class, excludeAutoConfiguration = {SecurityAutoConfiguration.class})
@@ -50,7 +51,7 @@ class AuthenticationControllerTest {
           .token("dfuehf08743hf8374hf80he8f9ahsd9fasgdf976gsda7f9gsa7gfsa76dgf9asgfd97sagfs")
           .build();
 
-      BDDMockito.when(authServiceMock.signIn(ArgumentMatchers.any(SignInRequest.class)))
+      BDDMockito.when(authServiceMock.signIn(any(SignInRequest.class)))
           .thenReturn(tokenResponse);
 
       String requestBody = """
@@ -62,15 +63,15 @@ class AuthenticationControllerTest {
 
       mockMvc.perform(
               post(URI).contentType(MediaType.APPLICATION_JSON).content(requestBody))
-          .andExpect(MockMvcResultMatchers.status().isOk())
-          .andExpect(MockMvcResultMatchers.jsonPath("$.token").isNotEmpty())
-          .andExpect(MockMvcResultMatchers.jsonPath("$.type").value("Bearer"));
+          .andExpect(status().isOk())
+          .andExpect(jsonPath("$.token").isNotEmpty())
+          .andExpect(jsonPath("$.type").value("Bearer"));
     }
 
     @Test
-    @DisplayName("signIn must return ErrorResponse when credentials are invalid")
-    void signIn_MustReturnErrorResponse_WhenCredentialsAreInvalid() throws Exception {
-      BDDMockito.given(authServiceMock.signIn(ArgumentMatchers.any(SignInRequest.class)))
+    @DisplayName("signIn must return ProblemDetail when credentials are invalid")
+    void signIn_MustReturnProblemDetail_WhenCredentialsAreInvalid() throws Exception {
+      BDDMockito.given(authServiceMock.signIn(any(SignInRequest.class)))
           .willThrow(new BadCredentialsException("Bad Credentials"));
 
       String requestBody = """
@@ -82,9 +83,28 @@ class AuthenticationControllerTest {
 
       mockMvc.perform(
               post(URI).contentType(MediaType.APPLICATION_JSON).content(requestBody))
-          .andExpect(MockMvcResultMatchers.status().isBadRequest())
-          .andExpect(MockMvcResultMatchers.jsonPath("$.error").value("Bad credentials"))
-          .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Invalid email or password"));
+          .andExpect(status().isBadRequest())
+          .andExpect(jsonPath("$.title").value("Bad credentials"))
+          .andExpect(jsonPath("$.detail").value("Invalid email or password"));
+    }
+
+    @Test
+    @DisplayName("signIn must return ValidationProblemDetail when request body is invalid")
+    void signIn_MustReturnValidationProblemDetail_WhenRequestBodyIsInvalid() throws Exception {
+      String requestBody = """
+          {
+            "email" : "lorememailcom",
+            "password" : "   "
+          }
+          """;
+
+      mockMvc.perform(
+              post(URI).contentType(MediaType.APPLICATION_JSON).content(requestBody))
+          .andExpect(status().isBadRequest())
+          .andExpect(jsonPath("$.title").value("Invalid fields"))
+          .andExpect(jsonPath("$.detail").value("Some fields are invalid"))
+          .andExpect(jsonPath("$.fields").isString())
+          .andExpect(jsonPath("$.messages").isString());
     }
 
   }
@@ -104,7 +124,7 @@ class AuthenticationControllerTest {
           .name("Lorem Ipsum")
           .build();
 
-      BDDMockito.when(authServiceMock.register(ArgumentMatchers.any(SignupRequest.class)))
+      BDDMockito.when(authServiceMock.register(any(SignupRequest.class)))
           .thenReturn(userResponse);
 
       String requestBody = """
@@ -118,15 +138,15 @@ class AuthenticationControllerTest {
 
       mockMvc.perform(
               post(URI).contentType(MediaType.APPLICATION_JSON).content(requestBody))
-          .andExpect(MockMvcResultMatchers.status().isCreated())
-          .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(1000L))
-          .andExpect(MockMvcResultMatchers.jsonPath("$.name").value("Lorem Ipsum"))
-          .andExpect(MockMvcResultMatchers.jsonPath("$.email").value("lorem@email.com"));
+          .andExpect(status().isCreated())
+          .andExpect(jsonPath("$.id").value(1000L))
+          .andExpect(jsonPath("$.name").value("Lorem Ipsum"))
+          .andExpect(jsonPath("$.email").value("lorem@email.com"));
     }
 
     @Test
-    @DisplayName("signup must return List<FormErrorDto> when request body is invalid")
-    void signUp_MustReturnListFormErrorDto_WhenRequestBodyIsInvalid() throws Exception {
+    @DisplayName("signup must return ValidationProblemDetail when request body is invalid")
+    void signUp_MustReturnValidationProblemDetail_WhenRequestBodyIsInvalid() throws Exception {
       String requestBody = """
           {
             "name" : "",
@@ -136,17 +156,20 @@ class AuthenticationControllerTest {
           }
           """;
 
-      // TODO: a resposta para request body inválido será alterado, então deve ser adicionado as assertivas.
       mockMvc.perform(
               post(URI).contentType(MediaType.APPLICATION_JSON).content(requestBody))
-          .andExpect(MockMvcResultMatchers.status().isBadRequest());
+          .andExpect(status().isBadRequest())
+          .andExpect(jsonPath("$.title").value("Invalid fields"))
+          .andExpect(jsonPath("$.detail").value("Some fields are invalid"))
+          .andExpect(jsonPath("$.fields").isString())
+          .andExpect(jsonPath("$.messages").isString());
     }
 
     @Test
-    @DisplayName("signUp must return ErrorResponse when informed email is already in use")
-    void signUp_MustReturnErrorResponse_WhenInformedEmailIsAlreadyInUse() throws Exception {
-      BDDMockito.given(authServiceMock.register(ArgumentMatchers.any(SignupRequest.class)))
-          .willThrow(new DataConflictException("Email conflict"));
+    @DisplayName("signUp must return ProblemDetail when informed email is already in use")
+    void signUp_MustReturnProblemDetail_WhenInformedEmailIsAlreadyInUse() throws Exception {
+      BDDMockito.given(authServiceMock.register(any(SignupRequest.class)))
+          .willThrow(new DataConflictException("Email is already in use"));
 
       String requestBody = """
           {
@@ -157,12 +180,11 @@ class AuthenticationControllerTest {
           }
           """;
 
-      // TODO: adicionar as assertivas depois que ErrorResponse for alterado.
       mockMvc.perform(
               post(URI).contentType(MediaType.APPLICATION_JSON).content(requestBody))
-          .andExpect(MockMvcResultMatchers.status().isConflict())
-          .andExpect(MockMvcResultMatchers.jsonPath("$.error").value("CONFLICT"))
-          .andExpect(MockMvcResultMatchers.jsonPath("$.message").isNotEmpty());
+          .andExpect(status().isConflict())
+          .andExpect(jsonPath("$.title").value("Data conflict"))
+          .andExpect(jsonPath("$.detail").value("Email is already in use"));
     }
 
   }

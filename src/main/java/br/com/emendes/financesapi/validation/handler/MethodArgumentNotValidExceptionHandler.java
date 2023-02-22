@@ -1,5 +1,6 @@
 package br.com.emendes.financesapi.validation.handler;
 
+import br.com.emendes.financesapi.dto.problem.ValidationProblemDetail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
@@ -8,8 +9,6 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.zalando.problem.Problem;
-import org.zalando.problem.Status;
 
 import java.net.URI;
 import java.time.LocalDateTime;
@@ -23,25 +22,26 @@ public class MethodArgumentNotValidExceptionHandler {
   private MessageSource messageSource;
 
   @ExceptionHandler(MethodArgumentNotValidException.class)
-  public ResponseEntity<Problem> handleMethodArgumentNotValidException(MethodArgumentNotValidException exception) {
-
+  public ResponseEntity<ValidationProblemDetail> handleMethodArgumentNotValidException(
+      MethodArgumentNotValidException exception) {
+    HttpStatus status = HttpStatus.BAD_REQUEST;
     List<FieldError> fieldErrors = exception.getBindingResult().getFieldErrors();
 
     String fields = fieldErrors.stream().map(FieldError::getField).collect(Collectors.joining("; "));
     String messages = fieldErrors.stream().map(FieldError::getDefaultMessage).collect(Collectors.joining("; "));
 
-    Problem problem = Problem.builder()
-        .withType(URI.create("https://github.com/Edson-Mendes/finances-api/problem-details/invalid-field"))
-        .withTitle("Invalid fields")
-        .withDetail("Some fields are invalid")
-        .withStatus(Status.BAD_REQUEST)
-        .with("timestamp", LocalDateTime.now())
-        .with("fields", fields)
-        .with("messages", messages)
+    ValidationProblemDetail problem = ValidationProblemDetail.builder()
+        .type(URI.create("https://github.com/Edson-Mendes/finances-api/problem-details/invalid-field"))
+        .title("Invalid fields")
+        .detail("Some fields are invalid")
+        .status(status.value())
+        .timestamp(LocalDateTime.now())
+        .fields(fields)
+        .messages(messages)
         .build();
 
     return ResponseEntity
-        .status(HttpStatus.BAD_REQUEST)
+        .status(status)
         .header("Content-Type", "application/problem+json;charset=UTF-8")
         .body(problem);
   }
