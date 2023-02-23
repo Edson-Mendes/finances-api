@@ -20,7 +20,7 @@ import br.com.emendes.financesapi.validation.validator.DateValidator;
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = DateValidator.class)
 public @interface DateValidation {
-  String message() default "invalid date";
+  String message() default "Invalid date";
 
   Class<?>[] groups() default {};
 

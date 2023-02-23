@@ -51,7 +51,6 @@ public class DevSecurityConfigurations extends WebSecurityConfigurerAdapter {
   protected void configure(HttpSecurity http) throws Exception {
     http.authorizeRequests()
         .antMatchers(HttpMethod.POST, "/api/auth/*").permitAll()
-        .antMatchers(HttpMethod.GET, "/api/categories").permitAll()
         .antMatchers(HttpMethod.GET, "/api/users").hasRole(ROLE_ADMIN)
         .antMatchers(HttpMethod.DELETE, "/api/users/*").hasRole(ROLE_ADMIN)
         .anyRequest().authenticated()

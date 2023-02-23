@@ -1,6 +1,7 @@
 package br.com.emendes.financesapi.integration.category;
 
 import br.com.emendes.financesapi.dto.response.CategoryResponse;
+import br.com.emendes.financesapi.util.component.SignIn;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -8,11 +9,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.jdbc.Sql;
 
 import java.util.List;
 
@@ -25,19 +28,35 @@ class FetchAllCategoriesIT {
   @Autowired
   private TestRestTemplate testRestTemplate;
 
+  @Autowired
+  private SignIn signIn;
+
+  private final String EMAIL = "lorem@email.com";
+  private final String PASSWORD = "12345678";
   private final String URI = "/api/categories";
 
   @Test
   @DisplayName("fetchAllCategories must return 200 and List<CategoryResponse> when fetch successfully")
+  @Sql(scripts = "/sql/user/insert-user.sql")
   void fetchAllCategories_MustReturn200AndListCategoryResponse_WhenFetchSuccessfully() {
+    HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
     ResponseEntity<List<CategoryResponse>> actualResponse = testRestTemplate
-        .exchange(URI, HttpMethod.GET, null, new ParameterizedTypeReference<>() {});
+        .exchange(URI, HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {});
 
     HttpStatus actualStatusCode = actualResponse.getStatusCode();
     List<CategoryResponse> actualResponseBody = actualResponse.getBody();
 
     Assertions.assertThat(actualStatusCode).isEqualByComparingTo(HttpStatus.OK);
     Assertions.assertThat(actualResponseBody).isNotEmpty().hasSize(8);
+  }
+
+  @Test
+  @DisplayName("fetchAllCategories must returns status 401 when user is not authenticated")
+  void fetchAllCategories_MustReturnsStatus401_WhenUserIsNotAuthenticated() {
+    ResponseEntity<Void> actualResponse = testRestTemplate.exchange(
+        URI, HttpMethod.GET, null, new ParameterizedTypeReference<>() {});
+
+    Assertions.assertThat(actualResponse.getStatusCode()).isEqualByComparingTo(HttpStatus.UNAUTHORIZED);
   }
 
 }

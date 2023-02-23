@@ -1,10 +1,9 @@
 package br.com.emendes.financesapi.integration.expense;
 
-import br.com.emendes.financesapi.controller.dto.error.FormErrorDto;
+import br.com.emendes.financesapi.dto.problem.ValidationProblemDetail;
 import br.com.emendes.financesapi.dto.request.ExpenseRequest;
-import br.com.emendes.financesapi.dto.request.SignInRequest;
 import br.com.emendes.financesapi.dto.response.ExpenseResponse;
-import br.com.emendes.financesapi.dto.response.TokenResponse;
+import br.com.emendes.financesapi.util.component.SignIn;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,13 +11,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -28,32 +29,12 @@ class CreateIT {
 
   @Autowired
   private TestRestTemplate testRestTemplate;
+  @Autowired
+  private SignIn signIn;
 
   private final String URI = "/api/expenses";
-
-  private HttpHeaders generateAuthorizationHeader() {
-    HttpHeaders headers = new HttpHeaders();
-
-    headers.add("Authorization", "Bearer " + signIn("lorem@email.com", "12345678"));
-
-    return headers;
-  }
-
-  private String signIn(String email, String password) {
-    HttpEntity<SignInRequest> requestBody = new HttpEntity<>(new SignInRequest(email, password));
-
-    ResponseEntity<TokenResponse> response = testRestTemplate.exchange(
-        "/api/auth/signin", HttpMethod.POST, requestBody, new ParameterizedTypeReference<>() {
-        });
-
-    TokenResponse body = response.getBody();
-
-    if (body == null) {
-      throw new IllegalArgumentException("Invalid email or password");
-    }
-
-    return body.getToken();
-  }
+  private final String EMAIL = "lorem@email.com";
+  private final String PASSWORD = "12345678";
 
   @Test
   @DisplayName("create must return 201 and ExpenseResponse when create successfully")
@@ -66,11 +47,11 @@ class CreateIT {
         .category("MORADIA")
         .build();
 
-    HttpEntity<ExpenseRequest> requestEntity = new HttpEntity<>(expenseRequest, generateAuthorizationHeader());
+    HttpEntity<ExpenseRequest> requestEntity = new HttpEntity<>(
+        expenseRequest, signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
 
     ResponseEntity<ExpenseResponse> actualResponse = testRestTemplate.exchange(
-        URI, HttpMethod.POST, requestEntity, new ParameterizedTypeReference<>() {
-        });
+        URI, HttpMethod.POST, requestEntity, new ParameterizedTypeReference<>() {});
 
     HttpStatus actualStatusCode = actualResponse.getStatusCode();
     ExpenseResponse actualResponseBody = actualResponse.getBody();
@@ -88,16 +69,15 @@ class CreateIT {
   @DisplayName("create must returns status 401 when user is not authenticated")
   void create_MustReturnStatus401_WhenUserIsNotAuthenticated() {
     ResponseEntity<Void> actualResponse = testRestTemplate.exchange(
-        URI, HttpMethod.POST, null, new ParameterizedTypeReference<>() {
-        });
+        URI, HttpMethod.POST, null, new ParameterizedTypeReference<>() {});
 
     Assertions.assertThat(actualResponse.getStatusCode()).isEqualByComparingTo(HttpStatus.UNAUTHORIZED);
   }
 
   @Test
-  @DisplayName("create must returns status 400 and List<FormErrorDto> when request body is invalid")
+  @DisplayName("create must returns status 400 and ValidationProblemDetail when request body is invalid")
   @Sql(scripts = {"/sql/user/insert-user.sql"})
-  void create_MustReturnStatus400AndListFormErrorDto_WhenRequestBodyIsInvalid() {
+  void create_MustReturnStatus400AndValidationProblemDetail_WhenRequestBodyIsInvalid() {
     ExpenseRequest expenseRequest = ExpenseRequest.builder()
         .description("")
         .value(new BigDecimal("150000000.00"))
@@ -105,17 +85,24 @@ class CreateIT {
         .category("  ")
         .build();
 
-    HttpEntity<ExpenseRequest> requestEntity = new HttpEntity<>(expenseRequest, generateAuthorizationHeader());
+    HttpEntity<ExpenseRequest> requestEntity = new HttpEntity<>(
+        expenseRequest, signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
 
-    ResponseEntity<List<FormErrorDto>> actualResponse = testRestTemplate.exchange(
-        URI, HttpMethod.POST, requestEntity, new ParameterizedTypeReference<>() {
-        });
+    ResponseEntity<ValidationProblemDetail> actualResponse = testRestTemplate.exchange(
+        URI, HttpMethod.POST, requestEntity, new ParameterizedTypeReference<>() {});
 
     HttpStatus actualStatusCode = actualResponse.getStatusCode();
-    List<FormErrorDto> actualResponseBody = actualResponse.getBody();
+    ValidationProblemDetail actualResponseBody = actualResponse.getBody();
 
     Assertions.assertThat(actualStatusCode).isEqualByComparingTo(HttpStatus.BAD_REQUEST);
-    Assertions.assertThat(actualResponseBody).isNotNull().isNotEmpty().hasSize(5);
+    Assertions.assertThat(actualResponseBody).isNotNull();
+    Assertions.assertThat(actualResponseBody.getTitle()).isEqualTo("Invalid fields");
+    Assertions.assertThat(actualResponseBody.getDetail()).isEqualTo("Some fields are invalid");
+    Assertions.assertThat(actualResponseBody.getFields()).contains("description", "value", "date", "category");
+    Assertions.assertThat(actualResponseBody.getMessages()).contains(
+        "description must not be null or blank",
+        "Integer part must be max 6 digits and fraction part must be max 2 digits",
+        "Invalid date", "category must not be null or blank");
   }
 
 }
