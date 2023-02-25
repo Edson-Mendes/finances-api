@@ -127,7 +127,7 @@ class MonthSummaryIT {
   }
 
   @ParameterizedTest
-  @CsvSource(value = {"/1969/3, year must be equal or greater than 1970", "/2100/3, year must be equal or less than 2099"})
+  @CsvSource(value = {"/1969/3, year must be equals or greater than 1970", "/2100/3, year must be equals or less than 2099"})
   @DisplayName("monthSummary must return 400 and ProblemDetail when year is out of range")
   @Sql(scripts = {"/sql/summary/insert-incomes-and-expenses.sql"})
   void monthSummary_MustReturn400AndProblemDetail_WhenYearIsOutOfRange(String input, String expectedDetail) {
@@ -148,7 +148,7 @@ class MonthSummaryIT {
   }
 
   @ParameterizedTest
-  @CsvSource(value = {"/2023/13, month must be equal or less than 12", "/2023/0, month must be equal or greater than 1"})
+  @CsvSource(value = {"/2023/13, month must be equals or less than 12", "/2023/0, month must be equals or greater than 1"})
   @DisplayName("monthSummary must return 400 and ProblemDetail when month is out of range")
   @Sql(scripts = {"/sql/summary/insert-incomes-and-expenses.sql"})
   void monthSummary_MustReturn400AndProblemDetail_WhenMonthIsOutOfRange(String input, String expectedDetail) {

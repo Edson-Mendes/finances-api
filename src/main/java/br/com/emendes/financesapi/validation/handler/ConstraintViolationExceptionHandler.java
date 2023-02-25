@@ -6,12 +6,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import java.net.URI;
 import java.time.LocalDateTime;
+import java.util.stream.Collectors;
 
-// Acredito que não está sendo mais usado
-@Deprecated(since = "2023-02-21", forRemoval = true)
 @RestControllerAdvice
 public class ConstraintViolationExceptionHandler {
 
@@ -19,10 +19,12 @@ public class ConstraintViolationExceptionHandler {
   public ResponseEntity<ProblemDetail> handle(ConstraintViolationException exception) {
     HttpStatus status = HttpStatus.BAD_REQUEST;
 
+    String messages = exception.getConstraintViolations().stream().map(ConstraintViolation::getMessage).collect(Collectors.joining(", "));
+
     ProblemDetail problem = ProblemDetail.builder()
         .type(URI.create("https://github.com/Edson-Mendes/finances-api/problem-details/invalid-field"))
         .title("Invalid arguments")
-        .detail(exception.getMessage())
+        .detail(messages)
         .status(status.value())
         .timestamp(LocalDateTime.now())
         .build();

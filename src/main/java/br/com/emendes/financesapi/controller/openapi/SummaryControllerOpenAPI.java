@@ -11,9 +11,6 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-
 @SecurityRequirement(name = "bearer-key")
 @Tag(name = "Resumos")
 public interface SummaryControllerOpenAPI {
@@ -28,7 +25,6 @@ public interface SummaryControllerOpenAPI {
           description = "Resumo não encontrado, usuário não possui receita ou despesas para o dado mês e ano",
           content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDto.class))}),
   })
-    // TODO: Adicionar essa validação na service.
-  ResponseEntity<SummaryResponse> monthSummary(@Min(1970) @Max(2099) int year, @Min(1) @Max(12) int month);
+  ResponseEntity<SummaryResponse> monthSummary(int year, int month);
 
 }

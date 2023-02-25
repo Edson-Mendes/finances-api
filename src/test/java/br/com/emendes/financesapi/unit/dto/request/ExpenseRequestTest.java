@@ -142,7 +142,7 @@ class ExpenseRequestTest {
       List<String> actualMessages = actualViolations.stream().map(ConstraintViolation::getMessage).toList();
 
       Assertions.assertThat(actualViolations).isNotEmpty();
-      Assertions.assertThat(actualMessages).contains("invalid date");
+      Assertions.assertThat(actualMessages).contains("Invalid date");
     }
 
   }
