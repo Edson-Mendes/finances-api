@@ -1,7 +1,7 @@
-package br.com.emendes.financesapi.validation.handler;
+package br.com.emendes.financesapi.handler;
 
 import br.com.emendes.financesapi.dto.problem.ProblemDetail;
-import br.com.emendes.financesapi.validation.exception.WrongPasswordException;
+import br.com.emendes.financesapi.exception.WrongPasswordException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;

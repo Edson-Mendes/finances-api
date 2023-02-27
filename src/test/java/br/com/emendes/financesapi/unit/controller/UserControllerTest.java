@@ -3,9 +3,10 @@ package br.com.emendes.financesapi.unit.controller;
 import br.com.emendes.financesapi.controller.UserController;
 import br.com.emendes.financesapi.dto.request.ChangePasswordRequest;
 import br.com.emendes.financesapi.dto.response.UserResponse;
+import br.com.emendes.financesapi.exception.EntityNotFoundException;
 import br.com.emendes.financesapi.service.UserService;
-import br.com.emendes.financesapi.validation.exception.PasswordsDoNotMatchException;
-import br.com.emendes.financesapi.validation.exception.WrongPasswordException;
+import br.com.emendes.financesapi.exception.PasswordsDoNotMatchException;
+import br.com.emendes.financesapi.exception.WrongPasswordException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -18,7 +19,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
-import javax.persistence.NoResultException;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -78,7 +78,7 @@ class UserControllerTest {
     @Test
     @DisplayName("delete must return ProblemDetail when not found user")
     void delete_MustReturnProblemDetail_WhenNotFoundUser() throws Exception {
-      BDDMockito.willThrow(new NoResultException("User not found with id 999"))
+      BDDMockito.willThrow(new EntityNotFoundException("User not found with id 999"))
           .given(userServiceMock).delete(999L);
 
       mockMvc.perform(delete(USER_BASE_URI + "/999"))

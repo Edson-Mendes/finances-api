@@ -6,7 +6,7 @@ import br.com.emendes.financesapi.dto.request.SignupRequest;
 import br.com.emendes.financesapi.dto.response.TokenResponse;
 import br.com.emendes.financesapi.dto.response.UserResponse;
 import br.com.emendes.financesapi.service.AuthenticationService;
-import br.com.emendes.financesapi.validation.exception.DataConflictException;
+import br.com.emendes.financesapi.exception.DataConflictException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

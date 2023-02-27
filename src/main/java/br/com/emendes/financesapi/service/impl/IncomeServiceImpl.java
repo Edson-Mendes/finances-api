@@ -2,6 +2,7 @@ package br.com.emendes.financesapi.service.impl;
 
 import br.com.emendes.financesapi.dto.response.IncomeResponse;
 import br.com.emendes.financesapi.dto.request.IncomeRequest;
+import br.com.emendes.financesapi.exception.EntityNotFoundException;
 import br.com.emendes.financesapi.model.entity.Income;
 import br.com.emendes.financesapi.model.entity.User;
 import br.com.emendes.financesapi.repository.IncomeRepository;
@@ -13,7 +14,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.NoResultException;
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.Month;
@@ -44,7 +44,7 @@ public class IncomeServiceImpl implements IncomeService {
     Page<Income> incomes = incomeRepository.findAllByUser(pageable);
 
     if (incomes.getTotalElements() == 0) {
-      throw new NoResultException("The user has no incomes");
+      throw new EntityNotFoundException("The user has no incomes");
     }
     return IncomeResponse.convert(incomes);
   }
@@ -53,7 +53,7 @@ public class IncomeServiceImpl implements IncomeService {
   public Page<IncomeResponse> readByDescriptionAndUser(String description, Pageable pageable) {
     Page<Income> incomes = incomeRepository.findByDescriptionAndUser(description, pageable);
     if (incomes.getTotalElements() == 0) {
-      throw new NoResultException("The user has no incomes with a description similar to " + description);
+      throw new EntityNotFoundException("The user has no incomes with a description similar to " + description);
     }
     return IncomeResponse.convert(incomes);
   }
@@ -67,7 +67,7 @@ public class IncomeServiceImpl implements IncomeService {
   public Page<IncomeResponse> readByYearAndMonthAndUser(int year, int month, Pageable pageable) {
     Page<Income> incomes = incomeRepository.findByYearAndMonthAndUser(year, month, pageable);
     if (incomes.getTotalElements() == 0) {
-      throw new NoResultException(String.format("Has no incomes for year %d and month %s", year, Month.of(month)));
+      throw new EntityNotFoundException(String.format("Has no incomes for year %d and month %s", year, Month.of(month)));
     }
     return IncomeResponse.convert(incomes);
   }
@@ -94,7 +94,7 @@ public class IncomeServiceImpl implements IncomeService {
     Optional<Income> optionalExpense = incomeRepository.findByIdAndUser(id);
 
     return optionalExpense.orElseThrow(
-        () -> new NoResultException("Income not found"));
+        () -> new EntityNotFoundException("Income not found"));
   }
 
 }

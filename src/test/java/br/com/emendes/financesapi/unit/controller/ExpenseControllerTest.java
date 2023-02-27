@@ -2,6 +2,7 @@ package br.com.emendes.financesapi.unit.controller;
 
 import br.com.emendes.financesapi.controller.ExpenseController;
 import br.com.emendes.financesapi.dto.response.ExpenseResponse;
+import br.com.emendes.financesapi.exception.EntityNotFoundException;
 import br.com.emendes.financesapi.model.Category;
 import br.com.emendes.financesapi.service.ExpenseService;
 import org.junit.jupiter.api.DisplayName;
@@ -16,7 +17,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
-import javax.persistence.NoResultException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
@@ -121,7 +121,7 @@ class ExpenseControllerTest {
     @DisplayName("read must return ProblemDetail when user has no expenses")
     void read_MustReturnProblemDetail_WhenUserHasNoExpenses() throws Exception {
       BDDMockito.given(expenseServiceMock.readAllByUser(any()))
-          .willThrow(new NoResultException("The user has no expenses"));
+          .willThrow(new EntityNotFoundException("The user has no expenses"));
 
       mockMvc.perform(get(EXPENSE_BASE_URI))
           .andExpect(status().isNotFound())
@@ -149,7 +149,7 @@ class ExpenseControllerTest {
     @DisplayName("read by description must return ProblemDetail when user has no expenses with description \"xxxx\"")
     void readByDescription_MustReturnProblemDetail_WhenUserHasNoExpensesWithDescriptionXxxx() throws Exception {
       BDDMockito.given(expenseServiceMock.readByDescriptionAndUser(eq("xxxx"), any()))
-          .willThrow(new NoResultException("The user has no expenses with a description similar to xxxx"));
+          .willThrow(new EntityNotFoundException("The user has no expenses with a description similar to xxxx"));
 
       mockMvc.perform(get(EXPENSE_BASE_URI + "?description=xxxx"))
           .andExpect(status().isNotFound())
@@ -183,7 +183,7 @@ class ExpenseControllerTest {
     @DisplayName("readById must return ProblemDetail when user has no expense with id 99999")
     void readById_MustReturnProblemDetail_WhenUserHasNoExpenseWithId99999() throws Exception {
       BDDMockito.given(expenseServiceMock.readByIdAndUser(99999L))
-          .willThrow(new NoResultException("Expense not found"));
+          .willThrow(new EntityNotFoundException("Expense not found"));
 
       mockMvc.perform(get(EXPENSE_BASE_URI + "/99999"))
           .andExpect(status().isNotFound())
@@ -244,7 +244,7 @@ class ExpenseControllerTest {
     @DisplayName("readByYearAndMonth must return ProblemDetail when user has not expenses for year and month")
     void readByYearAndMonth_MustReturnProblemDetail_WhenUserHasNotExpensesForYearAndMonth() throws Exception {
       BDDMockito.given(expenseServiceMock.readByYearAndMonthAndUser(eq(2023), eq(3), any()))
-          .willThrow(new NoResultException("Has no expenses for year 2023 and month MARCH"));
+          .willThrow(new EntityNotFoundException("Has no expenses for year 2023 and month MARCH"));
 
       mockMvc.perform(get(EXPENSE_BASE_URI + "/2023/03"))
           .andExpect(status().isNotFound())
@@ -295,7 +295,7 @@ class ExpenseControllerTest {
     @DisplayName("update must return ProblemDetail when user has no expenses with id 99999")
     void update_MustReturnProblemDetail_WhenUserHasNoExpensesWithId99999() throws Exception {
       BDDMockito.given(expenseServiceMock.update(eq(99999L), any()))
-          .willThrow(new NoResultException("Expense not found"));
+          .willThrow(new EntityNotFoundException("Expense not found"));
 
       String requestBody = """
           {
@@ -367,7 +367,7 @@ class ExpenseControllerTest {
     @Test
     @DisplayName("delete must return ProblemDetail when not found expense with id 99999")
     void delete_MustReturnProblemDetail_WhenNotFoundExpenseWithId99999() throws Exception {
-      BDDMockito.willThrow(new NoResultException("Expense not found"))
+      BDDMockito.willThrow(new EntityNotFoundException("Expense not found"))
           .given(expenseServiceMock).deleteById(99999L);
 
       mockMvc.perform(delete(EXPENSE_BASE_URI + "/99999"))

@@ -1,26 +1,26 @@
-package br.com.emendes.financesapi.validation.handler;
+package br.com.emendes.financesapi.handler;
 
 import br.com.emendes.financesapi.dto.problem.ProblemDetail;
+import br.com.emendes.financesapi.exception.DataConflictException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.net.URI;
 import java.time.LocalDateTime;
 
 @RestControllerAdvice
-public class TypeMismatchHandler {
+public class ConflictExceptionHandler {
 
-  @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-  public ResponseEntity<ProblemDetail> handle(MethodArgumentTypeMismatchException exception) {
-    HttpStatus status = HttpStatus.BAD_REQUEST;
+  @ExceptionHandler(DataConflictException.class)
+  public ResponseEntity<ProblemDetail> handleDataConflictException(DataConflictException exception) {
+    HttpStatus status = HttpStatus.CONFLICT;
 
     ProblemDetail problem = ProblemDetail.builder()
-        .type(URI.create("https://github.com/Edson-Mendes/finances-api/problem-details/type-mismatch"))
-        .title("Type mismatch")
-        .detail("An error occurred trying to cast String to Number")
+        .type(URI.create("https://github.com/Edson-Mendes/finances-api/problem-details/data-conflict"))
+        .title("Data conflict")
+        .detail(exception.getMessage())
         .status(status.value())
         .timestamp(LocalDateTime.now())
         .build();
@@ -30,5 +30,4 @@ public class TypeMismatchHandler {
         .header("Content-Type", "application/problem+json;charset=UTF-8")
         .body(problem);
   }
-
 }

@@ -3,6 +3,7 @@ package br.com.emendes.financesapi.service.impl;
 import br.com.emendes.financesapi.dto.request.ExpenseRequest;
 import br.com.emendes.financesapi.dto.response.ExpenseResponse;
 import br.com.emendes.financesapi.dto.response.ValueByCategoryResponse;
+import br.com.emendes.financesapi.exception.EntityNotFoundException;
 import br.com.emendes.financesapi.model.entity.Expense;
 import br.com.emendes.financesapi.model.entity.User;
 import br.com.emendes.financesapi.repository.ExpenseRepository;
@@ -14,7 +15,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.NoResultException;
 import java.time.Month;
 import java.util.List;
 import java.util.Optional;
@@ -43,7 +43,7 @@ public class ExpenseServiceImpl implements ExpenseService {
     Page<Expense> expenses = expenseRepository.findAllByUser(pageable);
     if (expenses.getTotalElements() == 0) {
       // TODO: Criar uma exception para ser lançada aqui!
-      throw new NoResultException("The user has no expenses");
+      throw new EntityNotFoundException("The user has no expenses");
     }
     return ExpenseResponse.convert(expenses);
   }
@@ -52,7 +52,7 @@ public class ExpenseServiceImpl implements ExpenseService {
   public Page<ExpenseResponse> readByDescriptionAndUser(String description, Pageable pageable) {
     Page<Expense> expenses = expenseRepository.findByDescriptionAndUser(description, pageable);
     if (expenses.getTotalElements() == 0) {
-      throw new NoResultException("The user has no expenses with a description similar to " + description);
+      throw new EntityNotFoundException("The user has no expenses with a description similar to " + description);
     }
     return ExpenseResponse.convert(expenses);
   }
@@ -67,7 +67,7 @@ public class ExpenseServiceImpl implements ExpenseService {
     Page<Expense> expenses = expenseRepository.findByYearAndMonthAndUser(year, month, pageable);
 
     if (expenses.getTotalElements() == 0) {
-      throw new NoResultException(String.format("Has no expenses for year %d and month %s", year, Month.of(month)));
+      throw new EntityNotFoundException(String.format("Has no expenses for year %d and month %s", year, Month.of(month)));
     }
     return ExpenseResponse.convert(expenses);
   }
@@ -94,7 +94,7 @@ public class ExpenseServiceImpl implements ExpenseService {
     Optional<Expense> optionalExpense = expenseRepository.findByIdAndUser(id);
 
     return optionalExpense.orElseThrow(
-        () -> new NoResultException("Expense not found"));
+        () -> new EntityNotFoundException("Expense not found"));
   }
 
 }

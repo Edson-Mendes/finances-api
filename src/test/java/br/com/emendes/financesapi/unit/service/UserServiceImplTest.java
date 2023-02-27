@@ -3,13 +3,14 @@ package br.com.emendes.financesapi.unit.service;
 import br.com.emendes.financesapi.dto.request.ChangePasswordRequest;
 import br.com.emendes.financesapi.dto.request.SignupRequest;
 import br.com.emendes.financesapi.dto.response.UserResponse;
+import br.com.emendes.financesapi.exception.EntityNotFoundException;
 import br.com.emendes.financesapi.model.entity.User;
 import br.com.emendes.financesapi.repository.UserRepository;
 import br.com.emendes.financesapi.service.impl.UserServiceImpl;
 import br.com.emendes.financesapi.util.AuthenticationFacade;
-import br.com.emendes.financesapi.validation.exception.DataConflictException;
-import br.com.emendes.financesapi.validation.exception.PasswordsDoNotMatchException;
-import br.com.emendes.financesapi.validation.exception.WrongPasswordException;
+import br.com.emendes.financesapi.exception.DataConflictException;
+import br.com.emendes.financesapi.exception.PasswordsDoNotMatchException;
+import br.com.emendes.financesapi.exception.WrongPasswordException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -30,7 +31,6 @@ import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import javax.persistence.NoResultException;
 import java.util.List;
 import java.util.Optional;
 
@@ -183,12 +183,12 @@ class UserServiceImplTest {
     }
 
     @Test
-    @DisplayName("delete must throws NoResultException when not found user")
-    void delete_MustThrowsNoResultException_WhenNotFoundUser() {
+    @DisplayName("delete must throws EntityNotFoundException when not found user")
+    void delete_MustThrowsEntityNotFoundException_WhenNotFoundUser() {
       BDDMockito.willThrow(new EmptyResultDataAccessException(1))
           .given(userRepositoryMock).deleteById(NON_EXISTING_USER_ID);
 
-      Assertions.assertThatExceptionOfType(NoResultException.class)
+      Assertions.assertThatExceptionOfType(EntityNotFoundException.class)
           .isThrownBy(() -> userServiceImpl.delete(NON_EXISTING_USER_ID))
           .withMessageContaining("User not found with id " + NON_EXISTING_USER_ID);
     }

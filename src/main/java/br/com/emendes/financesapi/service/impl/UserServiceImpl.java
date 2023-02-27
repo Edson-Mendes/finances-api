@@ -3,13 +3,14 @@ package br.com.emendes.financesapi.service.impl;
 import br.com.emendes.financesapi.dto.request.ChangePasswordRequest;
 import br.com.emendes.financesapi.dto.request.SignupRequest;
 import br.com.emendes.financesapi.dto.response.UserResponse;
+import br.com.emendes.financesapi.exception.EntityNotFoundException;
 import br.com.emendes.financesapi.model.entity.User;
 import br.com.emendes.financesapi.repository.UserRepository;
 import br.com.emendes.financesapi.service.UserService;
 import br.com.emendes.financesapi.util.AuthenticationFacade;
-import br.com.emendes.financesapi.validation.exception.DataConflictException;
-import br.com.emendes.financesapi.validation.exception.PasswordsDoNotMatchException;
-import br.com.emendes.financesapi.validation.exception.WrongPasswordException;
+import br.com.emendes.financesapi.exception.DataConflictException;
+import br.com.emendes.financesapi.exception.PasswordsDoNotMatchException;
+import br.com.emendes.financesapi.exception.WrongPasswordException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -17,8 +18,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import javax.persistence.NoResultException;
 
 @RequiredArgsConstructor
 @Service
@@ -59,7 +58,7 @@ public class UserServiceImpl implements UserService {
       userRepository.deleteById(id);
     } catch (EmptyResultDataAccessException e) {
       // TODO: Substituir por outro exception
-      throw new NoResultException("User not found with id " + id);
+      throw new EntityNotFoundException("User not found with id " + id);
     }
   }
 

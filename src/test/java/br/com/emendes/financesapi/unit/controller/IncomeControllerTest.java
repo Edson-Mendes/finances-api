@@ -2,6 +2,7 @@ package br.com.emendes.financesapi.unit.controller;
 
 import br.com.emendes.financesapi.controller.IncomeController;
 import br.com.emendes.financesapi.dto.response.IncomeResponse;
+import br.com.emendes.financesapi.exception.EntityNotFoundException;
 import br.com.emendes.financesapi.service.IncomeService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -14,8 +15,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-
-import javax.persistence.NoResultException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
@@ -115,7 +114,7 @@ class IncomeControllerTest {
     @DisplayName("read must return ProblemDetail when user has no incomes")
     void read_MustReturnProblemDetail_WhenUserHasNoIncomes() throws Exception {
       BDDMockito.given(incomeServiceMock.readAllByUser(any()))
-          .willThrow(new NoResultException("The user has no incomes"));
+          .willThrow(new EntityNotFoundException("The user has no incomes"));
 
       mockMvc.perform(get(INCOME_BASE_URI))
           .andExpect(status().isNotFound())
@@ -142,7 +141,7 @@ class IncomeControllerTest {
     @DisplayName("read by description must return ProblemDetail when user has no incomes with description \"xxxx\"")
     void readByDescription_MustReturnProblemDetail_WhenUserHasNoIncomesWithDescriptionXxxx() throws Exception {
       BDDMockito.given(incomeServiceMock.readByDescriptionAndUser(eq("xxxx"), any()))
-          .willThrow(new NoResultException("The user has no incomes with a description similar to xxxx"));
+          .willThrow(new EntityNotFoundException("The user has no incomes with a description similar to xxxx"));
 
       mockMvc.perform(get(INCOME_BASE_URI + "?description=xxxx"))
           .andExpect(status().isNotFound())
@@ -174,7 +173,7 @@ class IncomeControllerTest {
     @DisplayName("readById must return ProblemDetail when user has no income with id 99999")
     void readById_MustReturnProblemDetail_WhenUserHasNoIncomeWithId99999() throws Exception {
       BDDMockito.given(incomeServiceMock.readByIdAndUser(99999L))
-          .willThrow(new NoResultException("Income not found"));
+          .willThrow(new EntityNotFoundException("Income not found"));
 
       mockMvc.perform(get(INCOME_BASE_URI + "/99999"))
           .andExpect(status().isNotFound())
@@ -235,7 +234,7 @@ class IncomeControllerTest {
     @DisplayName("readByYearAndMonth must return ProblemDetail when user has not incomes for year and month")
     void readByYearAndMonth_MustReturnProblemDetail_WhenUserHasNotIncomesForYearAndMonth() throws Exception {
       BDDMockito.given(incomeServiceMock.readByYearAndMonthAndUser(eq(2023), eq(3), any()))
-          .willThrow(new NoResultException("Has no incomes for year 2023 and month MARCH"));
+          .willThrow(new EntityNotFoundException("Has no incomes for year 2023 and month MARCH"));
 
       mockMvc.perform(get(INCOME_BASE_URI + "/2023/03"))
           .andExpect(status().isNotFound())
@@ -282,7 +281,7 @@ class IncomeControllerTest {
     @DisplayName("update must return ProblemDetail when user has no incomes with id 99999")
     void update_MustReturnProblemDetail_WhenUserHasNoIncomesWithId99999() throws Exception {
       BDDMockito.given(incomeServiceMock.update(eq(99999L), any()))
-          .willThrow(new NoResultException("Income not found"));
+          .willThrow(new EntityNotFoundException("Income not found"));
 
       String requestBody = """
           {
@@ -351,7 +350,7 @@ class IncomeControllerTest {
     @Test
     @DisplayName("delete must return ProblemDetail when not found income with id 99999")
     void delete_MustReturnProblemDetail_WhenNotFoundIncomeWithId99999() throws Exception {
-      BDDMockito.willThrow(new NoResultException("Income not found"))
+      BDDMockito.willThrow(new EntityNotFoundException("Income not found"))
           .given(incomeServiceMock).deleteById(99999L);
 
       mockMvc.perform(delete(INCOME_BASE_URI + "/99999"))

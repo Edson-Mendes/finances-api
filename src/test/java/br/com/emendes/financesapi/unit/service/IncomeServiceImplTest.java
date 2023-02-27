@@ -2,6 +2,7 @@ package br.com.emendes.financesapi.unit.service;
 
 import br.com.emendes.financesapi.dto.request.IncomeRequest;
 import br.com.emendes.financesapi.dto.response.IncomeResponse;
+import br.com.emendes.financesapi.exception.EntityNotFoundException;
 import br.com.emendes.financesapi.model.entity.Income;
 import br.com.emendes.financesapi.repository.IncomeRepository;
 import br.com.emendes.financesapi.service.impl.IncomeServiceImpl;
@@ -20,7 +21,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import javax.persistence.NoResultException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Collections;
@@ -95,12 +95,12 @@ class IncomeServiceImplTest {
     }
 
     @Test
-    @DisplayName("readAllByUser must throws NoResultException when user has no incomes")
-    void readAllByUser_ThrowsNoResultException_WhenUserHasNoIncomes() {
+    @DisplayName("readAllByUser must throws EntityNotFoundException when user has no incomes")
+    void readAllByUser_ThrowsEntityNotFoundException_WhenUserHasNoIncomes() {
       BDDMockito.when(incomeRepositoryMock.findAllByUser(PAGEABLE))
           .thenReturn(Page.empty(PAGEABLE));
 
-      Assertions.assertThatExceptionOfType(NoResultException.class)
+      Assertions.assertThatExceptionOfType(EntityNotFoundException.class)
           .isThrownBy(() -> incomeServiceImpl.readAllByUser(PAGEABLE))
           .withMessage("The user has no incomes");
     }
@@ -140,12 +140,12 @@ class IncomeServiceImplTest {
     }
 
     @Test
-    @DisplayName("readByDescriptionAndUser must throws NoResultException when user has no incomes")
-    void readByDescriptionAndUser_ThrowsNoResultException_WhenUserHasNoIncomes() {
+    @DisplayName("readByDescriptionAndUser must throws EntityNotFoundException when user has no incomes")
+    void readByDescriptionAndUser_ThrowsEntityNotFoundException_WhenUserHasNoIncomes() {
       BDDMockito.when(incomeRepositoryMock.findByDescriptionAndUser(eq("Freela"), any()))
           .thenReturn(Page.empty(PAGEABLE));
 
-      Assertions.assertThatExceptionOfType(NoResultException.class)
+      Assertions.assertThatExceptionOfType(EntityNotFoundException.class)
           .isThrownBy(() -> incomeServiceImpl.readByDescriptionAndUser("Freela", PAGEABLE))
           .withMessageContaining("The user has no incomes with a description similar to ");
     }
@@ -183,12 +183,12 @@ class IncomeServiceImplTest {
     }
 
     @Test
-    @DisplayName("readByIdAndUser must throws NoResultException when income with id 999_999 no exists")
-    void readByIdAndUser_MustThrowsNoResultException_WhenIncomeWithId999999NoExists() {
+    @DisplayName("readByIdAndUser must throws EntityNotFoundException when income with id 999_999 no exists")
+    void readByIdAndUser_MustThrowsEntityNotFoundException_WhenIncomeWithId999999NoExists() {
       BDDMockito.when(incomeRepositoryMock.findByIdAndUser(999_999L))
           .thenReturn(Optional.empty());
 
-      Assertions.assertThatExceptionOfType(NoResultException.class)
+      Assertions.assertThatExceptionOfType(EntityNotFoundException.class)
           .isThrownBy(() -> incomeServiceImpl.readByIdAndUser(999_999L))
           .withMessage("Income not found");
     }
@@ -216,12 +216,12 @@ class IncomeServiceImplTest {
     }
 
     @Test
-    @DisplayName("readByYearAndMonthAndUser must throws NoResultException when has no incomes")
-    void readByYearAndMonthAndUser_MustThrowsNoResultException_WhenHasNoIncomes() {
+    @DisplayName("readByYearAndMonthAndUser must throws EntityNotFoundException when has no incomes")
+    void readByYearAndMonthAndUser_MustThrowsEntityNotFoundException_WhenHasNoIncomes() {
       BDDMockito.when(incomeRepositoryMock.findByYearAndMonthAndUser(2023, 3, PAGEABLE))
           .thenReturn(Page.empty());
 
-      Assertions.assertThatExceptionOfType(NoResultException.class)
+      Assertions.assertThatExceptionOfType(EntityNotFoundException.class)
           .isThrownBy(() -> incomeServiceImpl.readByYearAndMonthAndUser(2023, 3, PAGEABLE))
           .withMessage("Has no incomes for year 2023 and month MARCH");
     }
@@ -274,8 +274,8 @@ class IncomeServiceImplTest {
     }
 
     @Test
-    @DisplayName("update must throws NoResultException when income no exists")
-    void update_MustThrowsNoResultException_WhenIncomeNoExists() {
+    @DisplayName("update must throws EntityNotFoundException when income no exists")
+    void update_MustThrowsEntityNotFoundException_WhenIncomeNoExists() {
       BDDMockito.when(incomeRepositoryMock.findByIdAndUser(999_999L))
           .thenReturn(Optional.empty());
 
@@ -286,7 +286,7 @@ class IncomeServiceImplTest {
           .date("2023-02-05")
           .build();
 
-      Assertions.assertThatExceptionOfType(NoResultException.class)
+      Assertions.assertThatExceptionOfType(EntityNotFoundException.class)
           .isThrownBy(() -> incomeServiceImpl.update(999_999L, incomeRequest))
           .withMessage("Income not found");
     }
@@ -309,12 +309,12 @@ class IncomeServiceImplTest {
     }
 
     @Test
-    @DisplayName("deleteById must throws NoResultException when no exists income with id 999_999")
-    void deleteById_ThrowsNoResultException_WhenNoExistsIncomeWithId999999() {
+    @DisplayName("deleteById must throws EntityNotFoundException when no exists income with id 999_999")
+    void deleteById_ThrowsEntityNotFoundException_WhenNoExistsIncomeWithId999999() {
       BDDMockito.when(incomeRepositoryMock.findByIdAndUser(999_999L))
           .thenReturn(Optional.empty());
 
-      Assertions.assertThatExceptionOfType(NoResultException.class)
+      Assertions.assertThatExceptionOfType(EntityNotFoundException.class)
           .isThrownBy(() -> incomeServiceImpl.deleteById(999_999L))
           .withMessage("Income not found");
     }

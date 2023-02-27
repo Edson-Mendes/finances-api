@@ -1,4 +1,4 @@
-package br.com.emendes.financesapi.validation.handler;
+package br.com.emendes.financesapi.handler;
 
 import br.com.emendes.financesapi.dto.problem.ValidationProblemDetail;
 import org.springframework.beans.factory.annotation.Autowired;

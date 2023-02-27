@@ -2,6 +2,7 @@ package br.com.emendes.financesapi.unit.service;
 
 import br.com.emendes.financesapi.dto.response.SummaryResponse;
 import br.com.emendes.financesapi.dto.response.ValueByCategoryResponse;
+import br.com.emendes.financesapi.exception.EntityNotFoundException;
 import br.com.emendes.financesapi.model.Category;
 import br.com.emendes.financesapi.service.impl.ExpenseServiceImpl;
 import br.com.emendes.financesapi.service.impl.IncomeServiceImpl;
@@ -16,7 +17,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import javax.persistence.NoResultException;
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
@@ -98,14 +98,14 @@ class SummaryServiceImplTest {
     }
 
     @Test
-    @DisplayName("monthSummary throws NoResultException when user has no incomes and expenses")
-    void monthSummary_ThrowsNoResultException_WhenUserHasNoIncomesAndExpenses() {
+    @DisplayName("monthSummary throws EntityNotFoundException when user has no incomes and expenses")
+    void monthSummary_ThrowsEntityNotFoundException_WhenUserHasNoIncomesAndExpenses() {
       BDDMockito.when(incomeServiceImplMock.getTotalValueByMonthAndYearAndUserId(2023, 3))
           .thenReturn(BigDecimal.ZERO);
       BDDMockito.when(expenseServiceImplMock.getValuesByCategoryOnMonthAndYearByUser(2023, 3))
           .thenReturn(Collections.emptyList());
 
-      Assertions.assertThatExceptionOfType(NoResultException.class)
+      Assertions.assertThatExceptionOfType(EntityNotFoundException.class)
           .isThrownBy(() -> summaryServiceImpl.monthSummary(2023, 3))
           .withMessage("Has no expenses or incomes for MARCH 2023");
     }

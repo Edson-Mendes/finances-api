@@ -3,6 +3,7 @@ package br.com.emendes.financesapi.unit.controller;
 import br.com.emendes.financesapi.controller.SummaryController;
 import br.com.emendes.financesapi.dto.response.SummaryResponse;
 import br.com.emendes.financesapi.dto.response.ValueByCategoryResponse;
+import br.com.emendes.financesapi.exception.EntityNotFoundException;
 import br.com.emendes.financesapi.model.Category;
 import br.com.emendes.financesapi.service.SummaryService;
 import org.junit.jupiter.api.DisplayName;
@@ -16,7 +17,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
-import javax.persistence.NoResultException;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -70,7 +70,7 @@ class SummaryControllerTest {
     @DisplayName("monthSummary must return ProblemDetail when user has no expenses or incomes for year 2023 and month 3")
     void monthSummary_MustReturnProblemDetail_WhenUserHasNoExpensesOrIncomesForYear2023AndMonth3() throws Exception {
       BDDMockito.given(summaryServiceMock.monthSummary(2023, 3))
-          .willThrow(new NoResultException("Has no expenses or incomes for MARCH 2023"));
+          .willThrow(new EntityNotFoundException("Has no expenses or incomes for MARCH 2023"));
 
       mockMvc.perform(get(SUMMARY_BASE_URI + "/2023/3"))
           .andExpect(status().isNotFound())

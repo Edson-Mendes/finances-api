@@ -1,4 +1,4 @@
-package br.com.emendes.financesapi.validation.exception;
+package br.com.emendes.financesapi.exception;
 
 public class PasswordsDoNotMatchException extends RuntimeException {
 
