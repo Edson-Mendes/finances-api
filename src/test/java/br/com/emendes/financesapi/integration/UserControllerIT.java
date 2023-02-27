@@ -59,48 +59,7 @@ class UserControllerIT {
     HEADERS_USER.add("Authorization", "Bearer "+responseUser.getBody().getToken());
   }
 
-  //@Test
-  @DisplayName("delete must returns status 204 when deleted successful")
-  void delete_ReturnsStatus204_WhenDeletedSuccessful(){
-    HttpEntity<Void> requestEntity = new HttpEntity<>(HEADERS_ADMIN);
-    ResponseEntity<Void> response = testRestTemplate
-        .exchange(BASE_URI+"/2", HttpMethod.DELETE, requestEntity, new ParameterizedTypeReference<>(){});
 
-    HttpStatus statusCode = response.getStatusCode();
-
-    Optional<User> optionalUser = userRepository.findById(2L);
-
-    Assertions.assertThat(statusCode).isEqualTo(HttpStatus.NO_CONTENT);
-    Assertions.assertThat(optionalUser).isEmpty();
-  }
-
-  //@Test
-  @DisplayName("delete must returns status 403 when role is user")
-  void delete_ReturnsStatus403_WhenRoleIsUser(){
-    HttpEntity<Void> requestEntity = new HttpEntity<>(HEADERS_USER);
-    ResponseEntity<Void> response = testRestTemplate
-        .exchange(BASE_URI+"/2", HttpMethod.DELETE, requestEntity, new ParameterizedTypeReference<>(){});
-
-    HttpStatus statusCode = response.getStatusCode();
-
-    Assertions.assertThat(statusCode).isEqualTo(HttpStatus.FORBIDDEN);
-  }
-
-  //@Test
-  @DisplayName("delete must returns status 404 and ErrorDto when id not exists")
-  void delete_ReturnsStatus404AndErrorDto_WhenIdNotExists(){
-    HttpEntity<Void> requestEntity = new HttpEntity<>(HEADERS_ADMIN);
-    ResponseEntity<ErrorDto> response = testRestTemplate
-        .exchange(BASE_URI+"/10000", HttpMethod.DELETE, requestEntity, new ParameterizedTypeReference<>(){});
-
-    HttpStatus statusCode = response.getStatusCode();
-    ErrorDto responseBody = response.getBody();
-
-    Assertions.assertThat(statusCode).isEqualTo(HttpStatus.NOT_FOUND);
-    Assertions.assertThat(responseBody).isNotNull();
-    Assertions.assertThat(responseBody.getError()).isEqualTo("Not Found");
-    Assertions.assertThat(responseBody.getMessage()).contains("não existe usuário com id: ");
-  }
 
   //@Test
   @DisplayName("changePassword must returns status 204 when change password successful")

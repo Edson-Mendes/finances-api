@@ -46,18 +46,29 @@ class ReadAllIT {
   @Sql(scripts = {INSERT_ADMIN_SQL_PATH, INSERT_USER_SQL_PATH})
   void readAll_MustReturnPageUserResponse_WhenUserIsAdmin() {
     HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(ADMIN_EMAIL, ADMIN_PASSWORD));
-    ResponseEntity<PageableResponse<UserResponse>> response = testRestTemplate
+    ResponseEntity<PageableResponse<UserResponse>> actualResponse = testRestTemplate
         .exchange(URI, HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {});
 
-    HttpStatus statusCode = response.getStatusCode();
-    Page<UserResponse> responseBody = response.getBody();
+    HttpStatus actualStatusCode = actualResponse.getStatusCode();
+    Page<UserResponse> actualResponseBody = actualResponse.getBody();
 
-    Assertions.assertThat(statusCode).isEqualTo(HttpStatus.OK);
-    Assertions.assertThat(responseBody).isNotNull().isNotEmpty().hasSize(2);
-    Assertions.assertThat(responseBody.getContent().get(0).getName()).isEqualTo("Admin");
-    Assertions.assertThat(responseBody.getContent().get(0).getEmail()).isEqualTo("admin@email.com");
-    Assertions.assertThat(responseBody.getContent().get(1).getName()).isEqualTo("Lorem Ipsum");
-    Assertions.assertThat(responseBody.getContent().get(1).getEmail()).isEqualTo("lorem@email.com");
+    Assertions.assertThat(actualStatusCode).isEqualTo(HttpStatus.OK);
+    Assertions.assertThat(actualResponseBody).isNotNull().isNotEmpty().hasSize(2);
+    Assertions.assertThat(actualResponseBody.getContent().get(0).getName()).isEqualTo("Admin");
+    Assertions.assertThat(actualResponseBody.getContent().get(0).getEmail()).isEqualTo("admin@email.com");
+    Assertions.assertThat(actualResponseBody.getContent().get(1).getName()).isEqualTo("Lorem Ipsum");
+    Assertions.assertThat(actualResponseBody.getContent().get(1).getEmail()).isEqualTo("lorem@email.com");
+  }
+
+  @Test
+  @DisplayName("readAll must return status 401 when user is not authenticated")
+  void readAll_MustReturnStatus401_WhenUserIsNotAuthenticated() {
+    ResponseEntity<Void> actualResponse = testRestTemplate
+        .exchange(URI, HttpMethod.GET, null, new ParameterizedTypeReference<>() {});
+
+    HttpStatus actualStatusCode = actualResponse.getStatusCode();
+
+    Assertions.assertThat(actualStatusCode).isEqualTo(HttpStatus.UNAUTHORIZED);
   }
 
   @Test
@@ -65,12 +76,12 @@ class ReadAllIT {
   @Sql(scripts = {INSERT_USER_SQL_PATH})
   void readAll_MustReturnStatus403_WhenUSerIsNotAdmin() {
     HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(USER_EMAIL, USER_PASSWORD));
-    ResponseEntity<Void> response = testRestTemplate
+    ResponseEntity<Void> actualResponse = testRestTemplate
         .exchange(URI, HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {});
 
-    HttpStatus statusCode = response.getStatusCode();
+    HttpStatus actualStatusCode = actualResponse.getStatusCode();
 
-    Assertions.assertThat(statusCode).isEqualTo(HttpStatus.FORBIDDEN);
+    Assertions.assertThat(actualStatusCode).isEqualTo(HttpStatus.FORBIDDEN);
   }
 
 }
