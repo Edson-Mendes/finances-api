@@ -19,6 +19,8 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 
+import static br.com.emendes.financesapi.util.constant.SqlPath.INSERT_USER_SQL_PATH;
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @ActiveProfiles("integration")
@@ -109,7 +111,7 @@ class SignUpIT {
 
   @Test
   @DisplayName("sign up must returns status 409 and ProblemDetail when informed email is already in use")
-  @Sql(scripts = {"/sql/user/insert-user.sql"})
+  @Sql(scripts = {INSERT_USER_SQL_PATH})
   void signUp_MustReturnsStatus409AndProblemDetail_WhenInformedEmailIsAlreadyInUse() {
     SignupRequest requestBody = SignupRequest.builder()
         .name("Lorem Ipsum")

@@ -19,6 +19,8 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 
+import static br.com.emendes.financesapi.util.constant.SqlPath.INSERT_USER_SQL_PATH;
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @ActiveProfiles("integration")
@@ -32,7 +34,7 @@ class SignInIT {
 
   @Test
   @DisplayName("sign in must returns status 200 and TokenResponse when sign in successfully")
-  @Sql(scripts = {"/sql/user/insert-user.sql"})
+  @Sql(scripts = {INSERT_USER_SQL_PATH})
   void signIn_MustReturnStatus200AndTokenResponse_WhenSignInSuccessfully() {
     SignInRequest requestBody = SignInRequest.builder()
         .email("lorem@email.com")
@@ -54,7 +56,7 @@ class SignInIT {
 
   @Test
   @DisplayName("sign in must returns status 400 and ProblemDetail when bad credentials")
-  @Sql(scripts = {"/sql/user/insert-user.sql"})
+  @Sql(scripts = {INSERT_USER_SQL_PATH})
   void signIn_MustReturnStatus400AndProblemDetail_WhenBadCredentials() {
     SignInRequest requestBody = SignInRequest.builder()
         .email("lorem@email.com")

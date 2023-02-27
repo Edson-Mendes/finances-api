@@ -19,6 +19,8 @@ import org.springframework.test.context.jdbc.Sql;
 
 import java.util.List;
 
+import static br.com.emendes.financesapi.util.constant.SqlPath.INSERT_USER_SQL_PATH;
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @ActiveProfiles("integration")
@@ -37,7 +39,7 @@ class FetchAllCategoriesIT {
 
   @Test
   @DisplayName("fetchAllCategories must return 200 and List<CategoryResponse> when fetch successfully")
-  @Sql(scripts = "/sql/user/insert-user.sql")
+  @Sql(scripts = INSERT_USER_SQL_PATH)
   void fetchAllCategories_MustReturn200AndListCategoryResponse_WhenFetchSuccessfully() {
     HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
     ResponseEntity<List<CategoryResponse>> actualResponse = testRestTemplate

@@ -21,6 +21,8 @@ import org.springframework.test.context.jdbc.Sql;
 
 import java.math.BigDecimal;
 
+import static br.com.emendes.financesapi.util.constant.SqlPath.INSERT_USER_SQL_PATH;
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @ActiveProfiles("integration")
@@ -38,7 +40,7 @@ class CreateIT {
 
   @Test
   @DisplayName("create must return 201 and IncomeResponse when create successfully")
-  @Sql(scripts = {"/sql/user/insert-user.sql"})
+  @Sql(scripts = {INSERT_USER_SQL_PATH})
   void create_MustReturn201AndIncomeResponse_WhenCreateSuccessfully() {
     IncomeRequest incomeRequest = IncomeRequest.builder()
         .description("Salário")
@@ -82,7 +84,7 @@ class CreateIT {
 
   @Test
   @DisplayName("create must returns status 400 and ValidationProblemDetail when request body is invalid")
-  @Sql(scripts = {"/sql/user/insert-user.sql"})
+  @Sql(scripts = {INSERT_USER_SQL_PATH})
   void create_MustReturnStatus400AndValidationProblemDetail_WhenRequestBodyIsInvalid() {
     IncomeRequest incomeRequest = IncomeRequest.builder()
         .description("")

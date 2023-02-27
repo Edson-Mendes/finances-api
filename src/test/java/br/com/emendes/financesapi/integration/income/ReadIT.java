@@ -22,6 +22,8 @@ import org.springframework.test.context.jdbc.Sql;
 
 import java.util.List;
 
+import static br.com.emendes.financesapi.util.constant.SqlPath.INSERT_USER_SQL_PATH;
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @ActiveProfiles("integration")
@@ -85,7 +87,7 @@ class ReadIT {
 
   @Test
   @DisplayName("read must return status 404 and ProblemDetail when user has no incomes")
-  @Sql(scripts = {"/sql/user/insert-user.sql"})
+  @Sql(scripts = {INSERT_USER_SQL_PATH})
   void read_MustReturnStatus404AndProblemDetail_WhenUserHasNoIncomes() {
     HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
 
@@ -139,7 +141,7 @@ class ReadIT {
 
   @Test
   @DisplayName("readByDescription must returns status 404 and ProblemDetail when user has no incomes with description \"Salário\"")
-  @Sql(scripts = {"/sql/user/insert-user.sql"})
+  @Sql(scripts = {INSERT_USER_SQL_PATH})
   void readByDescription_MustReturnStatus404AndProblemDetail_WhenUserHasNoIncomesWithDescriptionSalario() {
     HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
     ResponseEntity<ProblemDetail> actualResponse = testRestTemplate.exchange(

@@ -22,6 +22,8 @@ import org.springframework.test.context.jdbc.Sql;
 
 import java.math.BigDecimal;
 
+import static br.com.emendes.financesapi.util.constant.SqlPath.INSERT_INCOME_SQL_PATH;
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @ActiveProfiles("integration")
@@ -39,7 +41,7 @@ class UpdateIT {
 
   @Test
   @DisplayName("update must return status 200 and IncomeResponse when update successfully")
-  @Sql(scripts = {"/sql/income/insert-income.sql"})
+  @Sql(scripts = {INSERT_INCOME_SQL_PATH})
   void update_MustReturnStatus200AndIncomeResponse_WhenUpdateSuccessfully() {
     IncomeRequest incomeRequest = IncomeRequest.builder()
         .description("Salário")
@@ -65,7 +67,7 @@ class UpdateIT {
 
   @Test
   @DisplayName("update must return status 400 and ValidationProblemDetail when body is invalid")
-  @Sql(scripts = {"/sql/income/insert-income.sql"})
+  @Sql(scripts = {INSERT_INCOME_SQL_PATH})
   void update_MustReturnStatus400AndValidationProblemDetail_WhenBodyIsInvalid() {
     IncomeRequest incomeRequest = IncomeRequest.builder()
         .description("")
@@ -93,7 +95,7 @@ class UpdateIT {
 
   @Test
   @DisplayName("update must return status 400 and ProblemDetail when id is invalid")
-  @Sql(scripts = {"/sql/income/insert-income.sql"})
+  @Sql(scripts = {INSERT_INCOME_SQL_PATH})
   void update_MustReturnStatus400AndProblemDetail_WhenIdIsInvalid() {
     IncomeRequest incomeRequest = IncomeRequest.builder()
         .description("Salário")
@@ -130,7 +132,7 @@ class UpdateIT {
 
   @Test
   @DisplayName("update must return status 404 and ProblemDetail when id no exists")
-  @Sql(scripts = {"/sql/income/insert-income.sql"})
+  @Sql(scripts = {INSERT_INCOME_SQL_PATH})
   void update_MustReturnStatus404AndProblemDetail_WhenIdNoExists() {
     IncomeRequest incomeRequest = IncomeRequest.builder()
         .description("Salário")

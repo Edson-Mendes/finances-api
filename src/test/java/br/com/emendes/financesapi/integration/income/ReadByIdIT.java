@@ -18,6 +18,8 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 
+import static br.com.emendes.financesapi.util.constant.SqlPath.INSERT_INCOME_SQL_PATH;
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @ActiveProfiles("integration")
@@ -35,7 +37,7 @@ class ReadByIdIT {
 
   @Test
   @DisplayName("readById must return status 200 and IncomeResponse when found successfully")
-  @Sql(scripts = {"/sql/income/insert-income.sql"})
+  @Sql(scripts = {INSERT_INCOME_SQL_PATH})
   void readById_MustReturnStatus200AndIncomeResponse_WhenFoundSuccessfully() {
     HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
 
@@ -53,7 +55,7 @@ class ReadByIdIT {
 
   @Test
   @DisplayName("readById must return status 400 and ProblemDetail when id is invalid")
-  @Sql(scripts = {"/sql/income/insert-income.sql"})
+  @Sql(scripts = {INSERT_INCOME_SQL_PATH})
   void readById_MustReturnStatus400AndProblemDetail_WhenIdIsInvalid() {
     HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
 
@@ -83,7 +85,7 @@ class ReadByIdIT {
 
   @Test
   @DisplayName("readById must return status 404 and ProblemDetail when id not exists")
-  @Sql(scripts = {"/sql/income/insert-income.sql"})
+  @Sql(scripts = {INSERT_INCOME_SQL_PATH})
   void readById_MustReturnStatus404AndProblemDetail_WhenIdNotExists() {
     HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
 

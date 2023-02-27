@@ -22,6 +22,8 @@ import org.springframework.test.context.jdbc.Sql;
 
 import java.util.List;
 
+import static br.com.emendes.financesapi.util.constant.SqlPath.INSERT_EXPENSE_SQL_PATH;
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @ActiveProfiles("integration")
@@ -39,7 +41,7 @@ class ReadIT {
 
   @Test
   @DisplayName("read must return status 200 and Page<ExpenseResponse> when read successfully")
-  @Sql(scripts = {"/sql/expense/insert-expense.sql"})
+  @Sql(scripts = {INSERT_EXPENSE_SQL_PATH})
   void read_MustReturnStatus200AndPageExpenseResponse_WhenReadSuccessfully() {
     HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
 
@@ -58,7 +60,7 @@ class ReadIT {
 
   @Test
   @DisplayName("read must return status 200 and empty Page<ExpenseResponse> when read page one")
-  @Sql(scripts = {"/sql/expense/insert-expense.sql"})
+  @Sql(scripts = {INSERT_EXPENSE_SQL_PATH})
   void read_MustReturnStatus200AndEmptyPageExpenseResponse_WhenReadPageOne() {
     HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
 
@@ -103,7 +105,7 @@ class ReadIT {
 
   @Test
   @DisplayName("readByDescription must return status 200 and empty Page<ExpenseResponse> when read by description and page one")
-  @Sql(scripts = {"/sql/expense/insert-expense.sql"})
+  @Sql(scripts = {INSERT_EXPENSE_SQL_PATH})
   void readByDescription_MustReturnsStatus200AndEmptyPageExpenseResponse_WhenReadByDescriptionAndPageOne() {
     HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
 
@@ -122,7 +124,7 @@ class ReadIT {
 
   @Test
   @DisplayName("readByDescription must returns status 200 and Page<ExpenseResponse> when read by description successfully")
-  @Sql(scripts = {"/sql/expense/insert-expense.sql"})
+  @Sql(scripts = {INSERT_EXPENSE_SQL_PATH})
   void readByDescription_MustReturnStatus200AndPageExpenseResponse_WhenReadByDescriptionSuccessfully() {
     HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
 

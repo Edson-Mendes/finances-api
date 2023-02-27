@@ -20,6 +20,8 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 
+import static br.com.emendes.financesapi.util.constant.SqlPath.INSERT_INCOMES_EXPENSES_SQL_PATH;
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @ActiveProfiles("integration")
@@ -37,7 +39,7 @@ class MonthSummaryIT {
 
   @Test
   @DisplayName("monthSummary must return status 200 and SummaryResponse read monthSummary successfully")
-  @Sql(scripts = {"/sql/summary/insert-incomes-and-expenses.sql"})
+  @Sql(scripts = {INSERT_INCOMES_EXPENSES_SQL_PATH})
   void monthSummary_MustReturnStatus200AndSummaryResponse_WhenReadMonthSummarySuccessfully() {
     HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
 
@@ -58,7 +60,7 @@ class MonthSummaryIT {
 
   @Test
   @DisplayName("monthSummary must return status 404 and ProblemDetail when summary no exists")
-  @Sql(scripts = {"/sql/summary/insert-incomes-and-expenses.sql"})
+  @Sql(scripts = {INSERT_INCOMES_EXPENSES_SQL_PATH})
   void monthSummary_MustReturnStatus404AndProblemDetail_WhenSummaryNoExists() {
     HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
 
@@ -87,7 +89,7 @@ class MonthSummaryIT {
 
   @Test
   @DisplayName("monthSummary must return 400 and ProblemDetail when can not parse year")
-  @Sql(scripts = {"/sql/summary/insert-incomes-and-expenses.sql"})
+  @Sql(scripts = {INSERT_INCOMES_EXPENSES_SQL_PATH})
   void monthSummary_MustReturn400AndProblemDetail_WhenCanNotParseYear() {
     HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
 
@@ -108,7 +110,7 @@ class MonthSummaryIT {
 
   @Test
   @DisplayName("monthSummary must return 400 and ProblemDetail when can not parse month")
-  @Sql(scripts = {"/sql/summary/insert-incomes-and-expenses.sql"})
+  @Sql(scripts = {INSERT_INCOMES_EXPENSES_SQL_PATH})
   void monthSummary_MustReturn400AndProblemDetail_WhenCanNotParseMonth() {
     HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
 
@@ -129,7 +131,7 @@ class MonthSummaryIT {
   @ParameterizedTest
   @CsvSource(value = {"/1969/3, year must be equals or greater than 1970", "/2100/3, year must be equals or less than 2099"})
   @DisplayName("monthSummary must return 400 and ProblemDetail when year is out of range")
-  @Sql(scripts = {"/sql/summary/insert-incomes-and-expenses.sql"})
+  @Sql(scripts = {INSERT_INCOMES_EXPENSES_SQL_PATH})
   void monthSummary_MustReturn400AndProblemDetail_WhenYearIsOutOfRange(String input, String expectedDetail) {
     HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
 
@@ -150,7 +152,7 @@ class MonthSummaryIT {
   @ParameterizedTest
   @CsvSource(value = {"/2023/13, month must be equals or less than 12", "/2023/0, month must be equals or greater than 1"})
   @DisplayName("monthSummary must return 400 and ProblemDetail when month is out of range")
-  @Sql(scripts = {"/sql/summary/insert-incomes-and-expenses.sql"})
+  @Sql(scripts = {INSERT_INCOMES_EXPENSES_SQL_PATH})
   void monthSummary_MustReturn400AndProblemDetail_WhenMonthIsOutOfRange(String input, String expectedDetail) {
     HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
 

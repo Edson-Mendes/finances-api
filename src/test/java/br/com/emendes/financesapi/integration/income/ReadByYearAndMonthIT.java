@@ -24,6 +24,8 @@ import org.springframework.test.context.jdbc.Sql;
 
 import java.util.List;
 
+import static br.com.emendes.financesapi.util.constant.SqlPath.INSERT_INCOME_SQL_PATH;
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @ActiveProfiles("integration")
@@ -41,7 +43,7 @@ class ReadByYearAndMonthIT {
 
   @Test
   @DisplayName("readByYearAndMonth must return status 200 and Page<IncomeResponse> when read successfully")
-  @Sql(scripts = {"/sql/income/insert-income.sql"})
+  @Sql(scripts = {INSERT_INCOME_SQL_PATH})
   void readByYearAndMonth_MustReturnStatus200AndPageIncomeResponse_WhenReadSuccessfully() {
     HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
 
@@ -60,7 +62,7 @@ class ReadByYearAndMonthIT {
 
   @Test
   @DisplayName("readByYearAndMonth must return status 200 and empty page when read by year and month and page one")
-  @Sql(scripts = {"/sql/income/insert-income.sql"})
+  @Sql(scripts = {INSERT_INCOME_SQL_PATH})
   void readByYearAndMonth_MustReturnStatus200AndEmptyPage_WhenReadByYearAndMonthAndPageOne() {
     HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
 
@@ -78,7 +80,7 @@ class ReadByYearAndMonthIT {
 
   @Test
   @DisplayName("readByYearAndMonth must return status 400 and ProblemDetail when year can not be parsed")
-  @Sql(scripts = {"/sql/income/insert-income.sql"})
+  @Sql(scripts = {INSERT_INCOME_SQL_PATH})
   void readByYearAndMonth_MustReturnStatus400AndProblemDetail_WhenYearCanNotBeParsed() {
     HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
 
@@ -97,7 +99,7 @@ class ReadByYearAndMonthIT {
 
   @Test
   @DisplayName("readByYearAndMonth must return status 400 and ProblemDetail when month can not be parsed")
-  @Sql(scripts = {"/sql/income/insert-income.sql"})
+  @Sql(scripts = {INSERT_INCOME_SQL_PATH})
   void readByYearAndMonth_MustReturnsStatus400AndProblemDetail_WhenMonthCanNotBeParsed() {
     HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
 
@@ -117,7 +119,7 @@ class ReadByYearAndMonthIT {
   @ParameterizedTest
   @CsvSource(value = {"/1969/3, year must be equals or greater than 1970", "/2100/3, year must be equals or less than 2099"})
   @DisplayName("readByYearAndMonth must return 400 and ProblemDetail when year is out of range")
-  @Sql(scripts = {"/sql/expense/insert-expense.sql"})
+  @Sql(scripts = {INSERT_INCOME_SQL_PATH})
   void readByYearAndMonth_MustReturn400AndProblemDetail_WhenYearIsOutOfRange(String input, String expectedDetail) {
     HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
 
@@ -137,7 +139,7 @@ class ReadByYearAndMonthIT {
   @ParameterizedTest
   @CsvSource(value = {"/2023/13, month must be equals or less than 12", "/2023/0, month must be equals or greater than 1"})
   @DisplayName("readByYearAndMonth must return 400 and ProblemDetail when month is out of range")
-  @Sql(scripts = {"/sql/income/insert-income.sql"})
+  @Sql(scripts = {INSERT_INCOME_SQL_PATH})
   void readByYearAndMonth_MustReturn400AndProblemDetail_WhenMonthIsOutOfRange(String input, String expectedDetail) {
     HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
 
@@ -167,7 +169,7 @@ class ReadByYearAndMonthIT {
 
   @Test
   @DisplayName("readByYearAndMonth must return status 404 and ProblemDetail when user has no incomes for march 2023")
-  @Sql(scripts = {"/sql/income/insert-income.sql"})
+  @Sql(scripts = {INSERT_INCOME_SQL_PATH})
   void readByYearAndMonth_MustReturnStatus404AndProblemDetail_WhenUserHasNoIncomesForMarch2023() {
     HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
 
