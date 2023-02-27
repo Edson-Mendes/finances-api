@@ -7,6 +7,8 @@ import br.com.emendes.financesapi.util.wrapper.PageableResponse;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -94,9 +96,9 @@ class ReadByYearAndMonthIT {
   }
 
   @Test
-  @DisplayName("readByYearAndMonth must return status 400 and ProblemDetail when month can't be parsed")
+  @DisplayName("readByYearAndMonth must return status 400 and ProblemDetail when month can not be parsed")
   @Sql(scripts = {"/sql/expense/insert-expense.sql"})
-  void readByYearAndMonth_MustReturnsStatus400AndProblemDetail_WhenMonthCantBeParsed() {
+  void readByYearAndMonth_MustReturnsStatus400AndProblemDetail_WhenMonthCanNotBeParsed() {
     HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
 
     ResponseEntity<ProblemDetail> actualResponse = testRestTemplate.exchange(
@@ -110,6 +112,46 @@ class ReadByYearAndMonthIT {
     Assertions.assertThat(actualResponseBody.getTitle()).isEqualTo("Type mismatch");
     Assertions.assertThat(actualResponseBody.getDetail())
         .contains("An error occurred trying to cast String to Number");
+  }
+
+  @ParameterizedTest
+  @CsvSource(value = {"/1969/3, year must be equals or greater than 1970", "/2100/3, year must be equals or less than 2099"})
+  @DisplayName("readByYearAndMonth must return 400 and ProblemDetail when year is out of range")
+  @Sql(scripts = {"/sql/expense/insert-expense.sql"})
+  void readByYearAndMonth_MustReturn400AndProblemDetail_WhenYearIsOutOfRange(String input, String expectedDetail) {
+    HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
+
+    ResponseEntity<ProblemDetail> actualResponse = testRestTemplate.exchange(
+        URI + input,
+        HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {});
+
+    HttpStatus actualStatusCode = actualResponse.getStatusCode();
+    ProblemDetail actualResponseBody = actualResponse.getBody();
+
+    Assertions.assertThat(actualStatusCode).isEqualByComparingTo(HttpStatus.BAD_REQUEST);
+    Assertions.assertThat(actualResponseBody).isNotNull();
+    Assertions.assertThat(actualResponseBody.getTitle()).isEqualTo("Invalid arguments");
+    Assertions.assertThat(actualResponseBody.getDetail()).isEqualTo(expectedDetail);
+  }
+
+  @ParameterizedTest
+  @CsvSource(value = {"/2023/13, month must be equals or less than 12", "/2023/0, month must be equals or greater than 1"})
+  @DisplayName("readByYearAndMonth must return 400 and ProblemDetail when month is out of range")
+  @Sql(scripts = {"/sql/expense/insert-expense.sql"})
+  void readByYearAndMonth_MustReturn400AndProblemDetail_WhenMonthIsOutOfRange(String input, String expectedDetail) {
+    HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
+
+    ResponseEntity<ProblemDetail> actualResponse = testRestTemplate.exchange(
+        URI + input,
+        HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {});
+
+    HttpStatus actualStatusCode = actualResponse.getStatusCode();
+    ProblemDetail actualResponseBody = actualResponse.getBody();
+
+    Assertions.assertThat(actualStatusCode).isEqualByComparingTo(HttpStatus.BAD_REQUEST);
+    Assertions.assertThat(actualResponseBody).isNotNull();
+    Assertions.assertThat(actualResponseBody.getTitle()).isEqualTo("Invalid arguments");
+    Assertions.assertThat(actualResponseBody.getDetail()).isEqualTo(expectedDetail);
   }
 
   @Test
