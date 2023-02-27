@@ -1,8 +1,8 @@
 package br.com.emendes.financesapi.controller.openapi;
 
+import br.com.emendes.financesapi.dto.problem.ProblemDetail;
+import br.com.emendes.financesapi.dto.problem.ValidationProblemDetail;
 import br.com.emendes.financesapi.dto.response.ExpenseResponse;
-import br.com.emendes.financesapi.controller.dto.error.ErrorDto;
-import br.com.emendes.financesapi.controller.dto.error.FormErrorDto;
 import br.com.emendes.financesapi.dto.request.ExpenseRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -32,10 +32,10 @@ public interface ExpenseControllerOpenAPI {
       @ApiResponse(responseCode = "201", description = "Despesa salva", content = {
           @Content(mediaType = "application/json", schema = @Schema(implementation = ExpenseResponse.class))}),
       @ApiResponse(responseCode = "400", description = "Bad request - Algum parâmetro do corpo da requisição inválido",
-          content = {@Content(mediaType = "application/json", schema = @Schema(implementation = FormErrorDto.class))}),
+          content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ValidationProblemDetail.class))}),
       @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
       @ApiResponse(responseCode = "409", description = "Já existe despesa com essa descrição no mesmo mês e ano",
-          content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDto.class))}),
+          content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ProblemDetail.class))}),
   })
   ResponseEntity<ExpenseResponse> create(ExpenseRequest form, UriComponentsBuilder uriBuilder);
 
@@ -46,7 +46,7 @@ public interface ExpenseControllerOpenAPI {
           content = @Content),
       @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
       @ApiResponse(responseCode = "404", description = "Nenhuma despesa encontrada",
-          content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDto.class))}),
+          content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ProblemDetail.class))}),
   })
   ResponseEntity<Page<ExpenseResponse>> read(String description, @ParameterObject Pageable pageable);
 
@@ -55,7 +55,7 @@ public interface ExpenseControllerOpenAPI {
       @ApiResponse(responseCode = "200", description = "Encontrou a despesa"),
       @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
       @ApiResponse(responseCode = "404", description = "Despesa não encontrada",
-          content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDto.class))}),
+          content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ProblemDetail.class))}),
   })
   ResponseEntity<ExpenseResponse> readById(Long id);
 
@@ -66,7 +66,7 @@ public interface ExpenseControllerOpenAPI {
           content = @Content),
       @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
       @ApiResponse(responseCode = "404", description = "Nenhuma despesa encontrada",
-          content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDto.class))}),
+          content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ProblemDetail.class))}),
   })
   ResponseEntity<Page<ExpenseResponse>> readByYearAndMonth(
       @Min(1970) @Max(2099) int year, // TODO: Adicionar essa validação na service.
@@ -78,11 +78,11 @@ public interface ExpenseControllerOpenAPI {
       @ApiResponse(responseCode = "200", description = "Atualizado com sucesso"),
       @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
       @ApiResponse(responseCode = "400", description = "Bad request - Algum parâmetro do corpo da requisição inválido",
-          content = {@Content(mediaType = "application/json", schema = @Schema(implementation = FormErrorDto.class))}),
+          content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ValidationProblemDetail.class))}),
       @ApiResponse(responseCode = "404", description = "Despesa não encontrada",
-          content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDto.class))}),
+          content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ProblemDetail.class))}),
       @ApiResponse(responseCode = "409", description = "Já existe despesa com essa descrição no mesmo mês e ano",
-          content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDto.class))}),
+          content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ProblemDetail.class))}),
   })
   ResponseEntity<ExpenseResponse> update(@PathVariable Long id, @Valid @RequestBody ExpenseRequest expenseRequest);
 
@@ -91,7 +91,7 @@ public interface ExpenseControllerOpenAPI {
       @ApiResponse(responseCode = "204", description = "Deletado com sucesso"),
       @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
       @ApiResponse(responseCode = "404", description = "Despesa não encontrada",
-          content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDto.class))}),
+          content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ProblemDetail.class))}),
   })
   ResponseEntity<Void> delete(@PathVariable Long id);
 

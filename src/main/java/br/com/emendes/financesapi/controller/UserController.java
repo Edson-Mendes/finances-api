@@ -19,7 +19,7 @@ import javax.validation.Valid;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping(value = "/api/users", produces = "application/json;charset=UTF-8")
 public class UserController implements UserControllerOpenAPI {
 
   private final UserService userService;

@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("api/summaries")
+@RequestMapping(value = "api/summaries", produces = "application/json;charset=UTF-8")
 public class SummaryController implements SummaryControllerOpenAPI {
 
   private final SummaryService summaryService;

@@ -1,6 +1,6 @@
 package br.com.emendes.financesapi.controller.openapi;
 
-import br.com.emendes.financesapi.controller.dto.error.ErrorDto;
+import br.com.emendes.financesapi.dto.problem.ProblemDetail;
 import br.com.emendes.financesapi.dto.response.SummaryResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -23,7 +23,7 @@ public interface SummaryControllerOpenAPI {
       @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
       @ApiResponse(responseCode = "404",
           description = "Resumo não encontrado, usuário não possui receita ou despesas para o dado mês e ano",
-          content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDto.class))}),
+          content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ProblemDetail.class))}),
   })
   ResponseEntity<SummaryResponse> monthSummary(int year, int month);
 

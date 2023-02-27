@@ -13,7 +13,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/categories")
+@RequestMapping(value = "/api/categories", produces = "application/json;charset=UTF-8")
 public class CategoryController implements CategoryControllerOpenAPI {
 
   private final CategoryService categoryService;

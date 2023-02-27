@@ -3,7 +3,6 @@ package br.com.emendes.financesapi.dto.request;
 import br.com.emendes.financesapi.model.Category;
 import br.com.emendes.financesapi.model.entity.Expense;
 import br.com.emendes.financesapi.model.entity.User;
-import br.com.emendes.financesapi.util.Formatter;
 import br.com.emendes.financesapi.validation.annotation.CategoryValidation;
 import br.com.emendes.financesapi.validation.annotation.DateValidation;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -50,11 +49,6 @@ public class ExpenseRequest {
     }
     User user = new User(userId);
     return new Expense(description, value, LocalDate.parse(this.date), Category.valueOf(category), user);
-  }
-
-  // TODO: remover! não será mais utilizado.
-  public LocalDate parseDateToLocalDate() {
-    return LocalDate.parse(this.date, Formatter.dateFormatter);
   }
 
 }

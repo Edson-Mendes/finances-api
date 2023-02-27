@@ -19,7 +19,7 @@ import java.net.URI;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping(value = "/api/auth", produces = "application/json;charset=UTF-8")
 public class AuthenticationController implements AuthenticationControllerOpenAPI {
 
   private final AuthenticationService authService;

@@ -2,7 +2,6 @@ package br.com.emendes.financesapi.dto.request;
 
 import br.com.emendes.financesapi.model.entity.Income;
 import br.com.emendes.financesapi.model.entity.User;
-import br.com.emendes.financesapi.util.Formatter;
 import br.com.emendes.financesapi.validation.annotation.DateValidation;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
@@ -39,11 +38,6 @@ public class IncomeRequest {
   public Income convert(Long userId) {
     User user = new User(userId);
     return new Income(description, value, LocalDate.parse(this.date), user);
-  }
-
-  // TODO: remover! não será mais utilizado.
-  public LocalDate parseDateToLocalDate() {
-    return LocalDate.parse(this.date, Formatter.dateFormatter);
   }
 
 }
