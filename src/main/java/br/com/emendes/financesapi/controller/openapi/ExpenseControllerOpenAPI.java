@@ -2,8 +2,8 @@ package br.com.emendes.financesapi.controller.openapi;
 
 import br.com.emendes.financesapi.dto.problem.ProblemDetail;
 import br.com.emendes.financesapi.dto.problem.ValidationProblemDetail;
-import br.com.emendes.financesapi.dto.response.ExpenseResponse;
 import br.com.emendes.financesapi.dto.request.ExpenseRequest;
+import br.com.emendes.financesapi.dto.response.ExpenseResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -15,13 +15,7 @@ import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.util.UriComponentsBuilder;
-
-import javax.validation.Valid;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 
 @SecurityRequirement(name = "bearer-key")
 @Tag(name = "Despesas")
@@ -68,10 +62,7 @@ public interface ExpenseControllerOpenAPI {
       @ApiResponse(responseCode = "404", description = "Nenhuma despesa encontrada",
           content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ProblemDetail.class))}),
   })
-  ResponseEntity<Page<ExpenseResponse>> readByYearAndMonth(
-      @Min(1970) @Max(2099) int year, // TODO: Adicionar essa validação na service.
-      @Min(1) @Max(12) int month,
-      @ParameterObject Pageable pageable);
+  ResponseEntity<Page<ExpenseResponse>> readByYearAndMonth(int year, int month, @ParameterObject Pageable pageable);
 
   @Operation(summary = "Atualizar despesa por id")
   @ApiResponses(value = {
@@ -84,7 +75,7 @@ public interface ExpenseControllerOpenAPI {
       @ApiResponse(responseCode = "409", description = "Já existe despesa com essa descrição no mesmo mês e ano",
           content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ProblemDetail.class))}),
   })
-  ResponseEntity<ExpenseResponse> update(@PathVariable Long id, @Valid @RequestBody ExpenseRequest expenseRequest);
+  ResponseEntity<ExpenseResponse> update(Long id, ExpenseRequest expenseRequest);
 
   @Operation(summary = "Deletar despesa por id")
   @ApiResponses(value = {
@@ -93,6 +84,6 @@ public interface ExpenseControllerOpenAPI {
       @ApiResponse(responseCode = "404", description = "Despesa não encontrada",
           content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ProblemDetail.class))}),
   })
-  ResponseEntity<Void> delete(@PathVariable Long id);
+  ResponseEntity<Void> delete(Long id);
 
 }

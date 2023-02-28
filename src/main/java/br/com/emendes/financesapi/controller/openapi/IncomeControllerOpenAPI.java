@@ -2,8 +2,8 @@ package br.com.emendes.financesapi.controller.openapi;
 
 import br.com.emendes.financesapi.dto.problem.ProblemDetail;
 import br.com.emendes.financesapi.dto.problem.ValidationProblemDetail;
-import br.com.emendes.financesapi.dto.response.IncomeResponse;
 import br.com.emendes.financesapi.dto.request.IncomeRequest;
+import br.com.emendes.financesapi.dto.response.IncomeResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -15,13 +15,7 @@ import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.util.UriComponentsBuilder;
-
-import javax.validation.Valid;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 
 @SecurityRequirement(name = "bearer-key")
 @Tag(name = "Receitas")
@@ -37,7 +31,7 @@ public interface IncomeControllerOpenAPI {
       @ApiResponse(responseCode = "409", description = "Já existe receita com essa descrição no mesmo mês e ano",
           content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ProblemDetail.class))}),
   })
-  ResponseEntity<IncomeResponse> create(@Valid @RequestBody IncomeRequest form, UriComponentsBuilder uriBuilder);
+  ResponseEntity<IncomeResponse> create(IncomeRequest form, UriComponentsBuilder uriBuilder);
 
   @Operation(summary = "Buscar todas as receitas do usuário, opcional buscar por descrição")
   @ApiResponses(value = {
@@ -68,10 +62,7 @@ public interface IncomeControllerOpenAPI {
       @ApiResponse(responseCode = "404", description = "Nenhuma receita encontrada",
           content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ProblemDetail.class))}),
   })
-  ResponseEntity<Page<IncomeResponse>> readByYearAndMonth(
-      @Min(1970) @Max(2099) int year,
-      @Min(1) @Max(12) int month,
-      @ParameterObject Pageable pageable);
+  ResponseEntity<Page<IncomeResponse>> readByYearAndMonth(int year, int month, @ParameterObject Pageable pageable);
 
   @Operation(summary = "Atualizar receita por id")
   @ApiResponses(value = {
@@ -93,5 +84,5 @@ public interface IncomeControllerOpenAPI {
       @ApiResponse(responseCode = "404", description = "Receita não encontrada", content = {
           @Content(mediaType = "application/json", schema = @Schema(implementation = ProblemDetail.class))}),
   })
-  ResponseEntity<Void> delete(@PathVariable Long id);
+  ResponseEntity<Void> delete(Long id);
 }

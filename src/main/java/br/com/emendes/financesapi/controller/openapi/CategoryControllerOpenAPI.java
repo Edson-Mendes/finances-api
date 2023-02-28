@@ -18,6 +18,7 @@ public interface CategoryControllerOpenAPI {
   @Operation(summary = "Buscar todas as categorias")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "Busca todas as categorias.", content = @Content),
+      @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
   })
   ResponseEntity<List<CategoryResponse>> fetchAllCategories();
 

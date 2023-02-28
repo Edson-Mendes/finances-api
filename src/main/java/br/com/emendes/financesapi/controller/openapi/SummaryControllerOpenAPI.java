@@ -15,7 +15,7 @@ import org.springframework.http.ResponseEntity;
 @Tag(name = "Resumos")
 public interface SummaryControllerOpenAPI {
 
-  @Operation(summary = "Buscar resumo de um mês em determinado ano")
+  @Operation(summary = "Buscar resumo mensal")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "Encontrou resumo"),
       @ApiResponse(responseCode = "400", description = "Algum parâmetro da requisição inválido",
