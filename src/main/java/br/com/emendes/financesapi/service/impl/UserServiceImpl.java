@@ -57,7 +57,6 @@ public class UserServiceImpl implements UserService {
     try {
       userRepository.deleteById(id);
     } catch (EmptyResultDataAccessException e) {
-      // TODO: Substituir por outro exception
       throw new EntityNotFoundException("User not found with id " + id);
     }
   }

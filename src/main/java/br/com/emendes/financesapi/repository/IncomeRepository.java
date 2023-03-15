@@ -17,25 +17,6 @@ public interface IncomeRepository extends JpaRepository<Income, Long> {
   @Query("SELECT i FROM Income i WHERE i.user.id = ?#{ principal?.id }")
   Page<Income> findAllByUser(Pageable pageable);
 
-  // TODO: Essa query não será mais utilizada!
-  @Query("SELECT count(i) > 0 FROM Income i " +
-      "WHERE lower_unaccent(i.description) = lower_unaccent(:description) " +
-      "AND MONTH(i.date) = :month AND YEAR(i.date) = :year AND i.user.id = ?#{ principal?.id }")
-  boolean existsByDescriptionAndMonthAndYearAndUser(
-      @Param("description") String description,
-      @Param("month") int month,
-      @Param("year") int year);
-
-  // TODO: Essa query não será mais utilizada!
-  @Query("SELECT count(i) > 0 FROM Income i " +
-      "WHERE lower_unaccent(i.description) = lower_unaccent(:description) " +
-      "AND MONTH(i.date) = :month AND YEAR(i.date) = :year AND i.id != :id AND i.user.id = ?#{ principal?.id }")
-  boolean existsByDescriptionAndMonthAndYearAndNotIdAndUser(
-      @Param("description") String description,
-      @Param("month") int month,
-      @Param("year") int year,
-      @Param("id") Long id);
-
   @Query("SELECT i FROM Income i " +
       "WHERE lower_unaccent(i.description) LIKE lower_unaccent('%' || :description || '%') " +
       "AND i.user.id = ?#{ principal?.id }")

@@ -36,7 +36,6 @@ public class ExpenseRequest {
       message = "Integer part must be max {integer} digits and fraction part must be max {fraction} digits")
   private BigDecimal value;
 
-  //  TODO: Fazer um bean validation para validar a categoria
   @Schema(example = "ALIMENTACAO")
   @NotBlank(message = "category must not be null or blank")
   @CategoryValidation

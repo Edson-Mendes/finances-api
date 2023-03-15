@@ -26,7 +26,6 @@ public class SummaryServiceImpl implements SummaryService {
     List<ValueByCategoryResponse> valuesByCategory = expenseService.getValuesByCategoryOnMonthAndYearByUser(year, month);
 
     if (incomeTotalValue.equals(BigDecimal.ZERO) && valuesByCategory.isEmpty()) {
-      // TODO: Substituir essa Exception!
       throw new EntityNotFoundException(String.format("Has no expenses or incomes for %s %d", Month.of(month), year));
     }
     BigDecimal expenseTotalValue = valuesByCategory

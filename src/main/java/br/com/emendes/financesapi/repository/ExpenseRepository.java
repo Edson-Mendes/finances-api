@@ -16,25 +16,6 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
   @Query("SELECT e FROM Expense e WHERE e.user.id = ?#{ principal?.id }")
   Page<Expense> findAllByUser(Pageable pageable);
 
-  // TODO: Remover query
-  @Query("SELECT count(e) > 0 FROM Expense e " +
-      "WHERE lower_unaccent(e.description) = lower_unaccent(:description) " +
-      "AND MONTH(e.date) = :month AND YEAR(e.date) = :year AND e.user.id = ?#{ principal?.id }")
-  boolean existsByDescriptionAndMonthAndYearAndUser(
-      @Param("description") String description,
-      @Param("month") int month,
-      @Param("year") int year);
-
-  // TODO: Remover query
-  @Query("SELECT count(e) > 0 FROM Expense e " +
-      "WHERE lower_unaccent(e.description) = lower_unaccent(:description) " +
-      "AND MONTH(e.date) = :month AND YEAR(e.date) = :year AND e.id != :id AND e.user.id = ?#{ principal?.id }")
-  boolean existsByDescriptionAndMonthAndYearAndNotIdAndUser(
-      @Param("description") String description,
-      @Param("month") int month,
-      @Param("year") int year,
-      @Param("id") Long id);
-
   @Query("SELECT e FROM Expense e " +
       "WHERE lower_unaccent(e.description) LIKE lower_unaccent('%' || :description || '%') " +
       "AND e.user.id = ?#{ principal?.id }")

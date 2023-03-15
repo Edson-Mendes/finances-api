@@ -42,7 +42,6 @@ public class ExpenseServiceImpl implements ExpenseService {
   public Page<ExpenseResponse> readAllByUser(Pageable pageable) {
     Page<Expense> expenses = expenseRepository.findAllByUser(pageable);
     if (expenses.getTotalElements() == 0) {
-      // TODO: Criar uma exception para ser lançada aqui!
       throw new EntityNotFoundException("The user has no expenses");
     }
     return ExpenseResponse.convert(expenses);
