@@ -3,7 +3,6 @@ package br.com.emendes.financesapi.dto.request;
 import br.com.emendes.financesapi.validation.annotation.NoWhiteSpace;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
@@ -32,8 +31,4 @@ public class ChangePasswordRequest {
     return this.newPassword.equals(this.confirm);
   }
 
-  // TODO: remover daqui o encode do password!
-  public String generateNewPasswordEncoded() {
-    return new BCryptPasswordEncoder().encode(newPassword);
-  }
 }

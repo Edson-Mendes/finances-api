@@ -66,7 +66,7 @@ public class UserServiceImpl implements UserService {
     User currentUser = (User) authenticationFacade.getAuthentication().getPrincipal();
     if (passwordsMatch(changeRequest.getOldPassword(), currentUser.getPassword())) {
       if (changeRequest.passwordMatch()) {
-        currentUser.setPassword(changeRequest.generateNewPasswordEncoded());
+        currentUser.setPassword(passwordEncoder.encode(changeRequest.getNewPassword()));
         userRepository.save(currentUser);
         return;
       }
