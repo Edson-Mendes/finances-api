@@ -1,8 +1,8 @@
 <h1 align="center"> Finances API </h1>
 
-![Badge Em Manutenção](https://img.shields.io/static/v1?label=Status&message=Em+Manutenção&color=yellow&style=for-the-badge)
+![Badge Concluído](https://img.shields.io/static/v1?label=Status&message=Concluído&color=success&style=for-the-badge)
 ![Badge Java](https://img.shields.io/static/v1?label=Java&message=17&color=orange&style=for-the-badge&logo=java)
-![Badge Spring](https://img.shields.io/static/v1?label=Spring&message=v2.6.3&color=brightgreen&style=for-the-badge&logo=spring)
+![Badge Spring](https://img.shields.io/static/v1?label=Springboot&message=v2.6.3&color=brightgreen&style=for-the-badge&logo=spring)
 ![Badge Maven](https://img.shields.io/static/v1?label=Maven&message=v3.8.4&color=critical&style=for-the-badge&logo=apache+maven)
 ![Badge JUnit5](https://img.shields.io/static/v1?label=JUnit5&message=v5.8.2&color=green&style=for-the-badge&logo=junit5)
 ![Badge JUnit5](https://img.shields.io/static/v1?label=PostgreSQL&message=v14.4&color=blue&style=for-the-badge&logo=PostgreSQL)
@@ -13,31 +13,37 @@ Finances API é um projeto de uma REST API para controle de orçamento familiar 
 O projeto foi proposto pela Alura no Challenge Backend 2ª edição.
 ## :hammer: Funcionalidades
 - `Autenticação de usuário`
-  - `Cadastrar usuário`: Cadastro de usuários através de um POST para */auth/signup* com as informações de nome, email, senha e confirmação de senha.
-  - `Logar usuário`: Login de usuários através de um POST para */auth/signin* com as informações de autenticação do usuário (email e senha), devolve um token JWT do tipo Bearer, que deve ser enviado no header authorization em cada nova requisição para as outras funcionalidades.
+  - `Cadastrar usuário`: Cadastro de usuários através de um **POST /api/auth/signup** com as informações de nome, email, senha e confirmação de senha.
+  - `Logar usuário`: Login de usuários através de um **POST /api/auth/signin** com as informações de autenticação do usuário (email e senha), 
+  devolve um token JWT do tipo Bearer, que deve ser enviado no header authorization em cada nova requisição para as outras funcionalidades.</br>
+
 - `Receitas`
-  - `Cadastrar receita`: Cadastro de receitas através de um POST para */receitas* com as informações da receita a ser salva (descrição, data e valor).
-  - `Buscar receitas`: Busca as receitas do usuário através de um GET para */receitas*, opcional buscar por descrição.
-  - `Buscar receita por id`: Busca a receita do usuário por id através de um GET para */receitas/{id}*.
-  - `Buscar receitas por ano e mês`: Busca as receitas do usuário em um dado ano e mês, através de um GET para */receitas/{ano}/{mês}*.
-  - `Atualizar receita`: Atualizar uma receita do usuário através de um PUT para */receitas/{id}*.
-  - `Deletar receita`: Deletar uma receita do usuário através de um DELETE para */receitas/{id}*
+  - `Cadastrar receita`: Cadastro de receitas através de um **POST /api/incomes** com as informações da receita a ser salva (descrição, data e valor).
+  - `Buscar receitas`: Busca as receitas do usuário através de um **GET /api/incomes**, opcional buscar por descrição.
+  - `Buscar receita por id`: Busca a receita do usuário por id através de um **GET /api/incomes**{id}*.
+  - `Buscar receitas por ano e mês`: Busca as receitas do usuário em um dado ano e mês, através de um **GET /api/incomes**{ano}/{mês}*.
+  - `Atualizar receita`: Atualizar uma receita do usuário através de um **PUT /api/incomes**{id}*.
+  - `Deletar receita`: Deletar uma receita do usuário através de um **DELETE /api/incomes**{id}*</br>
+
 - `Despesas`
-  - `Cadastrar despesa`: Cadastro de despesas através de um POST para */despesas* com as informações da despesa a ser salva (descrição, data, valor e categoria), o campo categoria é opcional, as categorias até o momemto são: ALIMENTACAO, SAUDE, MORADIA, TRANSPORTE, EDUCACAO, LAZER, IMPREVISTOS, OUTRAS.
-  - `Buscar despesas`: Busca as despesas do usuário através de um GET para */despesas*, opcional buscar por descrição.
-  - `Buscar despesa por id`: Busca a despesa do usuário por id através de um GET para */despesas/{valor do id}*.
-  - `Buscar despesas por ano e mês`: Busca as despesas do usuário em um dado ano e mês, através de um GET para */despesas/{ano}/{mês}*.
-  - `Atualizar despesa`: Atualizar uma despesa do usuário através de um PUT para */despesas/{id}*.
-  - `Deletar despesa`: Deletar uma despesa do usuário através de um DELETE para */despesas/{id}*
+  - `Cadastrar despesa`: Cadastro de despesas através de um **POST /api/expenses** com as informações da despesa a ser salva (descrição, data, valor e categoria), o campo categoria é opcional, as categorias até o momemto são: ALIMENTACAO, SAUDE, MORADIA, TRANSPORTE, EDUCACAO, LAZER, IMPREVISTOS, OUTRAS.
+  - `Buscar despesas`: Busca as despesas do usuário através de um **GET /api/expenses**, opcional buscar por descrição.
+  - `Buscar despesa por id`: Busca a despesa do usuário por id através de um **GET para /api/expenses/{valor do id}**.
+  - `Buscar despesas por ano e mês`: Busca as despesas do usuário em um dado ano e mês, através de um **GET /api/expenses/{ano}/{mês}**.
+  - `Atualizar despesa`: Atualizar uma despesa do usuário através de um **PUT /api/expenses/{id}**.
+  - `Deletar despesa`: Deletar uma despesa do usuário através de um **DELETE /api/expenses/{id}**</br>
+
+- `Categorias`
+  - `Buscar categorias`: Busca de categorias através de um **GET /api/categories**.</br>
+
 - `Resumo`
-  - `Resumo de mês`: Através de um GET para */resumo/{ano}/{mês}* o usuário tem acesso ao total de receitas e despesas de um dado ano e mês, assim como o saldo do mês e o total de despesas por categoria.
-- `Permissão`
-  - `Buscar permissões`: Busca um lista com todas as permissões no sistema, através de um GET para */roles*, necessário ter permissão de acesso.
-  - `Buscar permissão por id`: Busca permissão por id, através de um GET para */roles/{id}*. 
+  - `Resumo de mês`: Através de um **GET /api/summaries/{ano}/{mês}** o usuário tem acesso ao total de receitas e despesas de um dado ano e mês, 
+  assim como o saldo do mês e o total de despesas por categoria.</br>
+
 - `Usuário`
-  - `Atualizar senha`: Através de um POST para */user/password* o usuário pode alterar sua senha.
-  - `Buscar usuários`: Através de um GET para */user* o admin pode buscar todos os usuários cadastrados, usuários comuns não possuem permissão de uso dessa funcionalidade.
-  - `Deletar usuário`: Através de um DELETE para */user/{id}* o admin pode deletar um usuário por id.
+  - `Atualizar senha`: Através de um **POST /api/users/password** o usuário pode alterar sua senha.
+  - `Buscar usuários`: Através de um **GET /api/users** o *admin* pode buscar todos os usuários cadastrados, usuários comuns não possuem permissão de uso dessa funcionalidade.
+  - `Deletar usuário`: Através de um **DELETE /api/users/{id}** o admin pode deletar um usuário por *id*.</br>
 
 ## :toolbox: Tecnologias
 - `Intellij`
