@@ -1,0 +1,35 @@
+version: '3.1'
+
+x-datasource-variables: &datasource-variables
+  DB_URL: jdbc:postgresql://finances-api-db:5432/finances-db
+  DB_USERNAME: user
+  DB_PASSWORD: 1234
+  PORT: 8080
+x-postgres-variables: &postgres-variables
+  POSTGRES_DB: finances-db
+  POSTGRES_USER: user
+  POSTGRES_PASSWORD: 1234
+
+services:
+  app:
+    image: edsonmendes/finances-api:2.0.0
+    container_name: finances-api-app
+    depends_on:
+      - db
+    ports:
+      - "8080:8080"
+    environment:
+      <<: *datasource-variables
+
+  db:
+    image: postgres
+    container_name: finances-api-db
+    ports:
+      - "54321:5432"
+    environment:
+      <<: *postgres-variables
+    volumes:
+      - finances-api-db-volume:/var/lib/postgresql/data
+
+volumes:
+  finances-api-db-volume:
