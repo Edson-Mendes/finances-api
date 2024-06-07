@@ -4,6 +4,7 @@ import br.com.emendes.financesapi.controller.openapi.ExpenseControllerOpenAPI;
 import br.com.emendes.financesapi.dto.request.ExpenseRequest;
 import br.com.emendes.financesapi.dto.response.ExpenseResponse;
 import br.com.emendes.financesapi.service.ExpenseService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,10 +15,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import javax.transaction.Transactional;
-import javax.validation.Valid;
 import java.net.URI;
 
+/**
+ * Classe controller para lidar com os endpoints /api/expenses/**.
+ */
 @RequiredArgsConstructor
 @RestController
 @RequestMapping(value = "/api/expenses", produces = "application/json;charset=UTF-8")
@@ -25,6 +27,11 @@ public class ExpenseController implements ExpenseControllerOpenAPI {
 
   private final ExpenseService expenseService;
 
+  /**
+   * Método responsável por POST /api/expenses.
+   *
+   * @param expenseRequest objeto contendo os dados de registro de despesa.
+   */
   @Override
   @PostMapping
   public ResponseEntity<ExpenseResponse> create(
@@ -34,6 +41,11 @@ public class ExpenseController implements ExpenseControllerOpenAPI {
     return ResponseEntity.created(uri).body(expenseResponse);
   }
 
+  /**
+   * Método responsável por GET /api/expenses.
+   *
+   * @param description descrição das despesas a serem buscadas, parâmetro opcional.
+   */
   @Override
   @GetMapping
   public ResponseEntity<Page<ExpenseResponse>> read(
@@ -50,6 +62,11 @@ public class ExpenseController implements ExpenseControllerOpenAPI {
         .body(expensesDto);
   }
 
+  /**
+   * Método responsável por GET /api/expenses/{id}.
+   *
+   * @param id identificador da despesa a ser buscada.
+   */
   @Override
   @GetMapping("/{id}")
   public ResponseEntity<ExpenseResponse> readById(@PathVariable(name = "id") Long id) {
@@ -59,6 +76,12 @@ public class ExpenseController implements ExpenseControllerOpenAPI {
         .body(expenseResponse);
   }
 
+  /**
+   * Método responsável por GET /api/expenses/{year}/{month}.
+   *
+   * @param year  ano das despesas a serem buscadas.
+   * @param month mês das despesas a serem buscadas.
+   */
   @Override
   @GetMapping("/{year}/{month}")
   public ResponseEntity<Page<ExpenseResponse>> readByYearAndMonth(
@@ -71,9 +94,14 @@ public class ExpenseController implements ExpenseControllerOpenAPI {
         .body(expensesDto);
   }
 
+  /**
+   * Método responsável por PUT /api/expenses/{id}.
+   *
+   * @param id             identificador da despesa a ser atualizada.
+   * @param expenseRequest objeto com os novos dados da despesa.
+   */
   @Override
   @PutMapping("/{id}")
-  @Transactional
   public ResponseEntity<ExpenseResponse> update(
       @PathVariable(name = "id") Long id, @Valid @RequestBody ExpenseRequest expenseRequest) {
     ExpenseResponse expenseResponse = expenseService.update(id, expenseRequest);
@@ -82,6 +110,11 @@ public class ExpenseController implements ExpenseControllerOpenAPI {
         .body(expenseResponse);
   }
 
+  /**
+   * Método responsável por DELETE /api/expenses/{id}.
+   *
+   * @param id identificador da despesa a ser deletada.
+   */
   @Override
   @DeleteMapping("/{id}")
   public ResponseEntity<Void> delete(@PathVariable(name = "id") Long id) {

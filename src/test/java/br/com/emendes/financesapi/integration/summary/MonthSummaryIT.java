@@ -14,7 +14,7 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
@@ -47,10 +47,10 @@ class MonthSummaryIT {
         URI + "/2023/02", HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {
         });
 
-    HttpStatus actualStatusCode = actualResponse.getStatusCode();
+    HttpStatusCode actualStatusCode = actualResponse.getStatusCode();
     SummaryResponse actualResponseBody = actualResponse.getBody();
 
-    Assertions.assertThat(actualStatusCode).isEqualByComparingTo(HttpStatus.OK);
+    Assertions.assertThat(actualStatusCode).isEqualTo(HttpStatusCode.valueOf(200));
     Assertions.assertThat(actualResponseBody).isNotNull();
     Assertions.assertThat(actualResponseBody.getIncomeTotalValue()).isEqualTo("3500.00");
     Assertions.assertThat(actualResponseBody.getExpenseTotalValue()).isEqualTo("3055.00");
@@ -68,10 +68,10 @@ class MonthSummaryIT {
         URI + "/2023/08", HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {
         });
 
-    HttpStatus actualStatusCode = actualResponse.getStatusCode();
+    HttpStatusCode actualStatusCode = actualResponse.getStatusCode();
     ProblemDetail actualResponseBody = actualResponse.getBody();
 
-    Assertions.assertThat(actualStatusCode).isEqualByComparingTo(HttpStatus.NOT_FOUND);
+    Assertions.assertThat(actualStatusCode).isEqualTo(HttpStatusCode.valueOf(404));
     Assertions.assertThat(actualResponseBody).isNotNull();
     Assertions.assertThat(actualResponseBody.getTitle()).isEqualTo("Entity not found");
     Assertions.assertThat(actualResponseBody.getDetail()).isEqualTo("Has no expenses or incomes for AUGUST 2023");
@@ -84,7 +84,7 @@ class MonthSummaryIT {
         URI + "/2023/01", HttpMethod.GET, null, new ParameterizedTypeReference<>() {
         });
 
-    Assertions.assertThat(actualResponse.getStatusCode()).isEqualByComparingTo(HttpStatus.UNAUTHORIZED);
+    Assertions.assertThat(actualResponse.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(401));
   }
 
   @Test
@@ -98,10 +98,10 @@ class MonthSummaryIT {
         HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {
         });
 
-    HttpStatus actualStatusCode = actualResponse.getStatusCode();
+    HttpStatusCode actualStatusCode = actualResponse.getStatusCode();
     ProblemDetail actualResponseBody = actualResponse.getBody();
 
-    Assertions.assertThat(actualStatusCode).isEqualByComparingTo(HttpStatus.BAD_REQUEST);
+    Assertions.assertThat(actualStatusCode).isEqualTo(HttpStatusCode.valueOf(400));
     Assertions.assertThat(actualResponseBody).isNotNull();
     Assertions.assertThat(actualResponseBody.getTitle()).isEqualTo("Type mismatch");
     Assertions.assertThat(actualResponseBody.getDetail())
@@ -119,10 +119,10 @@ class MonthSummaryIT {
         HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {
         });
 
-    HttpStatus actualStatusCode = actualResponse.getStatusCode();
+    HttpStatusCode actualStatusCode = actualResponse.getStatusCode();
     ProblemDetail actualResponseBody = actualResponse.getBody();
 
-    Assertions.assertThat(actualStatusCode).isEqualByComparingTo(HttpStatus.BAD_REQUEST);
+    Assertions.assertThat(actualStatusCode).isEqualTo(HttpStatusCode.valueOf(400));
     Assertions.assertThat(actualResponseBody).isNotNull();
     Assertions.assertThat(actualResponseBody.getTitle()).isEqualTo("Type mismatch");
     Assertions.assertThat(actualResponseBody.getDetail()).contains("An error occurred trying to cast String to Number");
@@ -140,10 +140,10 @@ class MonthSummaryIT {
         HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {
         });
 
-    HttpStatus actualStatusCode = actualResponse.getStatusCode();
+    HttpStatusCode actualStatusCode = actualResponse.getStatusCode();
     ProblemDetail actualResponseBody = actualResponse.getBody();
 
-    Assertions.assertThat(actualStatusCode).isEqualByComparingTo(HttpStatus.BAD_REQUEST);
+    Assertions.assertThat(actualStatusCode).isEqualTo(HttpStatusCode.valueOf(400));
     Assertions.assertThat(actualResponseBody).isNotNull();
     Assertions.assertThat(actualResponseBody.getTitle()).isEqualTo("Invalid arguments");
     Assertions.assertThat(actualResponseBody.getDetail()).isEqualTo(expectedDetail);
@@ -161,10 +161,10 @@ class MonthSummaryIT {
         HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {
         });
 
-    HttpStatus actualStatusCode = actualResponse.getStatusCode();
+    HttpStatusCode actualStatusCode = actualResponse.getStatusCode();
     ProblemDetail actualResponseBody = actualResponse.getBody();
 
-    Assertions.assertThat(actualStatusCode).isEqualByComparingTo(HttpStatus.BAD_REQUEST);
+    Assertions.assertThat(actualStatusCode).isEqualTo(HttpStatusCode.valueOf(400));
     Assertions.assertThat(actualResponseBody).isNotNull();
     Assertions.assertThat(actualResponseBody.getTitle()).isEqualTo("Invalid arguments");
     Assertions.assertThat(actualResponseBody.getDetail()).isEqualTo(expectedDetail);

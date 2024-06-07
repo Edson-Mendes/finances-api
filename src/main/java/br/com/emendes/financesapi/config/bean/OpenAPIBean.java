@@ -1,4 +1,4 @@
-package br.com.emendes.financesapi.config.swagger;
+package br.com.emendes.financesapi.config.bean;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
@@ -8,8 +8,11 @@ import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * Classe com as configurações do OpenAPI.
+ */
 @Configuration
-public class SwaggerConfigurations {
+public class OpenAPIBean {
 
   @Bean
   public OpenAPI openAPI() {
@@ -27,4 +30,5 @@ public class SwaggerConfigurations {
         .components(new Components()
             .addSecuritySchemes("bearer-key", securityScheme));
   }
+
 }

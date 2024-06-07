@@ -13,7 +13,7 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
@@ -51,11 +51,12 @@ class ChangePasswordIT {
         new HttpEntity<>(changePasswordRequest, signIn.generateAuthorizationHeader(USER_EMAIL, USER_PASSWORD));
 
     ResponseEntity<Void> actualResponse = testRestTemplate
-        .exchange(URI, HttpMethod.PUT, requestEntity, new ParameterizedTypeReference<>() {});
+        .exchange(URI, HttpMethod.PUT, requestEntity, new ParameterizedTypeReference<>() {
+        });
 
-    HttpStatus actualStatusCode = actualResponse.getStatusCode();
+    HttpStatusCode actualStatusCode = actualResponse.getStatusCode();
 
-    Assertions.assertThat(actualStatusCode).isEqualTo(HttpStatus.NO_CONTENT);
+    Assertions.assertThat(actualStatusCode).isEqualTo(HttpStatusCode.valueOf(204));
   }
 
   @Test
@@ -72,12 +73,13 @@ class ChangePasswordIT {
         new HttpEntity<>(changePasswordRequest, signIn.generateAuthorizationHeader(USER_EMAIL, USER_PASSWORD));
 
     ResponseEntity<ProblemDetail> actualResponse = testRestTemplate
-        .exchange(URI, HttpMethod.PUT, requestEntity, new ParameterizedTypeReference<>() {});
+        .exchange(URI, HttpMethod.PUT, requestEntity, new ParameterizedTypeReference<>() {
+        });
 
-    HttpStatus actualStatusCode = actualResponse.getStatusCode();
+    HttpStatusCode actualStatusCode = actualResponse.getStatusCode();
     ProblemDetail actualResponseBody = actualResponse.getBody();
 
-    Assertions.assertThat(actualStatusCode).isEqualTo(HttpStatus.BAD_REQUEST);
+    Assertions.assertThat(actualStatusCode).isEqualTo(HttpStatusCode.valueOf(400));
     Assertions.assertThat(actualResponseBody).isNotNull();
     Assertions.assertThat(actualResponseBody.getTitle()).isEqualTo("Wrong password");
     Assertions.assertThat(actualResponseBody.getDetail()).isEqualTo("Wrong password");
@@ -97,12 +99,13 @@ class ChangePasswordIT {
         new HttpEntity<>(changePasswordRequest, signIn.generateAuthorizationHeader(USER_EMAIL, USER_PASSWORD));
 
     ResponseEntity<ProblemDetail> actualResponse = testRestTemplate
-        .exchange(URI, HttpMethod.PUT, requestEntity, new ParameterizedTypeReference<>() {});
+        .exchange(URI, HttpMethod.PUT, requestEntity, new ParameterizedTypeReference<>() {
+        });
 
-    HttpStatus actualStatusCode = actualResponse.getStatusCode();
+    HttpStatusCode actualStatusCode = actualResponse.getStatusCode();
     ProblemDetail actualResponseBody = actualResponse.getBody();
 
-    Assertions.assertThat(actualStatusCode).isEqualTo(HttpStatus.BAD_REQUEST);
+    Assertions.assertThat(actualStatusCode).isEqualTo(HttpStatusCode.valueOf(400));
     Assertions.assertThat(actualResponseBody).isNotNull();
     Assertions.assertThat(actualResponseBody.getTitle()).isEqualTo("Passwords do not match");
     Assertions.assertThat(actualResponseBody.getDetail()).isEqualTo("Passwords do not match");
@@ -122,12 +125,13 @@ class ChangePasswordIT {
         new HttpEntity<>(changePasswordRequest, signIn.generateAuthorizationHeader(USER_EMAIL, USER_PASSWORD));
 
     ResponseEntity<ValidationProblemDetail> actualResponse = testRestTemplate
-        .exchange(URI, HttpMethod.PUT, requestEntity, new ParameterizedTypeReference<>() {});
+        .exchange(URI, HttpMethod.PUT, requestEntity, new ParameterizedTypeReference<>() {
+        });
 
-    HttpStatus actualStatusCode = actualResponse.getStatusCode();
+    HttpStatusCode actualStatusCode = actualResponse.getStatusCode();
     ValidationProblemDetail actualResponseBody = actualResponse.getBody();
 
-    Assertions.assertThat(actualStatusCode).isEqualTo(HttpStatus.BAD_REQUEST);
+    Assertions.assertThat(actualStatusCode).isEqualTo(HttpStatusCode.valueOf(400));
     Assertions.assertThat(actualResponseBody).isNotNull();
     Assertions.assertThat(actualResponseBody.getFields()).contains("oldPassword", "newPassword", "confirm");
     Assertions.assertThat(actualResponseBody.getMessages())
@@ -147,11 +151,12 @@ class ChangePasswordIT {
     HttpEntity<ChangePasswordRequest> requestEntity = new HttpEntity<>(changePasswordRequest);
 
     ResponseEntity<Void> actualResponse = testRestTemplate
-        .exchange(URI, HttpMethod.PUT, requestEntity, new ParameterizedTypeReference<>() {});
+        .exchange(URI, HttpMethod.PUT, requestEntity, new ParameterizedTypeReference<>() {
+        });
 
-    HttpStatus actualStatusCode = actualResponse.getStatusCode();
+    HttpStatusCode actualStatusCode = actualResponse.getStatusCode();
 
-    Assertions.assertThat(actualStatusCode).isEqualTo(HttpStatus.UNAUTHORIZED);
+    Assertions.assertThat(actualStatusCode).isEqualTo(HttpStatusCode.valueOf(401));
   }
 
 }

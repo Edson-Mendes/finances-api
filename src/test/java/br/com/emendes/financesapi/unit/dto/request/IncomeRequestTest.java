@@ -1,6 +1,9 @@
 package br.com.emendes.financesapi.unit.dto.request;
 
 import br.com.emendes.financesapi.dto.request.IncomeRequest;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -9,9 +12,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
-import javax.validation.Validator;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Set;
@@ -69,9 +69,9 @@ class IncomeRequestTest {
     @DisplayName("Validate description must return violations when description contains more than 255 characters")
     void validateDescription_MustReturnViolations_WhenDescriptionContainsMoreThan255Characters() {
       String descriptionWithMoreThan255Characters = "SalárioSalárioSalárioSalárioSalárioSalárioSalário" +
-          "SalárioSalárioSalárioSalárioSalárioSalárioSalárioSalárioSalárioSalário" +
-          "SalárioSalárioSalárioSalárioSalárioSalárioSalárioSalárioSalárioSalário" +
-          "SalárioSalárioSalárioSalárioSalárioSalárioSalárioSalárioSalárioSalário";
+                                                    "SalárioSalárioSalárioSalárioSalárioSalárioSalárioSalárioSalárioSalário" +
+                                                    "SalárioSalárioSalárioSalárioSalárioSalárioSalárioSalárioSalárioSalário" +
+                                                    "SalárioSalárioSalárioSalárioSalárioSalárioSalárioSalárioSalárioSalário";
 
       IncomeRequest incomeRequest = incomeRequestBuilder
           .description(descriptionWithMoreThan255Characters)

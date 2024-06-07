@@ -10,6 +10,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+/**
+ * Implementação de {@link UserDetailsService}.
+ */
 @RequiredArgsConstructor
 @Service
 public class CustomUserDetailsService implements UserDetailsService {

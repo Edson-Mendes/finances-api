@@ -1,11 +1,11 @@
 package br.com.emendes.financesapi.model.entity;
 
 import br.com.emendes.financesapi.dto.request.IncomeRequest;
+import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
-import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 

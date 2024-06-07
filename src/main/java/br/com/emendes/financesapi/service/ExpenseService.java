@@ -1,14 +1,14 @@
 package br.com.emendes.financesapi.service;
 
+import br.com.emendes.financesapi.dto.request.ExpenseRequest;
 import br.com.emendes.financesapi.dto.response.ExpenseResponse;
 import br.com.emendes.financesapi.dto.response.ValueByCategoryResponse;
-import br.com.emendes.financesapi.dto.request.ExpenseRequest;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.validation.annotation.Validated;
 
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 import java.util.List;
 
 @Validated

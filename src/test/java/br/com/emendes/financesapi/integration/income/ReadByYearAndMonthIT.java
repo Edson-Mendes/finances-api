@@ -16,7 +16,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
@@ -48,12 +48,13 @@ class ReadByYearAndMonthIT {
     HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
 
     ResponseEntity<PageableResponse<IncomeResponse>> actualResponse = testRestTemplate.exchange(
-        URI + "/2023/2", HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {});
+        URI + "/2023/2", HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {
+        });
 
-    HttpStatus actualStatusCode = actualResponse.getStatusCode();
+    HttpStatusCode actualStatusCode = actualResponse.getStatusCode();
     Page<IncomeResponse> actualResponseBody = actualResponse.getBody();
 
-    Assertions.assertThat(actualStatusCode).isEqualByComparingTo(HttpStatus.OK);
+    Assertions.assertThat(actualStatusCode).isEqualTo(HttpStatusCode.valueOf(200));
     Assertions.assertThat(actualResponseBody).isNotNull().hasSize(2);
     List<String> actualDescriptionList = actualResponseBody.stream().map(IncomeResponse::getDescription).toList();
 
@@ -67,12 +68,13 @@ class ReadByYearAndMonthIT {
     HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
 
     ResponseEntity<PageableResponse<IncomeResponse>> actualResponse = testRestTemplate.exchange(
-        URI + "/2023/2?page=1", HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {});
+        URI + "/2023/2?page=1", HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {
+        });
 
-    HttpStatus actualStatusCode = actualResponse.getStatusCode();
+    HttpStatusCode actualStatusCode = actualResponse.getStatusCode();
     Page<IncomeResponse> actualResponseBody = actualResponse.getBody();
 
-    Assertions.assertThat(actualStatusCode).isEqualByComparingTo(HttpStatus.OK);
+    Assertions.assertThat(actualStatusCode).isEqualTo(HttpStatusCode.valueOf(200));
     Assertions.assertThat(actualResponseBody).isNotNull().isEmpty();
     Assertions.assertThat(actualResponseBody.getTotalPages()).isEqualTo(1);
     Assertions.assertThat(actualResponseBody.getTotalElements()).isEqualTo(2L);
@@ -85,12 +87,13 @@ class ReadByYearAndMonthIT {
     HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
 
     ResponseEntity<ProblemDetail> actualResponse = testRestTemplate.exchange(
-        URI + "/2023/ll", HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {});
+        URI + "/2023/ll", HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {
+        });
 
-    HttpStatus actualStatusCode = actualResponse.getStatusCode();
+    HttpStatusCode actualStatusCode = actualResponse.getStatusCode();
     ProblemDetail actualResponseBody = actualResponse.getBody();
 
-    Assertions.assertThat(actualStatusCode).isEqualByComparingTo(HttpStatus.BAD_REQUEST);
+    Assertions.assertThat(actualStatusCode).isEqualTo(HttpStatusCode.valueOf(400));
     Assertions.assertThat(actualResponseBody).isNotNull();
     Assertions.assertThat(actualResponseBody.getTitle()).isEqualTo("Type mismatch");
     Assertions.assertThat(actualResponseBody.getDetail())
@@ -104,12 +107,13 @@ class ReadByYearAndMonthIT {
     HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
 
     ResponseEntity<ProblemDetail> actualResponse = testRestTemplate.exchange(
-        URI + "/2o23/2", HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {});
+        URI + "/2o23/2", HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {
+        });
 
-    HttpStatus actualStatusCode = actualResponse.getStatusCode();
+    HttpStatusCode actualStatusCode = actualResponse.getStatusCode();
     ProblemDetail actualResponseBody = actualResponse.getBody();
 
-    Assertions.assertThat(actualStatusCode).isEqualByComparingTo(HttpStatus.BAD_REQUEST);
+    Assertions.assertThat(actualStatusCode).isEqualTo(HttpStatusCode.valueOf(400));
     Assertions.assertThat(actualResponseBody).isNotNull();
     Assertions.assertThat(actualResponseBody.getTitle()).isEqualTo("Type mismatch");
     Assertions.assertThat(actualResponseBody.getDetail())
@@ -125,12 +129,13 @@ class ReadByYearAndMonthIT {
 
     ResponseEntity<ProblemDetail> actualResponse = testRestTemplate.exchange(
         URI + input,
-        HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {});
+        HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {
+        });
 
-    HttpStatus actualStatusCode = actualResponse.getStatusCode();
+    HttpStatusCode actualStatusCode = actualResponse.getStatusCode();
     ProblemDetail actualResponseBody = actualResponse.getBody();
 
-    Assertions.assertThat(actualStatusCode).isEqualByComparingTo(HttpStatus.BAD_REQUEST);
+    Assertions.assertThat(actualStatusCode).isEqualTo(HttpStatusCode.valueOf(400));
     Assertions.assertThat(actualResponseBody).isNotNull();
     Assertions.assertThat(actualResponseBody.getTitle()).isEqualTo("Invalid arguments");
     Assertions.assertThat(actualResponseBody.getDetail()).isEqualTo(expectedDetail);
@@ -145,12 +150,13 @@ class ReadByYearAndMonthIT {
 
     ResponseEntity<ProblemDetail> actualResponse = testRestTemplate.exchange(
         URI + input,
-        HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {});
+        HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {
+        });
 
-    HttpStatus actualStatusCode = actualResponse.getStatusCode();
+    HttpStatusCode actualStatusCode = actualResponse.getStatusCode();
     ProblemDetail actualResponseBody = actualResponse.getBody();
 
-    Assertions.assertThat(actualStatusCode).isEqualByComparingTo(HttpStatus.BAD_REQUEST);
+    Assertions.assertThat(actualStatusCode).isEqualTo(HttpStatusCode.valueOf(400));
     Assertions.assertThat(actualResponseBody).isNotNull();
     Assertions.assertThat(actualResponseBody.getTitle()).isEqualTo("Invalid arguments");
     Assertions.assertThat(actualResponseBody.getDetail()).isEqualTo(expectedDetail);
@@ -160,11 +166,12 @@ class ReadByYearAndMonthIT {
   @DisplayName("readByYearAndMonth must return status 401 when user is not authenticated")
   void readByYearAndMonth_MustReturnStatus401_WhenUserIsNotAuthenticated() {
     ResponseEntity<Void> actualResponse = testRestTemplate.exchange(
-        URI + "/2023/1", HttpMethod.GET, null, new ParameterizedTypeReference<>() {});
+        URI + "/2023/1", HttpMethod.GET, null, new ParameterizedTypeReference<>() {
+        });
 
-    HttpStatus actualStatusCode = actualResponse.getStatusCode();
+    HttpStatusCode actualStatusCode = actualResponse.getStatusCode();
 
-    Assertions.assertThat(actualStatusCode).isEqualByComparingTo(HttpStatus.UNAUTHORIZED);
+    Assertions.assertThat(actualStatusCode).isEqualTo(HttpStatusCode.valueOf(401));
   }
 
   @Test
@@ -174,12 +181,13 @@ class ReadByYearAndMonthIT {
     HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
 
     ResponseEntity<ProblemDetail> actualResponse = testRestTemplate.exchange(
-        URI + "/2023/03", HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {});
+        URI + "/2023/03", HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {
+        });
 
-    HttpStatus actualStatusCode = actualResponse.getStatusCode();
+    HttpStatusCode actualStatusCode = actualResponse.getStatusCode();
     ProblemDetail actualResponseBody = actualResponse.getBody();
 
-    Assertions.assertThat(actualStatusCode).isEqualByComparingTo(HttpStatus.NOT_FOUND);
+    Assertions.assertThat(actualStatusCode).isEqualTo(HttpStatusCode.valueOf(404));
     Assertions.assertThat(actualResponseBody).isNotNull();
     Assertions.assertThat(actualResponseBody.getTitle()).isEqualTo("Entity not found");
     Assertions.assertThat(actualResponseBody.getDetail()).isEqualTo("Has no incomes for year 2023 and month MARCH");

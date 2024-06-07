@@ -1,10 +1,9 @@
 package br.com.emendes.financesapi.service;
 
 import br.com.emendes.financesapi.dto.response.SummaryResponse;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import org.springframework.validation.annotation.Validated;
-
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 
 @Validated
 public interface SummaryService {

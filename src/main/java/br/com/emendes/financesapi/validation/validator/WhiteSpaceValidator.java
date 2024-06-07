@@ -1,9 +1,8 @@
 package br.com.emendes.financesapi.validation.validator;
 
 import br.com.emendes.financesapi.validation.annotation.NoWhiteSpace;
-
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 public class WhiteSpaceValidator implements ConstraintValidator<NoWhiteSpace, String> {
 

@@ -11,7 +11,7 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
@@ -44,11 +44,12 @@ class DeleteIT {
   void delete_MustReturnStatus204_WhenDeleteSuccessfully() {
     HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(ADMIN_EMAIL, ADMIN_PASSWORD));
     ResponseEntity<Void> actualResponse = testRestTemplate
-        .exchange(URI + "/2", HttpMethod.DELETE, requestEntity, new ParameterizedTypeReference<>() {});
+        .exchange(URI + "/2", HttpMethod.DELETE, requestEntity, new ParameterizedTypeReference<>() {
+        });
 
-    HttpStatus actualStatusCode = actualResponse.getStatusCode();
+    HttpStatusCode actualStatusCode = actualResponse.getStatusCode();
 
-    Assertions.assertThat(actualStatusCode).isEqualTo(HttpStatus.NO_CONTENT);
+    Assertions.assertThat(actualStatusCode).isEqualTo(HttpStatusCode.valueOf(204));
   }
 
   @Test
@@ -57,12 +58,13 @@ class DeleteIT {
   void delete_MustReturnStatus400AndProblemDetail_WhenIdIsInvalid() {
     HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(ADMIN_EMAIL, ADMIN_PASSWORD));
     ResponseEntity<ProblemDetail> actualResponse = testRestTemplate
-        .exchange(URI + "/1o", HttpMethod.DELETE, requestEntity, new ParameterizedTypeReference<>() {});
+        .exchange(URI + "/1o", HttpMethod.DELETE, requestEntity, new ParameterizedTypeReference<>() {
+        });
 
-    HttpStatus actualStatusCode = actualResponse.getStatusCode();
+    HttpStatusCode actualStatusCode = actualResponse.getStatusCode();
     ProblemDetail actualResponseBody = actualResponse.getBody();
 
-    Assertions.assertThat(actualStatusCode).isEqualTo(HttpStatus.BAD_REQUEST);
+    Assertions.assertThat(actualStatusCode).isEqualTo(HttpStatusCode.valueOf(400));
     Assertions.assertThat(actualResponseBody).isNotNull();
     Assertions.assertThat(actualResponseBody.getTitle()).isEqualTo("Type mismatch");
     Assertions.assertThat(actualResponseBody.getDetail()).isEqualTo("An error occurred trying to cast String to Number");
@@ -72,11 +74,12 @@ class DeleteIT {
   @DisplayName("delete must return status 401 when user is not authenticated")
   void delete_MustReturnStatus401_WhenUserIsNotAuthenticated() {
     ResponseEntity<Void> actualResponse = testRestTemplate
-        .exchange(URI + "/2", HttpMethod.DELETE, null, new ParameterizedTypeReference<>() {});
+        .exchange(URI + "/2", HttpMethod.DELETE, null, new ParameterizedTypeReference<>() {
+        });
 
-    HttpStatus actualStatusCode = actualResponse.getStatusCode();
+    HttpStatusCode actualStatusCode = actualResponse.getStatusCode();
 
-    Assertions.assertThat(actualStatusCode).isEqualTo(HttpStatus.UNAUTHORIZED);
+    Assertions.assertThat(actualStatusCode).isEqualTo(HttpStatusCode.valueOf(401));
   }
 
   @Test
@@ -85,11 +88,12 @@ class DeleteIT {
   void delete_MustReturnStatus403_WhenUserIsNotAdmin() {
     HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(USER_EMAIL, USER_PASSWORD));
     ResponseEntity<Void> actualResponse = testRestTemplate
-        .exchange(URI + "/2", HttpMethod.DELETE, requestEntity, new ParameterizedTypeReference<>() {});
+        .exchange(URI + "/2", HttpMethod.DELETE, requestEntity, new ParameterizedTypeReference<>() {
+        });
 
-    HttpStatus actualStatusCode = actualResponse.getStatusCode();
+    HttpStatusCode actualStatusCode = actualResponse.getStatusCode();
 
-    Assertions.assertThat(actualStatusCode).isEqualTo(HttpStatus.FORBIDDEN);
+    Assertions.assertThat(actualStatusCode).isEqualTo(HttpStatusCode.valueOf(403));
   }
 
   @Test
@@ -98,12 +102,13 @@ class DeleteIT {
   void delete_MustReturnStatus404AndProblemDetail_WhenIdNotExists() {
     HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(ADMIN_EMAIL, ADMIN_PASSWORD));
     ResponseEntity<ProblemDetail> actualResponse = testRestTemplate
-        .exchange(URI + "/10000", HttpMethod.DELETE, requestEntity, new ParameterizedTypeReference<>() {});
+        .exchange(URI + "/10000", HttpMethod.DELETE, requestEntity, new ParameterizedTypeReference<>() {
+        });
 
-    HttpStatus actualStatusCode = actualResponse.getStatusCode();
+    HttpStatusCode actualStatusCode = actualResponse.getStatusCode();
     ProblemDetail actualResponseBody = actualResponse.getBody();
 
-    Assertions.assertThat(actualStatusCode).isEqualTo(HttpStatus.NOT_FOUND);
+    Assertions.assertThat(actualStatusCode).isEqualTo(HttpStatusCode.valueOf(404));
     Assertions.assertThat(actualResponseBody).isNotNull();
     Assertions.assertThat(actualResponseBody.getTitle()).isEqualTo("Entity not found");
     Assertions.assertThat(actualResponseBody.getDetail()).isEqualTo("User not found with id 10000");

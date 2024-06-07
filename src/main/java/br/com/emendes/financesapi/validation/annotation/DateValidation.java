@@ -5,10 +5,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import javax.validation.Constraint;
-import javax.validation.Payload;
-
 import br.com.emendes.financesapi.validation.validator.DateValidator;
+import jakarta.validation.Constraint;
+import jakarta.validation.Payload;
 
 /**
  * The {@code String} must be a {@code String} that can be parse to {@code LocalDate}.
