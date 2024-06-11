@@ -13,13 +13,14 @@ import br.com.emendes.financesapi.service.UserService;
 import br.com.emendes.financesapi.util.AuthenticationFacade;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class UserServiceImpl implements UserService {
@@ -55,11 +56,14 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public void delete(Long id) {
-    try {
-      userRepository.deleteById(id);
-    } catch (EmptyResultDataAccessException e) {
-      throw new EntityNotFoundException("User not found with id " + id);
-    }
+    log.info("attempt to delete user with id: {}", id);
+    User user = userRepository.findById(id).orElseThrow(() -> {
+      log.info("user not found with id: {}", id);
+      return new EntityNotFoundException("User not found with id " + id);
+    });
+
+    userRepository.delete(user);
+    log.info("user deleted successfully with id: {}", id);
   }
 
   @Override

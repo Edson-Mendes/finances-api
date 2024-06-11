@@ -3,25 +3,23 @@ package br.com.emendes.financesapi.unit.service;
 import br.com.emendes.financesapi.dto.request.ChangePasswordRequest;
 import br.com.emendes.financesapi.dto.request.SignupRequest;
 import br.com.emendes.financesapi.dto.response.UserResponse;
+import br.com.emendes.financesapi.exception.DataConflictException;
 import br.com.emendes.financesapi.exception.EntityNotFoundException;
+import br.com.emendes.financesapi.exception.PasswordsDoNotMatchException;
+import br.com.emendes.financesapi.exception.WrongPasswordException;
 import br.com.emendes.financesapi.model.entity.User;
 import br.com.emendes.financesapi.repository.UserRepository;
 import br.com.emendes.financesapi.service.impl.UserServiceImpl;
 import br.com.emendes.financesapi.util.AuthenticationFacade;
-import br.com.emendes.financesapi.exception.DataConflictException;
-import br.com.emendes.financesapi.exception.PasswordsDoNotMatchException;
-import br.com.emendes.financesapi.exception.WrongPasswordException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -36,7 +34,10 @@ import java.util.Optional;
 
 import static br.com.emendes.financesapi.util.constant.ConstantForTesting.ROLE_USER;
 import static br.com.emendes.financesapi.util.constant.ConstantForTesting.USER;
+import static br.com.emendes.financesapi.util.faker.UserFaker.optionalUser;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 @DisplayName("Tests for UserServiceImpl")
@@ -60,14 +61,14 @@ class UserServiceImplTest {
 
     @BeforeEach
     void setUp() {
-      BDDMockito.when(passwordEncoderMock.encode(any(String.class)))
+      when(passwordEncoderMock.encode(any(String.class)))
           .thenReturn("encodedpassword");
     }
 
     @Test
     @DisplayName("createAccount must return UserResponse when create successfully")
     void createAccount_MustReturnUserResponse_WhenCreateSuccessfully() {
-      BDDMockito.when(userRepositoryMock.save(any(User.class)))
+      when(userRepositoryMock.save(any(User.class)))
           .thenReturn(USER);
 
       SignupRequest signupRequest = SignupRequest.builder()
@@ -87,7 +88,7 @@ class UserServiceImplTest {
     @Test
     @DisplayName("createAccount must throws DataConflictException when email already used")
     void createAccount_MustThrowsDataConflictException_WhenEmailAlreadyUsed() {
-      BDDMockito.when(userRepositoryMock.save(any()))
+      when(userRepositoryMock.save(any()))
           .thenThrow(new DataIntegrityViolationException("Email inserido já está em uso!"));
 
       SignupRequest signupRequest = SignupRequest.builder()
@@ -126,7 +127,7 @@ class UserServiceImplTest {
     @Test
     @DisplayName("read must return Page<UserResponse> when read successfully")
     void read_ReturnsPageUserResponse_WhenReadSuccessfully() {
-      BDDMockito.when(userRepositoryMock.findAll(PAGEABLE))
+      when(userRepositoryMock.findAll(PAGEABLE))
           .thenReturn(new PageImpl<>(List.of(USER)));
 
       Page<UserResponse> actualUserResponsePage = userServiceImpl.read(PAGEABLE);
@@ -145,7 +146,7 @@ class UserServiceImplTest {
     @Test
     @DisplayName("readById must return User when read by id successfully")
     void readById_MustReturnsUser_WhenReadByIdSuccessfully() {
-      BDDMockito.when(userRepositoryMock.findById(1000L))
+      when(userRepositoryMock.findById(1000L))
           .thenReturn(Optional.of(USER));
 
       Long userId = 1000L;
@@ -158,7 +159,7 @@ class UserServiceImplTest {
     @Test
     @DisplayName("readById must return Null when not found user")
     void readById_MustReturnsNull_WhenNotFoundUser() {
-      BDDMockito.when(userRepositoryMock.findById(NON_EXISTING_USER_ID))
+      when(userRepositoryMock.findById(NON_EXISTING_USER_ID))
           .thenReturn(Optional.empty());
 
       User user = userServiceImpl.readById(NON_EXISTING_USER_ID);
@@ -175,22 +176,21 @@ class UserServiceImplTest {
     @Test
     @DisplayName("delete must call 1 time UserRepository#deleteById when delete successfully")
     void delete_MustCall1TimeUserRepositoryDeleteById_WhenDeleteSuccessfully() {
-      BDDMockito.doNothing().when(userRepositoryMock).deleteById(1000L);
+      when(userRepositoryMock.findById(1_000L)).thenReturn(optionalUser());
 
-      userServiceImpl.delete(1000L);
+      userServiceImpl.delete(1_000L);
 
-      BDDMockito.verify(userRepositoryMock).deleteById(1000L);
+      verify(userRepositoryMock).delete(any());
     }
 
     @Test
     @DisplayName("delete must throws EntityNotFoundException when not found user")
     void delete_MustThrowsEntityNotFoundException_WhenNotFoundUser() {
-      BDDMockito.willThrow(new EmptyResultDataAccessException(1))
-          .given(userRepositoryMock).deleteById(NON_EXISTING_USER_ID);
+      when(userRepositoryMock.findById(1_000L)).thenReturn(Optional.empty());
 
       Assertions.assertThatExceptionOfType(EntityNotFoundException.class)
-          .isThrownBy(() -> userServiceImpl.delete(NON_EXISTING_USER_ID))
-          .withMessageContaining("User not found with id " + NON_EXISTING_USER_ID);
+          .isThrownBy(() -> userServiceImpl.delete(1_000L))
+          .withMessageContaining("User not found with id " + 1_000L);
     }
 
   }
@@ -201,16 +201,16 @@ class UserServiceImplTest {
 
     @BeforeEach
     void setUp() {
-      BDDMockito.when(authenticationFacadeMock.getAuthentication())
+      when(authenticationFacadeMock.getAuthentication())
           .thenReturn(new TestingAuthenticationToken(USER, null, List.of(ROLE_USER)));
     }
 
     @Test
     @DisplayName("changePassword must save user with new password when change password successfully")
     void changePassword_MustSaveUserWithNewPassword_WhenChangePasswordSuccessfully() {
-      BDDMockito.when(passwordEncoderMock.matches(any(String.class), any(String.class)))
+      when(passwordEncoderMock.matches(any(String.class), any(String.class)))
           .thenReturn(true);
-      BDDMockito.when(userRepositoryMock.save(any(User.class)))
+      when(userRepositoryMock.save(any(User.class)))
           .thenReturn(USER);
 
       ChangePasswordRequest changePasswordRequest = ChangePasswordRequest.builder()
@@ -221,13 +221,13 @@ class UserServiceImplTest {
 
       userServiceImpl.changePassword(changePasswordRequest);
 
-      BDDMockito.verify(userRepositoryMock).save(any(User.class));
+      verify(userRepositoryMock).save(any(User.class));
     }
 
     @Test
     @DisplayName("changePassword must throws WrongPasswordException when password is wrong")
     void changePassword_MustThrowsWrongPasswordException_WhenPasswordIsWrong() {
-      BDDMockito.when(passwordEncoderMock.matches(any(String.class), any(String.class)))
+      when(passwordEncoderMock.matches(any(String.class), any(String.class)))
           .thenReturn(false);
 
       ChangePasswordRequest changePasswordRequest = ChangePasswordRequest.builder()
@@ -244,7 +244,7 @@ class UserServiceImplTest {
     @Test
     @DisplayName("changePassword must throws PasswordsDoNotMatchException when password and confirm no matches")
     void changePassword_MustThrowsPasswordsDoNotMatchException_WhenPasswordsAndConfirmNoMatches() {
-      BDDMockito.when(passwordEncoderMock.matches(any(String.class), any(String.class)))
+      when(passwordEncoderMock.matches(any(String.class), any(String.class)))
           .thenReturn(true);
 
       ChangePasswordRequest changePasswordRequest = ChangePasswordRequest.builder()
