@@ -9,6 +9,7 @@ import br.com.emendes.financesapi.model.entity.User;
 import br.com.emendes.financesapi.repository.ExpenseRepository;
 import br.com.emendes.financesapi.service.ExpenseService;
 import br.com.emendes.financesapi.util.AuthenticationFacade;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -72,6 +73,7 @@ public class ExpenseServiceImpl implements ExpenseService {
   }
 
   @Override
+  @Transactional
   public ExpenseResponse update(Long id, ExpenseRequest expenseRequest) {
     Expense expenseToBeUpdated = findByIdAndUser(id);
 

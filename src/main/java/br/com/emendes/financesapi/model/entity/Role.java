@@ -1,9 +1,8 @@
 package br.com.emendes.financesapi.model.entity;
 
+import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
-
-import javax.persistence.*;
 
 @AllArgsConstructor
 @NoArgsConstructor

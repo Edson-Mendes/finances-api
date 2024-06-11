@@ -1,30 +1,36 @@
-package br.com.emendes.financesapi.config.security;
+package br.com.emendes.financesapi.config.security.filter;
 
 import br.com.emendes.financesapi.config.security.service.TokenService;
 import br.com.emendes.financesapi.model.entity.User;
 import br.com.emendes.financesapi.service.UserService;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+/**
+ * Filtro responsável por autenticar requisição via JWT.
+ */
 @RequiredArgsConstructor
-public class AuthenticationByTokenFilter extends OncePerRequestFilter {
+@Component
+public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
   private final TokenService tokenService;
   private final UserService userService;
 
   @Override
   protected void doFilterInternal(
-      @NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain)
-      throws ServletException, IOException {
+      @NonNull HttpServletRequest request,
+      @NonNull HttpServletResponse response,
+      @NonNull FilterChain filterChain) throws ServletException, IOException {
 
     String token = tokenService.recoverToken(request);
     boolean isValid = tokenService.isTokenValid(token);

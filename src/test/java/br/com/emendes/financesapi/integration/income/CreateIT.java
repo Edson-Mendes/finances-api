@@ -13,7 +13,7 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
@@ -52,12 +52,13 @@ class CreateIT {
         incomeRequest, signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
 
     ResponseEntity<IncomeResponse> actualResponse = testRestTemplate.exchange(
-        URI, HttpMethod.POST, requestEntity, new ParameterizedTypeReference<>() {});
+        URI, HttpMethod.POST, requestEntity, new ParameterizedTypeReference<>() {
+        });
 
-    HttpStatus actualStatusCode = actualResponse.getStatusCode();
+    HttpStatusCode actualStatusCode = actualResponse.getStatusCode();
     IncomeResponse actualResponseBody = actualResponse.getBody();
 
-    Assertions.assertThat(actualStatusCode).isEqualByComparingTo(HttpStatus.CREATED);
+    Assertions.assertThat(actualStatusCode).isEqualTo(HttpStatusCode.valueOf(201));
     Assertions.assertThat(actualResponseBody).isNotNull();
     Assertions.assertThat(actualResponseBody.getId()).isNotNull();
     Assertions.assertThat(actualResponseBody.getDescription()).isEqualTo("Salário");
@@ -77,9 +78,10 @@ class CreateIT {
     HttpEntity<IncomeRequest> requestEntity = new HttpEntity<>(incomeRequest);
 
     ResponseEntity<Void> actualResponse = testRestTemplate.exchange(
-        URI, HttpMethod.POST, requestEntity, new ParameterizedTypeReference<>() {});
+        URI, HttpMethod.POST, requestEntity, new ParameterizedTypeReference<>() {
+        });
 
-    Assertions.assertThat(actualResponse.getStatusCode()).isEqualByComparingTo(HttpStatus.UNAUTHORIZED);
+    Assertions.assertThat(actualResponse.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(401));
   }
 
   @Test
@@ -96,12 +98,13 @@ class CreateIT {
         incomeRequest, signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
 
     ResponseEntity<ValidationProblemDetail> actualResponse = testRestTemplate.exchange(
-        URI, HttpMethod.POST, requestEntity, new ParameterizedTypeReference<>() {});
+        URI, HttpMethod.POST, requestEntity, new ParameterizedTypeReference<>() {
+        });
 
-    HttpStatus actualStatusCode = actualResponse.getStatusCode();
+    HttpStatusCode actualStatusCode = actualResponse.getStatusCode();
     ValidationProblemDetail actualResponseBody = actualResponse.getBody();
 
-    Assertions.assertThat(actualStatusCode).isEqualByComparingTo(HttpStatus.BAD_REQUEST);
+    Assertions.assertThat(actualStatusCode).isEqualTo(HttpStatusCode.valueOf(400));
     Assertions.assertThat(actualResponseBody).isNotNull();
     Assertions.assertThat(actualResponseBody.getTitle()).isEqualTo("Invalid fields");
     Assertions.assertThat(actualResponseBody.getDetail()).isEqualTo("Some fields are invalid");

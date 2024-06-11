@@ -12,7 +12,7 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
@@ -42,12 +42,13 @@ class ReadByIdIT {
     HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
 
     ResponseEntity<ExpenseResponse> actualResponse = testRestTemplate.exchange(
-        URI + "/1", HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {});
+        URI + "/1", HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {
+        });
 
-    HttpStatus actualStatusCode = actualResponse.getStatusCode();
+    HttpStatusCode actualStatusCode = actualResponse.getStatusCode();
     ExpenseResponse actualResponseBody = actualResponse.getBody();
 
-    Assertions.assertThat(actualStatusCode).isEqualByComparingTo(HttpStatus.OK);
+    Assertions.assertThat(actualStatusCode).isEqualTo(HttpStatusCode.valueOf(200));
     Assertions.assertThat(actualResponseBody).isNotNull();
     Assertions.assertThat(actualResponseBody.getId()).isEqualTo(1L);
     Assertions.assertThat(actualResponseBody.getDescription()).isEqualTo("Aluguel");
@@ -60,12 +61,13 @@ class ReadByIdIT {
     HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
 
     ResponseEntity<ProblemDetail> actualResponse = testRestTemplate.exchange(
-        URI + "/1oo", HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {});
+        URI + "/1oo", HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {
+        });
 
-    HttpStatus actualStatusCode = actualResponse.getStatusCode();
+    HttpStatusCode actualStatusCode = actualResponse.getStatusCode();
     ProblemDetail actualResponseBody = actualResponse.getBody();
 
-    Assertions.assertThat(actualStatusCode).isEqualByComparingTo(HttpStatus.BAD_REQUEST);
+    Assertions.assertThat(actualStatusCode).isEqualTo(HttpStatusCode.valueOf(400));
     Assertions.assertThat(actualResponseBody).isNotNull();
     Assertions.assertThat(actualResponseBody.getTitle()).isEqualTo("Type mismatch");
     Assertions.assertThat(actualResponseBody.getDetail())
@@ -76,11 +78,12 @@ class ReadByIdIT {
   @DisplayName("readById must return status 401 when user is not authenticated")
   void readById_MustReturnStatus401_WhenUserIsNotAuthenticated() {
     ResponseEntity<Void> actualResponse = testRestTemplate.exchange(
-        URI + "/1", HttpMethod.GET, null, new ParameterizedTypeReference<>() {});
+        URI + "/1", HttpMethod.GET, null, new ParameterizedTypeReference<>() {
+        });
 
-    HttpStatus actualStatusCode = actualResponse.getStatusCode();
+    HttpStatusCode actualStatusCode = actualResponse.getStatusCode();
 
-    Assertions.assertThat(actualStatusCode).isEqualByComparingTo(HttpStatus.UNAUTHORIZED);
+    Assertions.assertThat(actualStatusCode).isEqualTo(HttpStatusCode.valueOf(401));
   }
 
   @Test
@@ -90,12 +93,13 @@ class ReadByIdIT {
     HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
 
     ResponseEntity<ProblemDetail> actualResponse = testRestTemplate.exchange(
-        URI + "/10000", HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {});
+        URI + "/10000", HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {
+        });
 
-    HttpStatus actualStatusCode = actualResponse.getStatusCode();
+    HttpStatusCode actualStatusCode = actualResponse.getStatusCode();
     ProblemDetail actualResponseBody = actualResponse.getBody();
 
-    Assertions.assertThat(actualStatusCode).isEqualByComparingTo(HttpStatus.NOT_FOUND);
+    Assertions.assertThat(actualStatusCode).isEqualTo(HttpStatusCode.valueOf(404));
     Assertions.assertThat(actualResponseBody).isNotNull();
     Assertions.assertThat(actualResponseBody.getTitle()).isEqualTo("Entity not found");
     Assertions.assertThat(actualResponseBody.getDetail())

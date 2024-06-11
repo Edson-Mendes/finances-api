@@ -11,7 +11,7 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
@@ -41,11 +41,12 @@ class DeleteIT {
     HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
 
     ResponseEntity<Void> actualResponse = testRestTemplate.exchange(
-        URI + "/1", HttpMethod.DELETE, requestEntity, new ParameterizedTypeReference<>() {});
+        URI + "/1", HttpMethod.DELETE, requestEntity, new ParameterizedTypeReference<>() {
+        });
 
-    HttpStatus actualStatusCode = actualResponse.getStatusCode();
+    HttpStatusCode actualStatusCode = actualResponse.getStatusCode();
 
-    Assertions.assertThat(actualStatusCode).isEqualByComparingTo(HttpStatus.NO_CONTENT);
+    Assertions.assertThat(actualStatusCode).isEqualTo(HttpStatusCode.valueOf(204));
   }
 
   @Test
@@ -55,12 +56,13 @@ class DeleteIT {
     HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
 
     ResponseEntity<ProblemDetail> actualResponse = testRestTemplate.exchange(
-        URI + "/1o0", HttpMethod.DELETE, requestEntity, new ParameterizedTypeReference<>() {});
+        URI + "/1o0", HttpMethod.DELETE, requestEntity, new ParameterizedTypeReference<>() {
+        });
 
-    HttpStatus actualStatusCode = actualResponse.getStatusCode();
+    HttpStatusCode actualStatusCode = actualResponse.getStatusCode();
     ProblemDetail actualResponseBody = actualResponse.getBody();
 
-    Assertions.assertThat(actualStatusCode).isEqualByComparingTo(HttpStatus.BAD_REQUEST);
+    Assertions.assertThat(actualStatusCode).isEqualTo(HttpStatusCode.valueOf(400));
     Assertions.assertThat(actualResponseBody).isNotNull();
     Assertions.assertThat(actualResponseBody.getTitle()).isEqualTo("Type mismatch");
     Assertions.assertThat(actualResponseBody.getDetail())
@@ -72,11 +74,12 @@ class DeleteIT {
   @DisplayName("delete must return status 401 when user is not authenticated")
   void delete_MustReturnStatus401_WhenUserIsNotAuthenticated() {
     ResponseEntity<Void> actualResponse = testRestTemplate.exchange(
-        URI + "/1", HttpMethod.DELETE, null, new ParameterizedTypeReference<>() {});
+        URI + "/1", HttpMethod.DELETE, null, new ParameterizedTypeReference<>() {
+        });
 
-    HttpStatus actualStatusCode = actualResponse.getStatusCode();
+    HttpStatusCode actualStatusCode = actualResponse.getStatusCode();
 
-    Assertions.assertThat(actualStatusCode).isEqualByComparingTo(HttpStatus.UNAUTHORIZED);
+    Assertions.assertThat(actualStatusCode).isEqualTo(HttpStatusCode.valueOf(401));
   }
 
   @Test
@@ -85,12 +88,13 @@ class DeleteIT {
   void delete_MustReturnStatus404AndProblemDetail_WhenIdNoExists() {
     HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
     ResponseEntity<ProblemDetail> actualResponse = testRestTemplate.exchange(
-        URI + "/10000", HttpMethod.DELETE, requestEntity, new ParameterizedTypeReference<>() {});
+        URI + "/10000", HttpMethod.DELETE, requestEntity, new ParameterizedTypeReference<>() {
+        });
 
-    HttpStatus actualStatusCode = actualResponse.getStatusCode();
+    HttpStatusCode actualStatusCode = actualResponse.getStatusCode();
     ProblemDetail actualResponseBody = actualResponse.getBody();
 
-    Assertions.assertThat(actualStatusCode).isEqualByComparingTo(HttpStatus.NOT_FOUND);
+    Assertions.assertThat(actualStatusCode).isEqualTo(HttpStatusCode.valueOf(404));
     Assertions.assertThat(actualResponseBody).isNotNull();
     Assertions.assertThat(actualResponseBody.getTitle()).isEqualTo("Entity not found");
     Assertions.assertThat(actualResponseBody.getDetail()).isEqualTo("Income not found");

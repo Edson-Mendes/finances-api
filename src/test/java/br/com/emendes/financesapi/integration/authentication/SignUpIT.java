@@ -13,7 +13,7 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
@@ -45,12 +45,13 @@ class SignUpIT {
     HttpEntity<SignupRequest> bodyAndHeaders = new HttpEntity<>(requestBody);
 
     ResponseEntity<UserResponse> actualResponse = testRestTemplate.exchange(
-        URI, HttpMethod.POST, bodyAndHeaders, new ParameterizedTypeReference<>() {});
+        URI, HttpMethod.POST, bodyAndHeaders, new ParameterizedTypeReference<>() {
+        });
 
-    HttpStatus actualStatusCode = actualResponse.getStatusCode();
+    HttpStatusCode actualStatusCode = actualResponse.getStatusCode();
     UserResponse actualResponseBody = actualResponse.getBody();
 
-    Assertions.assertThat(actualStatusCode).isEqualByComparingTo(HttpStatus.CREATED);
+    Assertions.assertThat(actualStatusCode).isEqualTo(HttpStatusCode.valueOf(201));
     Assertions.assertThat(actualResponseBody).isNotNull();
     Assertions.assertThat(actualResponseBody.getId()).isNotNull().isPositive();
     Assertions.assertThat(actualResponseBody.getName()).isEqualTo("Lorem Ipsum");
@@ -70,12 +71,13 @@ class SignUpIT {
     HttpEntity<SignupRequest> bodyAndHeaders = new HttpEntity<>(requestBody);
 
     ResponseEntity<ValidationProblemDetail> actualResponse = testRestTemplate.exchange(
-        URI, HttpMethod.POST, bodyAndHeaders, new ParameterizedTypeReference<>() {});
+        URI, HttpMethod.POST, bodyAndHeaders, new ParameterizedTypeReference<>() {
+        });
 
-    HttpStatus actualStatusCode = actualResponse.getStatusCode();
+    HttpStatusCode actualStatusCode = actualResponse.getStatusCode();
     ValidationProblemDetail actualResponseBody = actualResponse.getBody();
 
-    Assertions.assertThat(actualStatusCode).isEqualByComparingTo(HttpStatus.BAD_REQUEST);
+    Assertions.assertThat(actualStatusCode).isEqualTo(HttpStatusCode.valueOf(400));
     Assertions.assertThat(actualResponseBody).isNotNull();
     Assertions.assertThat(actualResponseBody.getTitle()).isEqualTo("Invalid fields");
     Assertions.assertThat(actualResponseBody.getDetail()).isEqualTo("Some fields are invalid");
@@ -98,12 +100,13 @@ class SignUpIT {
     HttpEntity<SignupRequest> bodyAndHeaders = new HttpEntity<>(requestBody);
 
     ResponseEntity<ProblemDetail> actualResponse = testRestTemplate.exchange(
-        URI, HttpMethod.POST, bodyAndHeaders, new ParameterizedTypeReference<>() {});
+        URI, HttpMethod.POST, bodyAndHeaders, new ParameterizedTypeReference<>() {
+        });
 
-    HttpStatus actualStatusCode = actualResponse.getStatusCode();
+    HttpStatusCode actualStatusCode = actualResponse.getStatusCode();
     ProblemDetail actualResponseBody = actualResponse.getBody();
 
-    Assertions.assertThat(actualStatusCode).isEqualByComparingTo(HttpStatus.BAD_REQUEST);
+    Assertions.assertThat(actualStatusCode).isEqualTo(HttpStatusCode.valueOf(400));
     Assertions.assertThat(actualResponseBody).isNotNull();
     Assertions.assertThat(actualResponseBody.getTitle()).isEqualTo("Passwords do not match");
     Assertions.assertThat(actualResponseBody.getDetail()).isEqualTo("Password and confirm do not match");
@@ -126,10 +129,10 @@ class SignUpIT {
         URI, HttpMethod.POST, bodyAndHeaders, new ParameterizedTypeReference<>() {
         });
 
-    HttpStatus actualStatusCode = actualResponse.getStatusCode();
+    HttpStatusCode actualStatusCode = actualResponse.getStatusCode();
     ProblemDetail actualResponseBody = actualResponse.getBody();
 
-    Assertions.assertThat(actualStatusCode).isEqualByComparingTo(HttpStatus.CONFLICT);
+    Assertions.assertThat(actualStatusCode).isEqualTo(HttpStatusCode.valueOf(409));
     Assertions.assertThat(actualResponseBody).isNotNull();
     Assertions.assertThat(actualResponseBody.getTitle()).isEqualTo("Data conflict");
     Assertions.assertThat(actualResponseBody.getDetail()).isEqualTo("Email is already in use");

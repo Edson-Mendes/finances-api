@@ -2,9 +2,8 @@ package br.com.emendes.financesapi.validation.validator;
 
 import br.com.emendes.financesapi.model.Category;
 import br.com.emendes.financesapi.validation.annotation.CategoryValidation;
-
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 public class CategoryValidator implements ConstraintValidator<CategoryValidation, String> {
 

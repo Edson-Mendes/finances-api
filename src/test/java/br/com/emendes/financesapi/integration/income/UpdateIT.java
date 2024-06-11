@@ -14,7 +14,7 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
@@ -53,12 +53,13 @@ class UpdateIT {
         new HttpEntity<>(incomeRequest, signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
 
     ResponseEntity<IncomeResponse> actualResponse = testRestTemplate.exchange(
-        URI + "/1", HttpMethod.PUT, requestEntity, new ParameterizedTypeReference<>() {});
+        URI + "/1", HttpMethod.PUT, requestEntity, new ParameterizedTypeReference<>() {
+        });
 
-    HttpStatus statusCode = actualResponse.getStatusCode();
+    HttpStatusCode statusCode = actualResponse.getStatusCode();
     IncomeResponse actualResponseBody = actualResponse.getBody();
 
-    Assertions.assertThat(statusCode).isEqualByComparingTo(HttpStatus.OK);
+    Assertions.assertThat(statusCode).isEqualTo(HttpStatusCode.valueOf(200));
     Assertions.assertThat(actualResponseBody).isNotNull();
     Assertions.assertThat(actualResponseBody.getId()).isEqualTo(1L);
     Assertions.assertThat(actualResponseBody.getDescription()).isEqualTo("Salário");
@@ -79,12 +80,13 @@ class UpdateIT {
         new HttpEntity<>(incomeRequest, signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
 
     ResponseEntity<ValidationProblemDetail> actualResponse = testRestTemplate.exchange(
-        URI + "/1", HttpMethod.PUT, requestEntity, new ParameterizedTypeReference<>() {});
+        URI + "/1", HttpMethod.PUT, requestEntity, new ParameterizedTypeReference<>() {
+        });
 
-    HttpStatus statusCode = actualResponse.getStatusCode();
+    HttpStatusCode statusCode = actualResponse.getStatusCode();
     ValidationProblemDetail actualResponseBody = actualResponse.getBody();
 
-    Assertions.assertThat(statusCode).isEqualByComparingTo(HttpStatus.BAD_REQUEST);
+    Assertions.assertThat(statusCode).isEqualTo(HttpStatusCode.valueOf(400));
     Assertions.assertThat(actualResponseBody).isNotNull();
     Assertions.assertThat(actualResponseBody.getTitle()).isEqualTo("Invalid fields");
     Assertions.assertThat(actualResponseBody.getDetail()).isEqualTo("Some fields are invalid");
@@ -107,12 +109,13 @@ class UpdateIT {
         new HttpEntity<>(incomeRequest, signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
 
     ResponseEntity<ProblemDetail> actualResponse = testRestTemplate.exchange(
-        URI + "/1o", HttpMethod.PUT, requestEntity, new ParameterizedTypeReference<>() {});
+        URI + "/1o", HttpMethod.PUT, requestEntity, new ParameterizedTypeReference<>() {
+        });
 
-    HttpStatus statusCode = actualResponse.getStatusCode();
+    HttpStatusCode statusCode = actualResponse.getStatusCode();
     ProblemDetail actualResponseBody = actualResponse.getBody();
 
-    Assertions.assertThat(statusCode).isEqualByComparingTo(HttpStatus.BAD_REQUEST);
+    Assertions.assertThat(statusCode).isEqualTo(HttpStatusCode.valueOf(400));
     Assertions.assertThat(actualResponseBody).isNotNull();
     Assertions.assertThat(actualResponseBody.getTitle()).isEqualTo("Type mismatch");
     Assertions.assertThat(actualResponseBody.getDetail())
@@ -123,11 +126,12 @@ class UpdateIT {
   @DisplayName("update must return status 401 when user is not authenticated")
   void update_MustReturnStatus401_WhenUserIsNotAuthenticated() {
     ResponseEntity<Void> actualResponse = testRestTemplate.exchange(
-        URI + "/1", HttpMethod.PUT, null, new ParameterizedTypeReference<>() {});
+        URI + "/1", HttpMethod.PUT, null, new ParameterizedTypeReference<>() {
+        });
 
-    HttpStatus statusCode = actualResponse.getStatusCode();
+    HttpStatusCode statusCode = actualResponse.getStatusCode();
 
-    Assertions.assertThat(statusCode).isEqualByComparingTo(HttpStatus.UNAUTHORIZED);
+    Assertions.assertThat(statusCode).isEqualTo(HttpStatusCode.valueOf(401));
   }
 
   @Test
@@ -144,12 +148,13 @@ class UpdateIT {
         new HttpEntity<>(incomeRequest, signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
 
     ResponseEntity<ProblemDetail> actualResponse = testRestTemplate.exchange(
-        URI + "/10000", HttpMethod.PUT, requestEntity, new ParameterizedTypeReference<>() {});
+        URI + "/10000", HttpMethod.PUT, requestEntity, new ParameterizedTypeReference<>() {
+        });
 
-    HttpStatus statusCode = actualResponse.getStatusCode();
+    HttpStatusCode statusCode = actualResponse.getStatusCode();
     ProblemDetail actualResponseBody = actualResponse.getBody();
 
-    Assertions.assertThat(statusCode).isEqualByComparingTo(HttpStatus.NOT_FOUND);
+    Assertions.assertThat(statusCode).isEqualTo(HttpStatusCode.valueOf(404));
     Assertions.assertThat(actualResponseBody).isNotNull();
     Assertions.assertThat(actualResponseBody.getTitle()).isEqualTo("Entity not found");
     Assertions.assertThat(actualResponseBody.getDetail()).isEqualTo("Income not found");

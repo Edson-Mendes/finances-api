@@ -2,10 +2,9 @@ package br.com.emendes.financesapi.dto.request;
 
 import br.com.emendes.financesapi.validation.annotation.NoWhiteSpace;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.*;
-
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
 
 @AllArgsConstructor
 @NoArgsConstructor

@@ -3,14 +3,15 @@ package br.com.emendes.financesapi.service.impl;
 import br.com.emendes.financesapi.dto.request.ChangePasswordRequest;
 import br.com.emendes.financesapi.dto.request.SignupRequest;
 import br.com.emendes.financesapi.dto.response.UserResponse;
+import br.com.emendes.financesapi.exception.DataConflictException;
 import br.com.emendes.financesapi.exception.EntityNotFoundException;
+import br.com.emendes.financesapi.exception.PasswordsDoNotMatchException;
+import br.com.emendes.financesapi.exception.WrongPasswordException;
 import br.com.emendes.financesapi.model.entity.User;
 import br.com.emendes.financesapi.repository.UserRepository;
 import br.com.emendes.financesapi.service.UserService;
 import br.com.emendes.financesapi.util.AuthenticationFacade;
-import br.com.emendes.financesapi.exception.DataConflictException;
-import br.com.emendes.financesapi.exception.PasswordsDoNotMatchException;
-import br.com.emendes.financesapi.exception.WrongPasswordException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -62,6 +63,7 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
+  @Transactional
   public void changePassword(ChangePasswordRequest changeRequest) {
     User currentUser = (User) authenticationFacade.getAuthentication().getPrincipal();
     if (passwordsMatch(changeRequest.getOldPassword(), currentUser.getPassword())) {

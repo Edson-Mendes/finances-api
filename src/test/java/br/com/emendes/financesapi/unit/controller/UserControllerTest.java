@@ -4,9 +4,9 @@ import br.com.emendes.financesapi.controller.UserController;
 import br.com.emendes.financesapi.dto.request.ChangePasswordRequest;
 import br.com.emendes.financesapi.dto.response.UserResponse;
 import br.com.emendes.financesapi.exception.EntityNotFoundException;
-import br.com.emendes.financesapi.service.UserService;
 import br.com.emendes.financesapi.exception.PasswordsDoNotMatchException;
 import br.com.emendes.financesapi.exception.WrongPasswordException;
+import br.com.emendes.financesapi.service.UserService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -15,9 +15,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.List;
 
@@ -27,7 +30,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ActiveProfiles("test")
-@WebMvcTest(controllers = {UserController.class}, excludeAutoConfiguration = {SecurityAutoConfiguration.class})
+@WebMvcTest(
+    includeFilters = {
+        @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = UserController.class),
+        @ComponentScan.Filter(classes = RestControllerAdvice.class)
+    },
+    excludeAutoConfiguration = {SecurityAutoConfiguration.class},
+    useDefaultFilters = false
+)
 @DisplayName("Tests for UserController")
 class UserControllerTest {
 

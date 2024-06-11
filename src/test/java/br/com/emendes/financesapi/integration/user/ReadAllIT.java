@@ -13,7 +13,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
@@ -47,12 +47,13 @@ class ReadAllIT {
   void readAll_MustReturnPageUserResponse_WhenUserIsAdmin() {
     HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(ADMIN_EMAIL, ADMIN_PASSWORD));
     ResponseEntity<PageableResponse<UserResponse>> actualResponse = testRestTemplate
-        .exchange(URI, HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {});
+        .exchange(URI, HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {
+        });
 
-    HttpStatus actualStatusCode = actualResponse.getStatusCode();
+    HttpStatusCode actualStatusCode = actualResponse.getStatusCode();
     Page<UserResponse> actualResponseBody = actualResponse.getBody();
 
-    Assertions.assertThat(actualStatusCode).isEqualTo(HttpStatus.OK);
+    Assertions.assertThat(actualStatusCode).isEqualTo(HttpStatusCode.valueOf(200));
     Assertions.assertThat(actualResponseBody).isNotNull().isNotEmpty().hasSize(2);
     Assertions.assertThat(actualResponseBody.getContent().get(0).getName()).isEqualTo("Admin");
     Assertions.assertThat(actualResponseBody.getContent().get(0).getEmail()).isEqualTo("admin@email.com");
@@ -64,11 +65,12 @@ class ReadAllIT {
   @DisplayName("readAll must return status 401 when user is not authenticated")
   void readAll_MustReturnStatus401_WhenUserIsNotAuthenticated() {
     ResponseEntity<Void> actualResponse = testRestTemplate
-        .exchange(URI, HttpMethod.GET, null, new ParameterizedTypeReference<>() {});
+        .exchange(URI, HttpMethod.GET, null, new ParameterizedTypeReference<>() {
+        });
 
-    HttpStatus actualStatusCode = actualResponse.getStatusCode();
+    HttpStatusCode actualStatusCode = actualResponse.getStatusCode();
 
-    Assertions.assertThat(actualStatusCode).isEqualTo(HttpStatus.UNAUTHORIZED);
+    Assertions.assertThat(actualStatusCode).isEqualTo(HttpStatusCode.valueOf(401));
   }
 
   @Test
@@ -77,11 +79,12 @@ class ReadAllIT {
   void readAll_MustReturnStatus403_WhenUSerIsNotAdmin() {
     HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(USER_EMAIL, USER_PASSWORD));
     ResponseEntity<Void> actualResponse = testRestTemplate
-        .exchange(URI, HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {});
+        .exchange(URI, HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {
+        });
 
-    HttpStatus actualStatusCode = actualResponse.getStatusCode();
+    HttpStatusCode actualStatusCode = actualResponse.getStatusCode();
 
-    Assertions.assertThat(actualStatusCode).isEqualTo(HttpStatus.FORBIDDEN);
+    Assertions.assertThat(actualStatusCode).isEqualTo(HttpStatusCode.valueOf(403));
   }
 
 }

@@ -13,7 +13,7 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
@@ -43,12 +43,13 @@ class SignInIT {
     HttpEntity<SignInRequest> bodyAndHeaders = new HttpEntity<>(requestBody);
 
     ResponseEntity<TokenResponse> actualResponse = testRestTemplate.exchange(
-        URI, HttpMethod.POST, bodyAndHeaders, new ParameterizedTypeReference<>() {});
+        URI, HttpMethod.POST, bodyAndHeaders, new ParameterizedTypeReference<>() {
+        });
 
-    HttpStatus actualStatusCode = actualResponse.getStatusCode();
+    HttpStatusCode actualStatusCode = actualResponse.getStatusCode();
     TokenResponse actualResponseBody = actualResponse.getBody();
 
-    Assertions.assertThat(actualStatusCode).isEqualByComparingTo(HttpStatus.OK);
+    Assertions.assertThat(actualStatusCode).isEqualTo(HttpStatusCode.valueOf(200));
     Assertions.assertThat(actualResponseBody).isNotNull();
     Assertions.assertThat(actualResponseBody.getType()).isEqualTo("Bearer");
     Assertions.assertThat(actualResponseBody.getToken()).isNotBlank();
@@ -65,12 +66,13 @@ class SignInIT {
     HttpEntity<SignInRequest> bodyAndHeaders = new HttpEntity<>(requestBody);
 
     ResponseEntity<ProblemDetail> actualResponse = testRestTemplate.exchange(
-        URI, HttpMethod.POST, bodyAndHeaders, new ParameterizedTypeReference<>() {});
+        URI, HttpMethod.POST, bodyAndHeaders, new ParameterizedTypeReference<>() {
+        });
 
-    HttpStatus actualStatusCode = actualResponse.getStatusCode();
+    HttpStatusCode actualStatusCode = actualResponse.getStatusCode();
     ProblemDetail actualResponseBody = actualResponse.getBody();
 
-    Assertions.assertThat(actualStatusCode).isEqualByComparingTo(HttpStatus.BAD_REQUEST);
+    Assertions.assertThat(actualStatusCode).isEqualTo(HttpStatusCode.valueOf(400));
     Assertions.assertThat(actualResponseBody).isNotNull();
     Assertions.assertThat(actualResponseBody.getTitle()).isEqualTo("Bad credentials");
     Assertions.assertThat(actualResponseBody.getDetail()).isEqualTo("Invalid email or password");
@@ -86,12 +88,13 @@ class SignInIT {
     HttpEntity<SignInRequest> bodyAndHeaders = new HttpEntity<>(requestBody);
 
     ResponseEntity<ValidationProblemDetail> actualResponse = testRestTemplate.exchange(
-        URI, HttpMethod.POST, bodyAndHeaders, new ParameterizedTypeReference<>() {});
+        URI, HttpMethod.POST, bodyAndHeaders, new ParameterizedTypeReference<>() {
+        });
 
-    HttpStatus actualStatusCode = actualResponse.getStatusCode();
+    HttpStatusCode actualStatusCode = actualResponse.getStatusCode();
     ValidationProblemDetail actualResponseBody = actualResponse.getBody();
 
-    Assertions.assertThat(actualStatusCode).isEqualByComparingTo(HttpStatus.BAD_REQUEST);
+    Assertions.assertThat(actualStatusCode).isEqualTo(HttpStatusCode.valueOf(400));
     Assertions.assertThat(actualResponseBody).isNotNull();
     Assertions.assertThat(actualResponseBody.getTitle()).isEqualTo("Invalid fields");
     Assertions.assertThat(actualResponseBody.getDetail()).isEqualTo("Some fields are invalid");

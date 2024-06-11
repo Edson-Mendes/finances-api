@@ -6,9 +6,9 @@ import br.com.emendes.financesapi.model.entity.User;
 import br.com.emendes.financesapi.validation.annotation.CategoryValidation;
 import br.com.emendes.financesapi.validation.annotation.DateValidation;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.*;
 import lombok.*;
 
-import javax.validation.constraints.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 

@@ -1,9 +1,10 @@
 package br.com.emendes.financesapi.controller;
 
-import br.com.emendes.financesapi.dto.response.IncomeResponse;
-import br.com.emendes.financesapi.dto.request.IncomeRequest;
 import br.com.emendes.financesapi.controller.openapi.IncomeControllerOpenAPI;
+import br.com.emendes.financesapi.dto.request.IncomeRequest;
+import br.com.emendes.financesapi.dto.response.IncomeResponse;
 import br.com.emendes.financesapi.service.IncomeService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,7 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import javax.validation.Valid;
 import java.net.URI;
 
 @RequiredArgsConstructor

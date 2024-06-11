@@ -1,13 +1,13 @@
 package br.com.emendes.financesapi.handler;
 
 import br.com.emendes.financesapi.dto.problem.ProblemDetail;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
 import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.stream.Collectors;

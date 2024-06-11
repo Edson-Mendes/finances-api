@@ -2,11 +2,10 @@ package br.com.emendes.financesapi.dto.request;
 
 import br.com.emendes.financesapi.model.entity.User;
 import br.com.emendes.financesapi.validation.annotation.NoWhiteSpace;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.*;
-
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
 
 @AllArgsConstructor
 @NoArgsConstructor

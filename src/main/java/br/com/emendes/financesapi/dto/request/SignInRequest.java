@@ -1,10 +1,9 @@
 package br.com.emendes.financesapi.dto.request;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
 
 @AllArgsConstructor
 @NoArgsConstructor

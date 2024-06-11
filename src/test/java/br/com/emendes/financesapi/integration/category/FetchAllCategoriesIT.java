@@ -11,7 +11,7 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
@@ -43,12 +43,13 @@ class FetchAllCategoriesIT {
   void fetchAllCategories_MustReturn200AndListCategoryResponse_WhenFetchSuccessfully() {
     HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
     ResponseEntity<List<CategoryResponse>> actualResponse = testRestTemplate
-        .exchange(URI, HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {});
+        .exchange(URI, HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {
+        });
 
-    HttpStatus actualStatusCode = actualResponse.getStatusCode();
+    HttpStatusCode actualStatusCode = actualResponse.getStatusCode();
     List<CategoryResponse> actualResponseBody = actualResponse.getBody();
 
-    Assertions.assertThat(actualStatusCode).isEqualByComparingTo(HttpStatus.OK);
+    Assertions.assertThat(actualStatusCode).isEqualTo(HttpStatusCode.valueOf(200));
     Assertions.assertThat(actualResponseBody).isNotEmpty().hasSize(8);
   }
 
@@ -56,9 +57,10 @@ class FetchAllCategoriesIT {
   @DisplayName("fetchAllCategories must returns status 401 when user is not authenticated")
   void fetchAllCategories_MustReturnsStatus401_WhenUserIsNotAuthenticated() {
     ResponseEntity<Void> actualResponse = testRestTemplate.exchange(
-        URI, HttpMethod.GET, null, new ParameterizedTypeReference<>() {});
+        URI, HttpMethod.GET, null, new ParameterizedTypeReference<>() {
+        });
 
-    Assertions.assertThat(actualResponse.getStatusCode()).isEqualByComparingTo(HttpStatus.UNAUTHORIZED);
+    Assertions.assertThat(actualResponse.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(401));
   }
 
 }

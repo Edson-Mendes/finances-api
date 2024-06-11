@@ -14,7 +14,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
@@ -46,15 +46,16 @@ class ReadIT {
     HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
 
     ResponseEntity<PageableResponse<ExpenseResponse>> actualResponse = testRestTemplate
-        .exchange(URI, HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {});
+        .exchange(URI, HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {
+        });
 
-    HttpStatus actualStatusCode = actualResponse.getStatusCode();
+    HttpStatusCode actualStatusCode = actualResponse.getStatusCode();
     Page<ExpenseResponse> actualResponseBody = actualResponse.getBody();
     Assertions.assertThat(actualResponseBody).isNotNull().isNotEmpty().hasSize(2);
 
     List<String> actualDescriptionList = actualResponseBody.stream().map(ExpenseResponse::getDescription).toList();
 
-    Assertions.assertThat(actualStatusCode).isEqualByComparingTo(HttpStatus.OK);
+    Assertions.assertThat(actualStatusCode).isEqualTo(HttpStatusCode.valueOf(200));
     Assertions.assertThat(actualDescriptionList).contains("Aluguel", "Supermercado");
   }
 
@@ -65,12 +66,13 @@ class ReadIT {
     HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
 
     ResponseEntity<PageableResponse<ExpenseResponse>> actualResponse = testRestTemplate
-        .exchange(URI + "?page=1", HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {});
+        .exchange(URI + "?page=1", HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {
+        });
 
-    HttpStatus actualStatusCode = actualResponse.getStatusCode();
+    HttpStatusCode actualStatusCode = actualResponse.getStatusCode();
     Page<ExpenseResponse> actualResponseBody = actualResponse.getBody();
 
-    Assertions.assertThat(actualStatusCode).isEqualByComparingTo(HttpStatus.OK);
+    Assertions.assertThat(actualStatusCode).isEqualTo(HttpStatusCode.valueOf(200));
     Assertions.assertThat(actualResponseBody).isNotNull().isEmpty();
     Assertions.assertThat(actualResponseBody.getTotalPages()).isEqualTo(1);
     Assertions.assertThat(actualResponseBody.getTotalElements()).isEqualTo(2L);
@@ -80,9 +82,10 @@ class ReadIT {
   @DisplayName("read must returns status 401 when user is not authenticated")
   void read_MustReturnsStatus401_WhenUserIsNotAuthenticated() {
     ResponseEntity<Void> actualResponse = testRestTemplate.exchange(
-        URI, HttpMethod.GET, null, new ParameterizedTypeReference<>() {});
+        URI, HttpMethod.GET, null, new ParameterizedTypeReference<>() {
+        });
 
-    Assertions.assertThat(actualResponse.getStatusCode()).isEqualByComparingTo(HttpStatus.UNAUTHORIZED);
+    Assertions.assertThat(actualResponse.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(401));
   }
 
   @Test
@@ -92,12 +95,13 @@ class ReadIT {
     HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
 
     ResponseEntity<ProblemDetail> actualResponse = testRestTemplate.exchange(
-        URI, HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {});
+        URI, HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {
+        });
 
-    HttpStatus actualStatusCode = actualResponse.getStatusCode();
+    HttpStatusCode actualStatusCode = actualResponse.getStatusCode();
     ProblemDetail actualResponseBody = actualResponse.getBody();
 
-    Assertions.assertThat(actualStatusCode).isEqualByComparingTo(HttpStatus.NOT_FOUND);
+    Assertions.assertThat(actualStatusCode).isEqualTo(HttpStatusCode.valueOf(404));
     Assertions.assertThat(actualResponseBody).isNotNull();
     Assertions.assertThat(actualResponseBody.getTitle()).isEqualTo("Entity not found");
     Assertions.assertThat(actualResponseBody.getDetail()).isEqualTo("The user has no expenses");
@@ -111,12 +115,13 @@ class ReadIT {
 
     ResponseEntity<PageableResponse<ExpenseResponse>> actualResponse = testRestTemplate
         .exchange(URI + "?description=aluguel&page=1",
-            HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {});
+            HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {
+            });
 
-    HttpStatus actualStatusCode = actualResponse.getStatusCode();
+    HttpStatusCode actualStatusCode = actualResponse.getStatusCode();
     Page<ExpenseResponse> actualResponseBody = actualResponse.getBody();
 
-    Assertions.assertThat(actualStatusCode).isEqualByComparingTo(HttpStatus.OK);
+    Assertions.assertThat(actualStatusCode).isEqualTo(HttpStatusCode.valueOf(200));
     Assertions.assertThat(actualResponseBody).isNotNull().isEmpty();
     Assertions.assertThat(actualResponseBody.getTotalPages()).isEqualTo(1);
     Assertions.assertThat(actualResponseBody.getTotalElements()).isEqualTo(1L);
@@ -129,12 +134,13 @@ class ReadIT {
     HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
 
     ResponseEntity<PageableResponse<ExpenseResponse>> actualResponse = testRestTemplate
-        .exchange(URI + "?description=alu", HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {});
+        .exchange(URI + "?description=alu", HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {
+        });
 
-    HttpStatus actualStatusCode = actualResponse.getStatusCode();
+    HttpStatusCode actualStatusCode = actualResponse.getStatusCode();
     Page<ExpenseResponse> actualResponseBody = actualResponse.getBody();
 
-    Assertions.assertThat(actualStatusCode).isEqualByComparingTo(HttpStatus.OK);
+    Assertions.assertThat(actualStatusCode).isEqualTo(HttpStatusCode.valueOf(200));
     Assertions.assertThat(actualResponseBody).isNotNull().isNotEmpty().hasSize(1);
     Assertions.assertThat(actualResponseBody.getContent().get(0).getDescription()).isEqualTo("Aluguel");
   }
@@ -145,12 +151,13 @@ class ReadIT {
   void readByDescription_MustReturnStatus404AndProblemDetail_WhenUserHasNoExpensesWithDescriptionAluguel() {
     HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
     ResponseEntity<ProblemDetail> actualResponse = testRestTemplate.exchange(
-        URI + "?description=Aluguel", HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {});
+        URI + "?description=Aluguel", HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {
+        });
 
-    HttpStatus actualStatusCode = actualResponse.getStatusCode();
+    HttpStatusCode actualStatusCode = actualResponse.getStatusCode();
     ProblemDetail actualResponseBody = actualResponse.getBody();
 
-    Assertions.assertThat(actualStatusCode).isEqualByComparingTo(HttpStatus.NOT_FOUND);
+    Assertions.assertThat(actualStatusCode).isEqualTo(HttpStatusCode.valueOf(404));
     Assertions.assertThat(actualResponseBody).isNotNull();
     Assertions.assertThat(actualResponseBody.getTitle()).isEqualTo("Entity not found");
     Assertions.assertThat(actualResponseBody.getDetail())
