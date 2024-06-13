@@ -19,6 +19,8 @@ import org.springframework.test.context.jdbc.Sql;
 
 import java.util.List;
 
+import static br.com.emendes.financesapi.util.constant.AuthenticationConstant.USER_EMAIL;
+import static br.com.emendes.financesapi.util.constant.AuthenticationConstant.USER_PASSWORD;
 import static br.com.emendes.financesapi.util.constant.SqlPath.INSERT_USER_SQL_PATH;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -33,15 +35,13 @@ class FetchAllCategoriesIT {
   @Autowired
   private SignIn signIn;
 
-  private final String EMAIL = "lorem@email.com";
-  private final String PASSWORD = "12345678";
   private final String URI = "/api/categories";
 
   @Test
   @DisplayName("fetchAllCategories must return 200 and List<CategoryResponse> when fetch successfully")
   @Sql(scripts = INSERT_USER_SQL_PATH)
   void fetchAllCategories_MustReturn200AndListCategoryResponse_WhenFetchSuccessfully() {
-    HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
+    HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(USER_EMAIL, USER_PASSWORD));
     ResponseEntity<List<CategoryResponse>> actualResponse = testRestTemplate
         .exchange(URI, HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {
         });

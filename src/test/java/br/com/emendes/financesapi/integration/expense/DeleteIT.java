@@ -17,6 +17,8 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 
+import static br.com.emendes.financesapi.util.constant.AuthenticationConstant.USER_EMAIL;
+import static br.com.emendes.financesapi.util.constant.AuthenticationConstant.USER_PASSWORD;
 import static br.com.emendes.financesapi.util.constant.SqlPath.INSERT_EXPENSE_SQL_PATH;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -31,14 +33,12 @@ class DeleteIT {
   private SignIn signIn;
 
   private final String URI = "/api/expenses";
-  private final String EMAIL = "lorem@email.com";
-  private final String PASSWORD = "12345678";
 
   @Test
   @DisplayName("delete must return status 204 when delete successfully")
   @Sql(scripts = {INSERT_EXPENSE_SQL_PATH})
   void delete_MustReturnStatus204_WhenDeletedSuccessful() {
-    HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
+    HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(USER_EMAIL, USER_PASSWORD));
 
     ResponseEntity<Void> actualResponse = testRestTemplate.exchange(
         URI + "/1", HttpMethod.DELETE, requestEntity, new ParameterizedTypeReference<>() {
@@ -53,7 +53,7 @@ class DeleteIT {
   @DisplayName("delete must return status 400 and ProblemDetail when id is invalid")
   @Sql(scripts = {INSERT_EXPENSE_SQL_PATH})
   void delete_MustReturnStatus400AndProblemDetail_WhenIdIsInvalid() {
-    HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
+    HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(USER_EMAIL, USER_PASSWORD));
 
     ResponseEntity<ProblemDetail> actualResponse = testRestTemplate.exchange(
         URI + "/1o0", HttpMethod.DELETE, requestEntity, new ParameterizedTypeReference<>() {
@@ -86,7 +86,7 @@ class DeleteIT {
   @DisplayName("delete must return status 404 and ProblemDetail when id no exists")
   @Sql(scripts = {INSERT_EXPENSE_SQL_PATH})
   void delete_MustReturnStatus404AndProblemDetail_WhenIdNoExists() {
-    HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
+    HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(USER_EMAIL, USER_PASSWORD));
     ResponseEntity<ProblemDetail> actualResponse = testRestTemplate.exchange(
         URI + "/10000", HttpMethod.DELETE, requestEntity, new ParameterizedTypeReference<>() {
         });

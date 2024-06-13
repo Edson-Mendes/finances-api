@@ -1,0 +1,5 @@
+DROP TABLE IF EXISTS tb_user_roles;
+DROP TABLE IF EXISTS  tb_role;
+DROP TABLE IF EXISTS tb_income;
+DROP TABLE IF EXISTS tb_expense;
+DROP TABLE IF EXISTS tb_user;

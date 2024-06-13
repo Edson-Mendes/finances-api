@@ -19,6 +19,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 
+import static br.com.emendes.financesapi.util.constant.AuthenticationConstant.*;
 import static br.com.emendes.financesapi.util.constant.SqlPath.INSERT_ADMIN_SQL_PATH;
 import static br.com.emendes.financesapi.util.constant.SqlPath.INSERT_USER_SQL_PATH;
 
@@ -34,12 +35,6 @@ class ReadAllIT {
   private SignIn signIn;
 
   private final String URI = "/api/users";
-
-  private final String USER_EMAIL = "lorem@email.com";
-  private final String USER_PASSWORD = "12345678";
-  private final String ADMIN_EMAIL = "admin@email.com";
-  private final String ADMIN_PASSWORD = "12345678";
-
 
   @Test
   @DisplayName("readAll must return Page<UserResponse> when user is admin")
@@ -57,8 +52,8 @@ class ReadAllIT {
     Assertions.assertThat(actualResponseBody).isNotNull().isNotEmpty().hasSize(2);
     Assertions.assertThat(actualResponseBody.getContent().get(0).getName()).isEqualTo("Admin");
     Assertions.assertThat(actualResponseBody.getContent().get(0).getEmail()).isEqualTo("admin@email.com");
-    Assertions.assertThat(actualResponseBody.getContent().get(1).getName()).isEqualTo("Lorem Ipsum");
-    Assertions.assertThat(actualResponseBody.getContent().get(1).getEmail()).isEqualTo("lorem@email.com");
+    Assertions.assertThat(actualResponseBody.getContent().get(1).getName()).isEqualTo("John Doe");
+    Assertions.assertThat(actualResponseBody.getContent().get(1).getEmail()).isEqualTo("john.doe@email.com");
   }
 
   @Test

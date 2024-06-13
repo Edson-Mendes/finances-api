@@ -22,6 +22,8 @@ import org.springframework.test.context.jdbc.Sql;
 
 import java.math.BigDecimal;
 
+import static br.com.emendes.financesapi.util.constant.AuthenticationConstant.USER_EMAIL;
+import static br.com.emendes.financesapi.util.constant.AuthenticationConstant.USER_PASSWORD;
 import static br.com.emendes.financesapi.util.constant.SqlPath.INSERT_INCOME_SQL_PATH;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -36,8 +38,6 @@ class UpdateIT {
   private SignIn signIn;
 
   private final String URI = "/api/incomes";
-  private final String EMAIL = "lorem@email.com";
-  private final String PASSWORD = "12345678";
 
   @Test
   @DisplayName("update must return status 200 and IncomeResponse when update successfully")
@@ -50,7 +50,7 @@ class UpdateIT {
         .build();
 
     HttpEntity<IncomeRequest> requestEntity =
-        new HttpEntity<>(incomeRequest, signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
+        new HttpEntity<>(incomeRequest, signIn.generateAuthorizationHeader(USER_EMAIL, USER_PASSWORD));
 
     ResponseEntity<IncomeResponse> actualResponse = testRestTemplate.exchange(
         URI + "/1", HttpMethod.PUT, requestEntity, new ParameterizedTypeReference<>() {
@@ -77,7 +77,7 @@ class UpdateIT {
         .build();
 
     HttpEntity<IncomeRequest> requestEntity =
-        new HttpEntity<>(incomeRequest, signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
+        new HttpEntity<>(incomeRequest, signIn.generateAuthorizationHeader(USER_EMAIL, USER_PASSWORD));
 
     ResponseEntity<ValidationProblemDetail> actualResponse = testRestTemplate.exchange(
         URI + "/1", HttpMethod.PUT, requestEntity, new ParameterizedTypeReference<>() {
@@ -106,7 +106,7 @@ class UpdateIT {
         .build();
 
     HttpEntity<IncomeRequest> requestEntity =
-        new HttpEntity<>(incomeRequest, signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
+        new HttpEntity<>(incomeRequest, signIn.generateAuthorizationHeader(USER_EMAIL, USER_PASSWORD));
 
     ResponseEntity<ProblemDetail> actualResponse = testRestTemplate.exchange(
         URI + "/1o", HttpMethod.PUT, requestEntity, new ParameterizedTypeReference<>() {
@@ -145,7 +145,7 @@ class UpdateIT {
         .build();
 
     HttpEntity<IncomeRequest> requestEntity =
-        new HttpEntity<>(incomeRequest, signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
+        new HttpEntity<>(incomeRequest, signIn.generateAuthorizationHeader(USER_EMAIL, USER_PASSWORD));
 
     ResponseEntity<ProblemDetail> actualResponse = testRestTemplate.exchange(
         URI + "/10000", HttpMethod.PUT, requestEntity, new ParameterizedTypeReference<>() {

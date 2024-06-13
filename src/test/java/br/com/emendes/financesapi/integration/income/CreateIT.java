@@ -21,6 +21,8 @@ import org.springframework.test.context.jdbc.Sql;
 
 import java.math.BigDecimal;
 
+import static br.com.emendes.financesapi.util.constant.AuthenticationConstant.USER_EMAIL;
+import static br.com.emendes.financesapi.util.constant.AuthenticationConstant.USER_PASSWORD;
 import static br.com.emendes.financesapi.util.constant.SqlPath.INSERT_USER_SQL_PATH;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -35,8 +37,6 @@ class CreateIT {
   private SignIn signIn;
 
   private final String URI = "/api/incomes";
-  private final String EMAIL = "lorem@email.com";
-  private final String PASSWORD = "12345678";
 
   @Test
   @DisplayName("create must return 201 and IncomeResponse when create successfully")
@@ -49,7 +49,7 @@ class CreateIT {
         .build();
 
     HttpEntity<IncomeRequest> requestEntity = new HttpEntity<>(
-        incomeRequest, signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
+        incomeRequest, signIn.generateAuthorizationHeader(USER_EMAIL, USER_PASSWORD));
 
     ResponseEntity<IncomeResponse> actualResponse = testRestTemplate.exchange(
         URI, HttpMethod.POST, requestEntity, new ParameterizedTypeReference<>() {
@@ -95,7 +95,7 @@ class CreateIT {
         .build();
 
     HttpEntity<IncomeRequest> requestEntity = new HttpEntity<>(
-        incomeRequest, signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
+        incomeRequest, signIn.generateAuthorizationHeader(USER_EMAIL, USER_PASSWORD));
 
     ResponseEntity<ValidationProblemDetail> actualResponse = testRestTemplate.exchange(
         URI, HttpMethod.POST, requestEntity, new ParameterizedTypeReference<>() {

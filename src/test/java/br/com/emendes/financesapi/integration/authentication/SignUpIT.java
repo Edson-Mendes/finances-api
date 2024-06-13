@@ -36,10 +36,10 @@ class SignUpIT {
   @DisplayName("sign up must returns status 201 and UserResponse when sign up successfully")
   void signUp_MustReturnsStatus201AndUserResponse_WhenSignUpSuccessfully() {
     SignupRequest requestBody = SignupRequest.builder()
-        .name("Lorem Ipsum")
-        .email("lorem@email.com")
-        .password("12345678")
-        .confirm("12345678")
+        .name("John Doe")
+        .email("john.doe@email.com")
+        .password("1234567890")
+        .confirm("1234567890")
         .build();
 
     HttpEntity<SignupRequest> bodyAndHeaders = new HttpEntity<>(requestBody);
@@ -54,8 +54,8 @@ class SignUpIT {
     Assertions.assertThat(actualStatusCode).isEqualTo(HttpStatusCode.valueOf(201));
     Assertions.assertThat(actualResponseBody).isNotNull();
     Assertions.assertThat(actualResponseBody.getId()).isNotNull().isPositive();
-    Assertions.assertThat(actualResponseBody.getName()).isEqualTo("Lorem Ipsum");
-    Assertions.assertThat(actualResponseBody.getEmail()).isEqualTo("lorem@email.com");
+    Assertions.assertThat(actualResponseBody.getName()).isEqualTo("John Doe");
+    Assertions.assertThat(actualResponseBody.getEmail()).isEqualTo("john.doe@email.com");
   }
 
   @Test
@@ -117,8 +117,8 @@ class SignUpIT {
   @Sql(scripts = {INSERT_USER_SQL_PATH})
   void signUp_MustReturnsStatus409AndProblemDetail_WhenInformedEmailIsAlreadyInUse() {
     SignupRequest requestBody = SignupRequest.builder()
-        .name("Lorem Ipsum")
-        .email("lorem@email.com")
+        .name("Doe. J")
+        .email("john.doe@email.com")
         .password("12345678")
         .confirm("12345678")
         .build();

@@ -19,6 +19,8 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 
+import static br.com.emendes.financesapi.util.constant.AuthenticationConstant.USER_EMAIL;
+import static br.com.emendes.financesapi.util.constant.AuthenticationConstant.USER_PASSWORD;
 import static br.com.emendes.financesapi.util.constant.SqlPath.INSERT_USER_SQL_PATH;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -34,17 +36,14 @@ class ChangePasswordIT {
 
   private final String URI = "/api/users/password";
 
-  private final String USER_EMAIL = "lorem@email.com";
-  private final String USER_PASSWORD = "12345678";
-
   @Test
   @DisplayName("changePassword must return status 204 when change password successfully")
   @Sql(scripts = {INSERT_USER_SQL_PATH})
   void changePassword_MustReturnStatus204_WhenChangePasswordSuccessfully() {
     ChangePasswordRequest changePasswordRequest = ChangePasswordRequest.builder()
-        .oldPassword("12345678")
-        .newPassword("1234567890")
-        .confirm("1234567890")
+        .oldPassword("1234567890")
+        .newPassword("0987654321")
+        .confirm("0987654321")
         .build();
 
     HttpEntity<ChangePasswordRequest> requestEntity =
@@ -90,9 +89,9 @@ class ChangePasswordIT {
   @Sql(scripts = {INSERT_USER_SQL_PATH})
   void changePassword_MustReturnStatus400AndProblemDetail_WhenPasswordAndConfirmDoNotMatch() {
     ChangePasswordRequest changePasswordRequest = ChangePasswordRequest.builder()
-        .oldPassword("12345678")
-        .newPassword("1234567890")
-        .confirm("12345678900")
+        .oldPassword("1234567890")
+        .newPassword("0987654321")
+        .confirm("0987654321111")
         .build();
 
     HttpEntity<ChangePasswordRequest> requestEntity =

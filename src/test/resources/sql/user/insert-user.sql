@@ -1,5 +1,5 @@
 INSERT INTO tb_user (name, email, password) VALUES
-    ('Lorem Ipsum', 'lorem@email.com', '{bcrypt}$2a$10$H0Mbg9.ZehMCCUkLuweLOenMAgGWxrzr1I0DWf0gwVs/S8zsPwXO.');
+    ('John Doe', 'john.doe@email.com', '{bcrypt}$2a$10$g8ZNLct0Rcoyq2mExowkheD7GdQzwj/UNl7JvQnk.UiXnIFwt4be6');
 
 INSERT INTO tb_user_roles (user_id, roles_id) VALUES
     (1, 1);

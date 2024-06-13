@@ -17,6 +17,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 
+import static br.com.emendes.financesapi.util.constant.AuthenticationConstant.*;
 import static br.com.emendes.financesapi.util.constant.SqlPath.INSERT_ADMIN_SQL_PATH;
 import static br.com.emendes.financesapi.util.constant.SqlPath.INSERT_USER_SQL_PATH;
 
@@ -32,11 +33,6 @@ class DeleteIT {
   private SignIn signIn;
 
   private final String URI = "/api/users";
-
-  private final String USER_EMAIL = "lorem@email.com";
-  private final String USER_PASSWORD = "12345678";
-  private final String ADMIN_EMAIL = "admin@email.com";
-  private final String ADMIN_PASSWORD = "12345678";
 
   @Test
   @DisplayName("delete must return status 204 when delete successfully")
