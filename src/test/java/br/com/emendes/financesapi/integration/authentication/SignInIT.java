@@ -37,8 +37,8 @@ class SignInIT {
   @Sql(scripts = {INSERT_USER_SQL_PATH})
   void signIn_MustReturnStatus200AndTokenResponse_WhenSignInSuccessfully() {
     SignInRequest requestBody = SignInRequest.builder()
-        .email("lorem@email.com")
-        .password("12345678")
+        .email("john.doe@email.com")
+        .password("1234567890")
         .build();
     HttpEntity<SignInRequest> bodyAndHeaders = new HttpEntity<>(requestBody);
 

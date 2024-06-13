@@ -20,6 +20,8 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 
+import static br.com.emendes.financesapi.util.constant.AuthenticationConstant.USER_EMAIL;
+import static br.com.emendes.financesapi.util.constant.AuthenticationConstant.USER_PASSWORD;
 import static br.com.emendes.financesapi.util.constant.SqlPath.INSERT_INCOMES_EXPENSES_SQL_PATH;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -34,14 +36,12 @@ class MonthSummaryIT {
   private SignIn signIn;
 
   private final String URI = "/api/summaries";
-  private final String EMAIL = "lorem@email.com";
-  private final String PASSWORD = "12345678";
 
   @Test
   @DisplayName("monthSummary must return status 200 and SummaryResponse read monthSummary successfully")
   @Sql(scripts = {INSERT_INCOMES_EXPENSES_SQL_PATH})
   void monthSummary_MustReturnStatus200AndSummaryResponse_WhenReadMonthSummarySuccessfully() {
-    HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
+    HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(USER_EMAIL, USER_PASSWORD));
 
     ResponseEntity<SummaryResponse> actualResponse = testRestTemplate.exchange(
         URI + "/2023/02", HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {
@@ -62,7 +62,7 @@ class MonthSummaryIT {
   @DisplayName("monthSummary must return status 404 and ProblemDetail when summary no exists")
   @Sql(scripts = {INSERT_INCOMES_EXPENSES_SQL_PATH})
   void monthSummary_MustReturnStatus404AndProblemDetail_WhenSummaryNoExists() {
-    HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
+    HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(USER_EMAIL, USER_PASSWORD));
 
     ResponseEntity<ProblemDetail> actualResponse = testRestTemplate.exchange(
         URI + "/2023/08", HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {
@@ -91,7 +91,7 @@ class MonthSummaryIT {
   @DisplayName("monthSummary must return 400 and ProblemDetail when can not parse year")
   @Sql(scripts = {INSERT_INCOMES_EXPENSES_SQL_PATH})
   void monthSummary_MustReturn400AndProblemDetail_WhenCanNotParseYear() {
-    HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
+    HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(USER_EMAIL, USER_PASSWORD));
 
     ResponseEntity<ProblemDetail> actualResponse = testRestTemplate.exchange(
         URI + "/2o23/2",
@@ -112,7 +112,7 @@ class MonthSummaryIT {
   @DisplayName("monthSummary must return 400 and ProblemDetail when can not parse month")
   @Sql(scripts = {INSERT_INCOMES_EXPENSES_SQL_PATH})
   void monthSummary_MustReturn400AndProblemDetail_WhenCanNotParseMonth() {
-    HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
+    HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(USER_EMAIL, USER_PASSWORD));
 
     ResponseEntity<ProblemDetail> actualResponse = testRestTemplate.exchange(
         URI + "/2023/1o",
@@ -133,7 +133,7 @@ class MonthSummaryIT {
   @DisplayName("monthSummary must return 400 and ProblemDetail when year is out of range")
   @Sql(scripts = {INSERT_INCOMES_EXPENSES_SQL_PATH})
   void monthSummary_MustReturn400AndProblemDetail_WhenYearIsOutOfRange(String input, String expectedDetail) {
-    HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
+    HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(USER_EMAIL, USER_PASSWORD));
 
     ResponseEntity<ProblemDetail> actualResponse = testRestTemplate.exchange(
         URI + input,
@@ -154,7 +154,7 @@ class MonthSummaryIT {
   @DisplayName("monthSummary must return 400 and ProblemDetail when month is out of range")
   @Sql(scripts = {INSERT_INCOMES_EXPENSES_SQL_PATH})
   void monthSummary_MustReturn400AndProblemDetail_WhenMonthIsOutOfRange(String input, String expectedDetail) {
-    HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
+    HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(USER_EMAIL, USER_PASSWORD));
 
     ResponseEntity<ProblemDetail> actualResponse = testRestTemplate.exchange(
         URI + input,

@@ -18,6 +18,8 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 
+import static br.com.emendes.financesapi.util.constant.AuthenticationConstant.USER_EMAIL;
+import static br.com.emendes.financesapi.util.constant.AuthenticationConstant.USER_PASSWORD;
 import static br.com.emendes.financesapi.util.constant.SqlPath.INSERT_INCOME_SQL_PATH;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -32,14 +34,12 @@ class ReadByIdIT {
   private SignIn signIn;
 
   private final String URI = "/api/incomes";
-  private final String EMAIL = "lorem@email.com";
-  private final String PASSWORD = "12345678";
 
   @Test
   @DisplayName("readById must return status 200 and IncomeResponse when found successfully")
   @Sql(scripts = {INSERT_INCOME_SQL_PATH})
   void readById_MustReturnStatus200AndIncomeResponse_WhenFoundSuccessfully() {
-    HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
+    HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(USER_EMAIL, USER_PASSWORD));
 
     ResponseEntity<IncomeResponse> actualResponse = testRestTemplate.exchange(
         URI + "/1", HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {
@@ -58,7 +58,7 @@ class ReadByIdIT {
   @DisplayName("readById must return status 400 and ProblemDetail when id is invalid")
   @Sql(scripts = {INSERT_INCOME_SQL_PATH})
   void readById_MustReturnStatus400AndProblemDetail_WhenIdIsInvalid() {
-    HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
+    HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(USER_EMAIL, USER_PASSWORD));
 
     ResponseEntity<ProblemDetail> actualResponse = testRestTemplate.exchange(
         URI + "/1oo", HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {
@@ -90,7 +90,7 @@ class ReadByIdIT {
   @DisplayName("readById must return status 404 and ProblemDetail when id not exists")
   @Sql(scripts = {INSERT_INCOME_SQL_PATH})
   void readById_MustReturnStatus404AndProblemDetail_WhenIdNotExists() {
-    HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
+    HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(USER_EMAIL, USER_PASSWORD));
 
     ResponseEntity<ProblemDetail> actualResponse = testRestTemplate.exchange(
         URI + "/10000", HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {

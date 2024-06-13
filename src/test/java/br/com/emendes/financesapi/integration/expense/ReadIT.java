@@ -22,6 +22,8 @@ import org.springframework.test.context.jdbc.Sql;
 
 import java.util.List;
 
+import static br.com.emendes.financesapi.util.constant.AuthenticationConstant.USER_EMAIL;
+import static br.com.emendes.financesapi.util.constant.AuthenticationConstant.USER_PASSWORD;
 import static br.com.emendes.financesapi.util.constant.SqlPath.INSERT_EXPENSE_SQL_PATH;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -36,14 +38,12 @@ class ReadIT {
   private SignIn signIn;
 
   private final String URI = "/api/expenses";
-  private final String EMAIL = "lorem@email.com";
-  private final String PASSWORD = "12345678";
 
   @Test
   @DisplayName("read must return status 200 and Page<ExpenseResponse> when read successfully")
   @Sql(scripts = {INSERT_EXPENSE_SQL_PATH})
   void read_MustReturnStatus200AndPageExpenseResponse_WhenReadSuccessfully() {
-    HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
+    HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(USER_EMAIL, USER_PASSWORD));
 
     ResponseEntity<PageableResponse<ExpenseResponse>> actualResponse = testRestTemplate
         .exchange(URI, HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {
@@ -63,7 +63,7 @@ class ReadIT {
   @DisplayName("read must return status 200 and empty Page<ExpenseResponse> when read page one")
   @Sql(scripts = {INSERT_EXPENSE_SQL_PATH})
   void read_MustReturnStatus200AndEmptyPageExpenseResponse_WhenReadPageOne() {
-    HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
+    HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(USER_EMAIL, USER_PASSWORD));
 
     ResponseEntity<PageableResponse<ExpenseResponse>> actualResponse = testRestTemplate
         .exchange(URI + "?page=1", HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {
@@ -92,7 +92,7 @@ class ReadIT {
   @DisplayName("read must return status 404 and ProblemDetail when user has no expenses")
   @Sql(scripts = {"/sql/user/insert-user.sql"})
   void read_MustReturnStatus404AndProblemDetail_WhenUserHasNoExpenses() {
-    HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
+    HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(USER_EMAIL, USER_PASSWORD));
 
     ResponseEntity<ProblemDetail> actualResponse = testRestTemplate.exchange(
         URI, HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {
@@ -111,7 +111,7 @@ class ReadIT {
   @DisplayName("readByDescription must return status 200 and empty Page<ExpenseResponse> when read by description and page one")
   @Sql(scripts = {INSERT_EXPENSE_SQL_PATH})
   void readByDescription_MustReturnsStatus200AndEmptyPageExpenseResponse_WhenReadByDescriptionAndPageOne() {
-    HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
+    HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(USER_EMAIL, USER_PASSWORD));
 
     ResponseEntity<PageableResponse<ExpenseResponse>> actualResponse = testRestTemplate
         .exchange(URI + "?description=aluguel&page=1",
@@ -131,7 +131,7 @@ class ReadIT {
   @DisplayName("readByDescription must returns status 200 and Page<ExpenseResponse> when read by description successfully")
   @Sql(scripts = {INSERT_EXPENSE_SQL_PATH})
   void readByDescription_MustReturnStatus200AndPageExpenseResponse_WhenReadByDescriptionSuccessfully() {
-    HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
+    HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(USER_EMAIL, USER_PASSWORD));
 
     ResponseEntity<PageableResponse<ExpenseResponse>> actualResponse = testRestTemplate
         .exchange(URI + "?description=alu", HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {
@@ -149,7 +149,7 @@ class ReadIT {
   @DisplayName("readByDescription must returns status 404 and ProblemDetail when user has no expenses with description \"Aluguel\"")
   @Sql(scripts = {"/sql/user/insert-user.sql"})
   void readByDescription_MustReturnStatus404AndProblemDetail_WhenUserHasNoExpensesWithDescriptionAluguel() {
-    HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
+    HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(USER_EMAIL, USER_PASSWORD));
     ResponseEntity<ProblemDetail> actualResponse = testRestTemplate.exchange(
         URI + "?description=Aluguel", HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {
         });

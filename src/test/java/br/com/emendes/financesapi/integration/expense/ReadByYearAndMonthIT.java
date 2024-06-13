@@ -24,6 +24,8 @@ import org.springframework.test.context.jdbc.Sql;
 
 import java.util.List;
 
+import static br.com.emendes.financesapi.util.constant.AuthenticationConstant.USER_EMAIL;
+import static br.com.emendes.financesapi.util.constant.AuthenticationConstant.USER_PASSWORD;
 import static br.com.emendes.financesapi.util.constant.SqlPath.INSERT_EXPENSE_SQL_PATH;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -38,14 +40,12 @@ class ReadByYearAndMonthIT {
   private SignIn signIn;
 
   private final String URI = "/api/expenses";
-  private final String EMAIL = "lorem@email.com";
-  private final String PASSWORD = "12345678";
 
   @Test
   @DisplayName("readByYearAndMonth must return status 200 and Page<ExpenseResponse> when read successfully")
   @Sql(scripts = {INSERT_EXPENSE_SQL_PATH})
   void readByYearAndMonth_MustReturnStatus200AndPageExpenseResponse_WhenReadSuccessfully() {
-    HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
+    HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(USER_EMAIL, USER_PASSWORD));
 
     ResponseEntity<PageableResponse<ExpenseResponse>> actualResponse = testRestTemplate.exchange(
         URI + "/2023/2", HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {
@@ -65,7 +65,7 @@ class ReadByYearAndMonthIT {
   @DisplayName("readByYearAndMonth must return status 200 and empty page when read by year and month and page one")
   @Sql(scripts = {INSERT_EXPENSE_SQL_PATH})
   void readByYearAndMonth_MustReturnStatus200AndEmptyPage_WhenReadByYearAndMonthAndPageOne() {
-    HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
+    HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(USER_EMAIL, USER_PASSWORD));
 
     ResponseEntity<PageableResponse<ExpenseResponse>> actualResponse = testRestTemplate.exchange(
         URI + "/2023/2?page=1", HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {
@@ -84,7 +84,7 @@ class ReadByYearAndMonthIT {
   @DisplayName("readByYearAndMonth must return status 400 and ProblemDetail when year can not be parsed")
   @Sql(scripts = {INSERT_EXPENSE_SQL_PATH})
   void readByYearAndMonth_MustReturnStatus400AndProblemDetail_WhenYearCanNotBeParsed() {
-    HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
+    HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(USER_EMAIL, USER_PASSWORD));
 
     ResponseEntity<ProblemDetail> actualResponse = testRestTemplate.exchange(
         URI + "/2023/ll", HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {
@@ -104,7 +104,7 @@ class ReadByYearAndMonthIT {
   @DisplayName("readByYearAndMonth must return status 400 and ProblemDetail when month can not be parsed")
   @Sql(scripts = {INSERT_EXPENSE_SQL_PATH})
   void readByYearAndMonth_MustReturnsStatus400AndProblemDetail_WhenMonthCanNotBeParsed() {
-    HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
+    HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(USER_EMAIL, USER_PASSWORD));
 
     ResponseEntity<ProblemDetail> actualResponse = testRestTemplate.exchange(
         URI + "/2o23/2", HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {
@@ -125,7 +125,7 @@ class ReadByYearAndMonthIT {
   @DisplayName("readByYearAndMonth must return 400 and ProblemDetail when year is out of range")
   @Sql(scripts = {INSERT_EXPENSE_SQL_PATH})
   void readByYearAndMonth_MustReturn400AndProblemDetail_WhenYearIsOutOfRange(String input, String expectedDetail) {
-    HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
+    HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(USER_EMAIL, USER_PASSWORD));
 
     ResponseEntity<ProblemDetail> actualResponse = testRestTemplate.exchange(
         URI + input,
@@ -146,7 +146,7 @@ class ReadByYearAndMonthIT {
   @DisplayName("readByYearAndMonth must return 400 and ProblemDetail when month is out of range")
   @Sql(scripts = {INSERT_EXPENSE_SQL_PATH})
   void readByYearAndMonth_MustReturn400AndProblemDetail_WhenMonthIsOutOfRange(String input, String expectedDetail) {
-    HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
+    HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(USER_EMAIL, USER_PASSWORD));
 
     ResponseEntity<ProblemDetail> actualResponse = testRestTemplate.exchange(
         URI + input,
@@ -178,7 +178,7 @@ class ReadByYearAndMonthIT {
   @DisplayName("readByYearAndMonth must return status 404 and ProblemDetail when user has no expenses for march 2023")
   @Sql(scripts = {INSERT_EXPENSE_SQL_PATH})
   void readByYearAndMonth_MustReturnStatus404AndProblemDetail_WhenUserHasNoExpensesForMarch2023() {
-    HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(EMAIL, PASSWORD));
+    HttpEntity<Void> requestEntity = new HttpEntity<>(signIn.generateAuthorizationHeader(USER_EMAIL, USER_PASSWORD));
 
     ResponseEntity<ProblemDetail> actualResponse = testRestTemplate.exchange(
         URI + "/2023/03", HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>() {
