@@ -8,9 +8,9 @@ INSERT INTO tb_user_roles (user_id, roles_id) VALUES
     (1, 1),
     (2, 1);
 
--- Add as despesas (expenses) dos usuários.
-INSERT INTO tb_expense (description, value, date, category, user_id) VALUES
-    ('Aluguel', 1500.00, '2023-02-05', 'MORADIA', 1),
-    ('mercado', 325.00, '2023-02-13', 'ALIMENTACAO', 1),
-    ('Aluguel', 1200.00, '2023-02-05', 'MORADIA', 2),
-    ('supermercado', 175.00, '2023-02-13', 'ALIMENTACAO', 2);
+-- Add as receitas (incomes) dos usuários.
+INSERT INTO tb_income (description, value, date, user_id) VALUES
+    ('Salário', 3500.00, '2023-02-08', 1),
+    ('Freela', 325.00, '2023-02-13', 1),
+    ('Salário', 3700.00, '2023-02-05', 2),
+    ('Venda Video Game', 975.00, '2023-02-13', 2);

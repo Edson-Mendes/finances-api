@@ -74,7 +74,7 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
    * @param month    mês em que foi feito a despesa.
    * @param user     usuário relacionado com as despesas a serem buscadas.
    * @param pageable objeto que define como será feito a paginação (page, size e sort).
-   * @return Objeto {@code Page<Expense>} com as despesas que satisfação as restrições acima.
+   * @return Objeto {@code Page<Expense>} com as despesas que satisfaçam as restrições acima.
    */
   @Query("""
       SELECT e FROM Expense e

@@ -13,6 +13,15 @@ public class SqlPath {
    */
   public static final String INSERT_USER_SQL_PATH = "/sql/user/insert-user.sql";
   public static final String INSERT_INCOMES_EXPENSES_SQL_PATH = "/sql/summary/insert-incomes-and-expenses.sql";
+
+  /**
+   * Path para um arquivo SQL que insere dois usuários e 2 (duas) receitas (incomes) para cada usuário.
+   */
+  public static final String INSERT_MULTIPLE_INCOMES_AND_MULTIPLE_USERS = "/sql/income/insert-multiple-incomes-and-multiple-users.sql";
+  /**
+   * Path para um arquivo SQL que insere um usuário e 5 (cinco) receitas (incomes) para o usuário.
+   */
+  public static final String INSERT_MULTIPLE_INCOMES_FOR_ONE_USER = "/sql/income/insert-multiple-incomes-for-one-user.sql";
   public static final String INSERT_INCOME_SQL_PATH = "/sql/income/insert-income.sql";
 
   /**
