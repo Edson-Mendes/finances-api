@@ -91,6 +91,22 @@ class ExpenseRepositoryIT {
     }
 
     @SqlMergeMode(SqlMergeMode.MergeMode.MERGE)
+    @Sql(scripts = INSERT_MULTIPLE_EXPENSES_AND_MULTIPLE_USERS)
+    @Test
+    @DisplayName("findByDescriptionAndUser must return page with one expense when exists expense with same description for different users")
+    void findByDescriptionAndUser_MustReturnPageWithOneExpense_WhenExistsExpenseWithSameDescriptionForDifferentUsers() {
+      User user = User.builder().id(1L).build();
+
+      Page<Expense> actualExpensePage = expenseRepository.findByDescriptionAndUser("aluguel", user, PAGEABLE);
+      assertThat(actualExpensePage).isNotNull().hasSize(1);
+
+      Page<String> actualExpensesDescriptions = actualExpensePage.map(Expense::getDescription);
+      assertThat(actualExpensesDescriptions)
+          .isNotNull().hasSize(1)
+          .allMatch(description -> description.toLowerCase().contains("aluguel"));
+    }
+
+    @SqlMergeMode(SqlMergeMode.MergeMode.MERGE)
     @Sql(scripts = INSERT_MULTIPLE_EXPENSES_FOR_ONE_USER)
     @Test
     @DisplayName("findByDescriptionAndUser must return empty page when not found for given user and description 'mecanico'")
@@ -98,6 +114,18 @@ class ExpenseRepositoryIT {
       User user = User.builder().id(1L).build();
 
       Page<Expense> actualExpensePage = expenseRepository.findByDescriptionAndUser("mecanico", user, PAGEABLE);
+      assertThat(actualExpensePage).isNotNull().isEmpty();
+    }
+
+
+    @SqlMergeMode(SqlMergeMode.MergeMode.MERGE)
+    @Sql(scripts = INSERT_MULTIPLE_EXPENSES_AND_MULTIPLE_USERS)
+    @Test
+    @DisplayName("findByDescriptionAndUser must return empty page when not found for given user")
+    void findByDescriptionAndUser_MustReturnEmptyPage_WhenNotFoundForGivenUser() {
+      User user = User.builder().id(1L).build();
+
+      Page<Expense> actualExpensePage = expenseRepository.findByDescriptionAndUser("super", user, PAGEABLE);
       assertThat(actualExpensePage).isNotNull().isEmpty();
     }
 
@@ -120,6 +148,22 @@ class ExpenseRepositoryIT {
       Page<LocalDate> actualExpensesDescriptions = actualExpensePage.map(Expense::getDate);
       assertThat(actualExpensesDescriptions)
           .isNotNull().hasSize(3)
+          .allMatch(date -> date.getYear() == 2023 && date.getMonthValue() == 2);
+    }
+
+    @SqlMergeMode(SqlMergeMode.MergeMode.MERGE)
+    @Sql(scripts = INSERT_MULTIPLE_EXPENSES_AND_MULTIPLE_USERS)
+    @Test
+    @DisplayName("findByYearAndMonthAndUser must return Page with two expenses when exists expenses with same year and month and different users")
+    void findByYearAndMonthAndUser_MustReturnPageWithTwoExpenses_WhenExistsExpenseWithSameYearAndMonthAndDifferentUsers() {
+      User user = User.builder().id(1L).build();
+
+      Page<Expense> actualExpensePage = expenseRepository.findByYearAndMonthAndUser(2023, 2, user, PAGEABLE);
+      assertThat(actualExpensePage).isNotNull().hasSize(2);
+
+      Page<LocalDate> actualExpensesDescriptions = actualExpensePage.map(Expense::getDate);
+      assertThat(actualExpensesDescriptions)
+          .isNotNull().hasSize(2)
           .allMatch(date -> date.getYear() == 2023 && date.getMonthValue() == 2);
     }
 
