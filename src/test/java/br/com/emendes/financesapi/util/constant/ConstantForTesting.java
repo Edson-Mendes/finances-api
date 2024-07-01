@@ -21,11 +21,13 @@ public final class ConstantForTesting {
 
   public static final Pageable PAGEABLE_WITH_PAGE_ONE = PageRequest.of(1, 10, Sort.Direction.DESC, "date");
 
+  @Deprecated
   public static final Role ROLE_USER = Role.builder()
       .id(1)
       .name("ROLE_USER")
       .build();
 
+  @Deprecated
   public static final User USER = User.builder()
       .id(1000L)
       .name("Lorem Ipsum")
@@ -34,6 +36,7 @@ public final class ConstantForTesting {
       .roles(List.of(ROLE_USER))
       .build();
 
+  @Deprecated
   public static final Expense EXPENSE = Expense.builder()
       .id(100_000L)
       .description("Aluguel xpto")

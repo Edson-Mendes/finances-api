@@ -14,10 +14,6 @@ import java.util.Optional;
 
 public interface ExpenseRepository extends JpaRepository<Expense, Long> {
 
-  @Deprecated
-  @Query("SELECT e FROM Expense e WHERE e.user.id = ?#{ principal?.id }")
-  Page<Expense> findAllByUser(Pageable pageable);
-
   /**
    * Busca paginada de despesas (expenses) para um dado usuário (user).
    *
@@ -27,12 +23,6 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
    */
   @Query("SELECT e FROM Expense e WHERE e.user = :user")
   Page<Expense> findAllByUser(@Param("user") User user, Pageable pageable);
-
-  @Deprecated
-  @Query("SELECT e FROM Expense e " +
-         "WHERE lower_unaccent(e.description) LIKE lower_unaccent('%' || :description || '%') " +
-         "AND e.user.id = ?#{ principal?.id }")
-  Page<Expense> findByDescriptionAndUser(@Param("description") String description, Pageable pageable);
 
   /**
    * Busca paginada de despesas (expenses) para um dado usuário (user) e descrição (description).<br>
@@ -53,18 +43,6 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
   Page<Expense> findByDescriptionAndUser(
       @Param("description") String description,
       @Param("user") User user,
-      Pageable pageable);
-
-  @Deprecated
-  @Query("""
-      SELECT e FROM Expense e
-        WHERE YEAR(e.date) = :year
-        AND MONTH(e.date)= :month
-        AND e.user.id = ?#{ principal?.id }
-      """)
-  Page<Expense> findByYearAndMonthAndUser(
-      @Param("year") int year,
-      @Param("month") int month,
       Pageable pageable);
 
   /**
@@ -88,10 +66,6 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
       @Param("user") User user,
       Pageable pageable);
 
-  @Deprecated
-  @Query("SELECT e FROM Expense e WHERE e.id = :id AND e.user.id = ?#{ principal?.id }")
-  Optional<Expense> findByIdAndUser(@Param("id") Long id);
-
   /**
    * Busca despesa (expense) por id e user.
    *
@@ -101,14 +75,6 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
    */
   @Query("SELECT e FROM Expense e WHERE e.id = :id AND e.user = :user")
   Optional<Expense> findByIdAndUser(@Param("id") Long id, @Param("user") User user);
-
-  @Deprecated
-  @Query("SELECT new br.com.emendes.financesapi.dto.response.ValueByCategoryResponse(e.category, SUM(e.value)) " +
-         "FROM Expense e " +
-         "WHERE YEAR(e.date) = :year AND MONTH(e.date) = :month " +
-         "AND e.user.id = ?#{ principal?.id } " +
-         "GROUP BY e.category")
-  List<ValueByCategoryResponse> getValueByCategoryAndMonthAndYearAndUser(@Param("year") int year, @Param("month") int month);
 
   /**
    * Busca uma lista de {@link ValueByCategoryResponse}, agrupando todas as despesas por categoria em dado mês (month)
