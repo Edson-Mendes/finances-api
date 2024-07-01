@@ -162,7 +162,7 @@ class UpdateIT {
     Assertions.assertThat(statusCode).isEqualTo(HttpStatusCode.valueOf(404));
     Assertions.assertThat(actualResponseBody).isNotNull();
     Assertions.assertThat(actualResponseBody.getTitle()).isEqualTo("Entity not found");
-    Assertions.assertThat(actualResponseBody.getDetail()).isEqualTo("Expense not found");
+    Assertions.assertThat(actualResponseBody.getDetail()).isEqualTo("Expense not found with id: 10000");
   }
 
 }
