@@ -9,7 +9,6 @@ import br.com.emendes.financesapi.model.Category;
 import br.com.emendes.financesapi.model.entity.Expense;
 import br.com.emendes.financesapi.repository.ExpenseRepository;
 import br.com.emendes.financesapi.service.impl.ExpenseServiceImpl;
-import br.com.emendes.financesapi.util.AuthenticationFacade;
 import br.com.emendes.financesapi.util.component.CurrentAuthenticationComponent;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -37,6 +36,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
+/**
+ * ExpenseServiceImpl unit tests.
+ */
 @ExtendWith(SpringExtension.class)
 @DisplayName("Unit tests for ExpenseServiceImpl")
 class ExpenseServiceImplTest {
@@ -46,9 +48,6 @@ class ExpenseServiceImplTest {
 
   @Mock
   private ExpenseRepository expenseRepositoryMock;
-  @Deprecated(forRemoval = true)
-  @Mock
-  private AuthenticationFacade authenticationFacadeMock;
   @Mock
   private CurrentAuthenticationComponent currentAuthenticationComponentMock;
 
@@ -350,7 +349,6 @@ class ExpenseServiceImplTest {
       when(currentAuthenticationComponentMock.getCurrentUser()).thenReturn(user());
       when(expenseRepositoryMock.findByIdAndUser(eq(999_999L), any()))
           .thenReturn(Optional.empty());
-
 
       ExpenseRequest expenseRequest = ExpenseRequest.builder()
           .description("Aluguel xpto updated")

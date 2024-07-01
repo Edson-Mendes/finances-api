@@ -7,33 +7,32 @@ import br.com.emendes.financesapi.model.entity.Income;
 import br.com.emendes.financesapi.model.entity.User;
 import br.com.emendes.financesapi.repository.IncomeRepository;
 import br.com.emendes.financesapi.service.IncomeService;
-import br.com.emendes.financesapi.util.AuthenticationFacade;
+import br.com.emendes.financesapi.util.component.CurrentAuthenticationComponent;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.Month;
 import java.util.Optional;
 
+@Slf4j
 @RequiredArgsConstructor
-@Transactional
 @Service
 public class IncomeServiceImpl implements IncomeService {
 
   private final IncomeRepository incomeRepository;
-  private final AuthenticationFacade authenticationFacade;
+  private final CurrentAuthenticationComponent currentAuthenticationComponent;
 
   @Override
   public IncomeResponse create(IncomeRequest incomeRequest) {
-    Authentication authentication = authenticationFacade.getAuthentication();
+    log.info("attempt to create new income.");
+    User currentUser = currentAuthenticationComponent.getCurrentUser();
 
-    Long userId = ((User) authentication.getPrincipal()).getId();
-
-    Income income = incomeRequest.convert(userId);
+    Income income = incomeRequest.convert(currentUser.getId());
     incomeRepository.save(income);
 
     return new IncomeResponse(income);
@@ -41,17 +40,23 @@ public class IncomeServiceImpl implements IncomeService {
 
   @Override
   public Page<IncomeResponse> readAllByUser(Pageable pageable) {
-    Page<Income> incomes = incomeRepository.findAllByUser(pageable);
+    User currentUser = currentAuthenticationComponent.getCurrentUser();
+    log.info("attempt to read incomes for user with id: {}.", currentUser.getId());
 
+    Page<Income> incomes = incomeRepository.findAllByUser(currentUser, pageable);
     if (incomes.getTotalElements() == 0) {
       throw new EntityNotFoundException("The user has no incomes");
     }
+
     return IncomeResponse.convert(incomes);
   }
 
   @Override
   public Page<IncomeResponse> readByDescriptionAndUser(String description, Pageable pageable) {
-    Page<Income> incomes = incomeRepository.findByDescriptionAndUser(description, pageable);
+    log.info("attempt to read income by description");
+
+    User currentUser = currentAuthenticationComponent.getCurrentUser();
+    Page<Income> incomes = incomeRepository.findByDescriptionAndUser(description, currentUser, pageable);
     if (incomes.getTotalElements() == 0) {
       throw new EntityNotFoundException("The user has no incomes with a description similar to " + description);
     }
@@ -60,12 +65,16 @@ public class IncomeServiceImpl implements IncomeService {
 
   @Override
   public IncomeResponse readByIdAndUser(Long incomeId) {
+    log.info("attempt to read income by id.");
     return new IncomeResponse(findByIdAndUser(incomeId));
   }
 
   @Override
   public Page<IncomeResponse> readByYearAndMonthAndUser(int year, int month, Pageable pageable) {
-    Page<Income> incomes = incomeRepository.findByYearAndMonthAndUser(year, month, pageable);
+    log.info("attempt to read income by year and month.");
+    User currentUser = currentAuthenticationComponent.getCurrentUser();
+    Page<Income> incomes = incomeRepository.findByYearAndMonthAndUser(year, month, currentUser, pageable);
+
     if (incomes.getTotalElements() == 0) {
       throw new EntityNotFoundException(String.format("Has no incomes for year %d and month %s", year, Month.of(month)));
     }
@@ -73,7 +82,9 @@ public class IncomeServiceImpl implements IncomeService {
   }
 
   @Override
+  @Transactional
   public IncomeResponse update(Long id, IncomeRequest incomeRequest) {
+    log.info("attempt to update income with id: {}", id);
     Income incomeToBeUpdated = findByIdAndUser(id);
 
     incomeToBeUpdated.setParams(incomeRequest);
@@ -82,19 +93,33 @@ public class IncomeServiceImpl implements IncomeService {
 
   @Override
   public void deleteById(Long id) {
+    log.info("attempt to delete income with id: {}", id);
+
     incomeRepository.delete(findByIdAndUser(id));
   }
 
   @Override
   public BigDecimal getTotalValueByMonthAndYearAndUserId(int year, int month) {
-    return incomeRepository.getTotalValueByMonthAndYearAndUser(year, month).orElse(BigDecimal.ZERO);
+    log.info("attempt to get total value of incomes for year: {} and month: {}", year, month);
+
+    User currentUser = currentAuthenticationComponent.getCurrentUser();
+    return incomeRepository.getTotalValueByMonthAndYearAndUser(year, month, currentUser).orElse(BigDecimal.ZERO);
   }
 
+  /**
+   * Busca Income por id e user, sendo que o user usado na busca é o usuário logado na requisição atual.
+   *
+   * @param id identificador da income a ser buscada.
+   * @return Income encontrada para o dado id e user autenticado.
+   * @throws EntityNotFoundException caso não seja encontrada nenhuma income para o dado id e user autenticado.
+   */
   private Income findByIdAndUser(Long id) {
-    Optional<Income> optionalExpense = incomeRepository.findByIdAndUser(id);
+    log.info("attempt to find income with id: {}", id);
+    User currentUser = currentAuthenticationComponent.getCurrentUser();
+    Optional<Income> optionalIncome = incomeRepository.findByIdAndUser(id, currentUser);
 
-    return optionalExpense.orElseThrow(
-        () -> new EntityNotFoundException("Income not found"));
+    return optionalIncome.orElseThrow(
+        () -> new EntityNotFoundException(String.format("Income not found with id: %d", id)));
   }
 
 }

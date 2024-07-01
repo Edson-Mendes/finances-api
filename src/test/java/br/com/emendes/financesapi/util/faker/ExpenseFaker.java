@@ -12,7 +12,7 @@ import java.util.Optional;
 import static br.com.emendes.financesapi.util.faker.UserFaker.user;
 
 /**
- * Classe com objetos relacionados a eXPENSE para serem usados em testes automatizados.
+ * Classe com objetos relacionados a {@link Expense} para serem usados em testes automatizados.
  */
 public class ExpenseFaker {
 
