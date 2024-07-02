@@ -15,7 +15,8 @@ import java.util.List;
 
 public final class ConstantForTesting {
 
-  private ConstantForTesting() {}
+  private ConstantForTesting() {
+  }
 
   public static final Pageable PAGEABLE = PageRequest.of(0, 10, Sort.Direction.DESC, "date");
 
@@ -46,6 +47,7 @@ public final class ConstantForTesting {
       .user(USER)
       .build();
 
+  @Deprecated
   public static final Income INCOME = Income.builder()
       .id(100_000L)
       .description("Salário")

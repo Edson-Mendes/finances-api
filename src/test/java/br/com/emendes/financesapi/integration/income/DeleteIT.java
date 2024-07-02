@@ -97,7 +97,7 @@ class DeleteIT {
     Assertions.assertThat(actualStatusCode).isEqualTo(HttpStatusCode.valueOf(404));
     Assertions.assertThat(actualResponseBody).isNotNull();
     Assertions.assertThat(actualResponseBody.getTitle()).isEqualTo("Entity not found");
-    Assertions.assertThat(actualResponseBody.getDetail()).isEqualTo("Income not found");
+    Assertions.assertThat(actualResponseBody.getDetail()).isEqualTo("Income not found with id: 10000");
   }
 
 }

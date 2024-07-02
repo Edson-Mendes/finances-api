@@ -12,6 +12,9 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Interface repository com as abstrações para interação com o recurso Expense no banco de dados.
+ */
 public interface ExpenseRepository extends JpaRepository<Expense, Long> {
 
   /**
