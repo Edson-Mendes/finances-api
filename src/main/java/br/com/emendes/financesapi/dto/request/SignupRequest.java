@@ -35,6 +35,7 @@ public class SignupRequest {
     return new User(name, email, password);
   }
 
+  @Deprecated(forRemoval = true)
   public boolean passwordMatch() {
     return this.password.equals(this.confirm);
   }

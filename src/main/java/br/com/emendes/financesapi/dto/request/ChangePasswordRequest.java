@@ -26,6 +26,7 @@ public class ChangePasswordRequest {
   @NotBlank(message = "confirm must not be null or blank")
   private String confirm;
 
+  @Deprecated(forRemoval = true)
   public boolean passwordMatch() {
     return this.newPassword.equals(this.confirm);
   }

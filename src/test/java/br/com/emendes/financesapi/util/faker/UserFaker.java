@@ -28,8 +28,15 @@ public class UserFaker {
   /**
    * Retorna um {@code Optional<User>} que contém um User.
    */
-  public static Optional<User> optionalUser() {
+  public static Optional<User> userOptional() {
     return Optional.ofNullable(user());
+  }
+
+  /**
+   * Retorna um {@code List<User>} com um elemento.
+   */
+  public static List<User> userList() {
+    return List.of(user());
   }
 
 }
