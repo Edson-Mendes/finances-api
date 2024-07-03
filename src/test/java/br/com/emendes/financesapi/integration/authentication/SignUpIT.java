@@ -109,7 +109,7 @@ class SignUpIT {
     Assertions.assertThat(actualStatusCode).isEqualTo(HttpStatusCode.valueOf(400));
     Assertions.assertThat(actualResponseBody).isNotNull();
     Assertions.assertThat(actualResponseBody.getTitle()).isEqualTo("Passwords do not match");
-    Assertions.assertThat(actualResponseBody.getDetail()).isEqualTo("Password and confirm do not match");
+    Assertions.assertThat(actualResponseBody.getDetail()).isEqualTo("Password and confirm does not match");
   }
 
   @Test

@@ -19,8 +19,8 @@ public final class ConstantForTesting {
   }
 
   public static final Pageable PAGEABLE = PageRequest.of(0, 10, Sort.Direction.DESC, "date");
-
   public static final Pageable PAGEABLE_WITH_PAGE_ONE = PageRequest.of(1, 10, Sort.Direction.DESC, "date");
+  public static final Pageable USER_PAGEABLE = PageRequest.of(0, 10, Sort.Direction.ASC, "id");
 
   @Deprecated
   public static final Role ROLE_USER = Role.builder()

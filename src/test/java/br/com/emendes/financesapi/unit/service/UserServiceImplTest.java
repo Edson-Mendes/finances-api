@@ -3,15 +3,11 @@ package br.com.emendes.financesapi.unit.service;
 import br.com.emendes.financesapi.dto.request.ChangePasswordRequest;
 import br.com.emendes.financesapi.dto.request.SignupRequest;
 import br.com.emendes.financesapi.dto.response.UserResponse;
-import br.com.emendes.financesapi.exception.DataConflictException;
-import br.com.emendes.financesapi.exception.EntityNotFoundException;
-import br.com.emendes.financesapi.exception.PasswordsDoNotMatchException;
-import br.com.emendes.financesapi.exception.WrongPasswordException;
+import br.com.emendes.financesapi.exception.*;
 import br.com.emendes.financesapi.model.entity.User;
 import br.com.emendes.financesapi.repository.UserRepository;
 import br.com.emendes.financesapi.service.impl.UserServiceImpl;
-import br.com.emendes.financesapi.util.AuthenticationFacade;
-import org.assertj.core.api.Assertions;
+import br.com.emendes.financesapi.util.component.CurrentAuthenticationComponent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -22,23 +18,22 @@ import org.mockito.Mock;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort.Direction;
-import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.List;
 import java.util.Optional;
 
-import static br.com.emendes.financesapi.util.constant.ConstantForTesting.ROLE_USER;
-import static br.com.emendes.financesapi.util.constant.ConstantForTesting.USER;
-import static br.com.emendes.financesapi.util.faker.UserFaker.optionalUser;
+import static br.com.emendes.financesapi.util.constant.ConstantForTesting.USER_PAGEABLE;
+import static br.com.emendes.financesapi.util.faker.UserFaker.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+/**
+ * UserServiceImple unit tests.
+ */
 @ExtendWith(SpringExtension.class)
 @DisplayName("Tests for UserServiceImpl")
 class UserServiceImplTest {
@@ -50,10 +45,7 @@ class UserServiceImplTest {
   @Mock
   private PasswordEncoder passwordEncoderMock;
   @Mock
-  private AuthenticationFacade authenticationFacadeMock;
-
-  private final Pageable PAGEABLE = PageRequest.of(0, 10, Direction.ASC, "id");
-  private final Long NON_EXISTING_USER_ID = 9999L;
+  private CurrentAuthenticationComponent currentAuthenticationComponentMock;
 
   @Nested
   @DisplayName("Tests for createAccount method")
@@ -68,21 +60,20 @@ class UserServiceImplTest {
     @Test
     @DisplayName("createAccount must return UserResponse when create successfully")
     void createAccount_MustReturnUserResponse_WhenCreateSuccessfully() {
-      when(userRepositoryMock.save(any(User.class)))
-          .thenReturn(USER);
+      when(userRepositoryMock.save(any(User.class))).thenReturn(user());
 
       SignupRequest signupRequest = SignupRequest.builder()
-          .name("Lorem Ipsum")
-          .email("lorem@email.com")
+          .name("John Doe")
+          .email("john.doe@email.com")
           .password("1234567890")
           .confirm("1234567890")
           .build();
 
       UserResponse actualUserResponse = userServiceImpl.createAccount(signupRequest);
 
-      Assertions.assertThat(actualUserResponse).isNotNull();
-      Assertions.assertThat(actualUserResponse.getEmail()).isEqualTo("lorem@email.com");
-      Assertions.assertThat(actualUserResponse.getName()).isEqualTo("Lorem Ipsum");
+      assertThat(actualUserResponse).isNotNull();
+      assertThat(actualUserResponse.getEmail()).isEqualTo("john.doe@email.com");
+      assertThat(actualUserResponse.getName()).isEqualTo("John Doe");
     }
 
     @Test
@@ -92,13 +83,13 @@ class UserServiceImplTest {
           .thenThrow(new DataIntegrityViolationException("Email inserido já está em uso!"));
 
       SignupRequest signupRequest = SignupRequest.builder()
-          .name("Lorem Ipsum")
+          .name("John Doe")
           .email("email.alreay.in.use@email.com")
           .password("1234567890")
           .confirm("1234567890")
           .build();
 
-      Assertions.assertThatExceptionOfType(DataConflictException.class)
+      assertThatExceptionOfType(DataConflictException.class)
           .isThrownBy(() -> userServiceImpl.createAccount(signupRequest))
           .withMessage("Email is already in use");
     }
@@ -107,15 +98,15 @@ class UserServiceImplTest {
     @DisplayName("createAccount must throws PasswordsDoNotMatchException when password no matches")
     void createAccount_MustThrowsPasswordsDoNotMatchException_WhenPasswordNoMatches() {
       SignupRequest signupRequest = SignupRequest.builder()
-          .name("Lorem Ipsum")
-          .email("lorem@email.com")
+          .name("John Doe")
+          .email("john.doe@email.com")
           .password("1234567890")
           .confirm("12345678")
           .build();
 
-      Assertions.assertThatExceptionOfType(PasswordsDoNotMatchException.class)
+      assertThatExceptionOfType(PasswordsDoNotMatchException.class)
           .isThrownBy(() -> userServiceImpl.createAccount(signupRequest))
-          .withMessage("Password and confirm do not match");
+          .withMessage("Password and confirm does not match");
     }
 
   }
@@ -127,14 +118,14 @@ class UserServiceImplTest {
     @Test
     @DisplayName("read must return Page<UserResponse> when read successfully")
     void read_ReturnsPageUserResponse_WhenReadSuccessfully() {
-      when(userRepositoryMock.findAll(PAGEABLE))
-          .thenReturn(new PageImpl<>(List.of(USER)));
+      when(userRepositoryMock.findAll(USER_PAGEABLE))
+          .thenReturn(new PageImpl<>(userList()));
 
-      Page<UserResponse> actualUserResponsePage = userServiceImpl.read(PAGEABLE);
+      Page<UserResponse> actualUserResponsePage = userServiceImpl.read(USER_PAGEABLE);
 
-      Assertions.assertThat(actualUserResponsePage).isNotEmpty().hasSize(1);
-      Assertions.assertThat(actualUserResponsePage.getContent().get(0).getName())
-          .isEqualTo("Lorem Ipsum");
+      assertThat(actualUserResponsePage).isNotEmpty().hasSize(1);
+      assertThat(actualUserResponsePage.getContent().get(0).getName())
+          .isEqualTo("John Doe");
     }
 
   }
@@ -146,25 +137,26 @@ class UserServiceImplTest {
     @Test
     @DisplayName("readById must return User when read by id successfully")
     void readById_MustReturnsUser_WhenReadByIdSuccessfully() {
-      when(userRepositoryMock.findById(1000L))
-          .thenReturn(Optional.of(USER));
+      when(userRepositoryMock.findById(1_000L))
+          .thenReturn(userOptional());
 
-      Long userId = 1000L;
+      Long userId = 1_000L;
       User user = userServiceImpl.readById(userId);
 
-      Assertions.assertThat(user).isNotNull();
-      Assertions.assertThat(user.getId()).isEqualTo(1000L);
+      assertThat(user).isNotNull();
+      assertThat(user.getId()).isEqualTo(1_000L);
     }
 
     @Test
     @DisplayName("readById must return Null when not found user")
     void readById_MustReturnsNull_WhenNotFoundUser() {
+      Long NON_EXISTING_USER_ID = 9999L;
       when(userRepositoryMock.findById(NON_EXISTING_USER_ID))
           .thenReturn(Optional.empty());
 
       User user = userServiceImpl.readById(NON_EXISTING_USER_ID);
 
-      Assertions.assertThat(user).isNull();
+      assertThat(user).isNull();
     }
 
   }
@@ -176,7 +168,7 @@ class UserServiceImplTest {
     @Test
     @DisplayName("delete must call 1 time UserRepository#deleteById when delete successfully")
     void delete_MustCall1TimeUserRepositoryDeleteById_WhenDeleteSuccessfully() {
-      when(userRepositoryMock.findById(1_000L)).thenReturn(optionalUser());
+      when(userRepositoryMock.findById(1_000L)).thenReturn(userOptional());
 
       userServiceImpl.delete(1_000L);
 
@@ -188,7 +180,7 @@ class UserServiceImplTest {
     void delete_MustThrowsEntityNotFoundException_WhenNotFoundUser() {
       when(userRepositoryMock.findById(1_000L)).thenReturn(Optional.empty());
 
-      Assertions.assertThatExceptionOfType(EntityNotFoundException.class)
+      assertThatExceptionOfType(EntityNotFoundException.class)
           .isThrownBy(() -> userServiceImpl.delete(1_000L))
           .withMessageContaining("User not found with id " + 1_000L);
     }
@@ -199,44 +191,41 @@ class UserServiceImplTest {
   @DisplayName("Tests for changePassword method")
   class ChangePasswordMethod {
 
-    @BeforeEach
-    void setUp() {
-      when(authenticationFacadeMock.getAuthentication())
-          .thenReturn(new TestingAuthenticationToken(USER, null, List.of(ROLE_USER)));
-    }
-
     @Test
     @DisplayName("changePassword must save user with new password when change password successfully")
     void changePassword_MustSaveUserWithNewPassword_WhenChangePasswordSuccessfully() {
-      when(passwordEncoderMock.matches(any(String.class), any(String.class)))
-          .thenReturn(true);
-      when(userRepositoryMock.save(any(User.class)))
-          .thenReturn(USER);
+      User userToBeChanged = user();
+      when(currentAuthenticationComponentMock.getCurrentUser()).thenReturn(userToBeChanged);
+      when(passwordEncoderMock.matches(any(String.class), any(String.class))).thenReturn(true);
+      when(passwordEncoderMock.encode(any())).thenReturn("encoded_password");
+      when(userRepositoryMock.save(any(User.class))).thenReturn(user());
 
       ChangePasswordRequest changePasswordRequest = ChangePasswordRequest.builder()
-          .oldPassword("123456789")
-          .newPassword("1234567890")
-          .confirm("1234567890")
+          .oldPassword("1234567890")
+          .newPassword("123456789")
+          .confirm("123456789")
           .build();
 
       userServiceImpl.changePassword(changePasswordRequest);
 
       verify(userRepositoryMock).save(any(User.class));
+      assertThat(userToBeChanged).isNotNull();
+      assertThat(userToBeChanged.getPassword()).isNotNull().isEqualTo("encoded_password");
     }
 
     @Test
     @DisplayName("changePassword must throws WrongPasswordException when password is wrong")
     void changePassword_MustThrowsWrongPasswordException_WhenPasswordIsWrong() {
-      when(passwordEncoderMock.matches(any(String.class), any(String.class)))
-          .thenReturn(false);
+      when(currentAuthenticationComponentMock.getCurrentUser()).thenReturn(user());
+      when(passwordEncoderMock.matches(any(String.class), any(String.class))).thenReturn(false);
 
       ChangePasswordRequest changePasswordRequest = ChangePasswordRequest.builder()
-          .oldPassword("123456789")
-          .newPassword("1234567890")
-          .confirm("1234567890")
+          .oldPassword("1234567890")
+          .newPassword("123456789")
+          .confirm("123456789")
           .build();
 
-      Assertions.assertThatExceptionOfType(WrongPasswordException.class)
+      assertThatExceptionOfType(WrongPasswordException.class)
           .isThrownBy(() -> userServiceImpl.changePassword(changePasswordRequest))
           .withMessageContaining("Wrong password");
     }
@@ -244,18 +233,32 @@ class UserServiceImplTest {
     @Test
     @DisplayName("changePassword must throws PasswordsDoNotMatchException when password and confirm no matches")
     void changePassword_MustThrowsPasswordsDoNotMatchException_WhenPasswordsAndConfirmNoMatches() {
-      when(passwordEncoderMock.matches(any(String.class), any(String.class)))
-          .thenReturn(true);
-
       ChangePasswordRequest changePasswordRequest = ChangePasswordRequest.builder()
-          .oldPassword("123456789")
-          .newPassword("1234567890")
-          .confirm("12345678")
+          .oldPassword("1234567890")
+          .newPassword("123456789")
+          .confirm("1234567888")
           .build();
 
-      Assertions.assertThatExceptionOfType(PasswordsDoNotMatchException.class)
+      assertThatExceptionOfType(PasswordsDoNotMatchException.class)
           .isThrownBy(() -> userServiceImpl.changePassword(changePasswordRequest))
           .withMessageContaining("Passwords do not match");
+    }
+
+    @Test
+    @DisplayName("changePassword must throws UserIsNotAuthenticatedException when user is not authenticated")
+    void changePassword_MustThrowsUserIsNotAuthenticatedException_WhenUserIsNotAuthenticated() {
+      when(currentAuthenticationComponentMock.getCurrentUser())
+          .thenThrow(new UserIsNotAuthenticatedException("User is not authenticated"));
+
+      ChangePasswordRequest changePasswordRequest = ChangePasswordRequest.builder()
+          .oldPassword("1234567890")
+          .newPassword("123456789")
+          .confirm("123456789")
+          .build();
+
+      assertThatExceptionOfType(UserIsNotAuthenticatedException.class)
+          .isThrownBy(() -> userServiceImpl.changePassword(changePasswordRequest))
+          .withMessageContaining("User is not authenticated");
     }
 
   }
