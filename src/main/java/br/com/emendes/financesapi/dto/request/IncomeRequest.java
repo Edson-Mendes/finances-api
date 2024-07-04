@@ -1,14 +1,11 @@
 package br.com.emendes.financesapi.dto.request;
 
-import br.com.emendes.financesapi.model.entity.Income;
-import br.com.emendes.financesapi.model.entity.User;
 import br.com.emendes.financesapi.validation.annotation.DateValidation;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -33,11 +30,5 @@ public class IncomeRequest {
   @Digits(integer = 6, fraction = 2,
       message = "Integer part must be max {integer} digits and fraction part must be max {fraction} digits")
   private BigDecimal value;
-
-  // FIXME: Usar um mapper para isso.
-  public Income convert(Long userId) {
-    User user = new User(userId);
-    return new Income(description, value, LocalDate.parse(this.date), user);
-  }
 
 }

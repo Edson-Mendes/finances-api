@@ -1,6 +1,5 @@
 package br.com.emendes.financesapi.model.entity;
 
-import br.com.emendes.financesapi.dto.request.IncomeRequest;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.OnDelete;
@@ -32,18 +31,4 @@ public class Income {
   @OnDelete(action = OnDeleteAction.CASCADE)
   private User user;
 
-  //FIXME: Substituir pelo Builder
-  public Income(String description, BigDecimal value, LocalDate date, User user) {
-    this.description = description;
-    this.value = value;
-    this.date = date;
-    this.user = user;
-  }
-
-  // TODO: Criar um Mapper com um método merge.
-  public void setParams(IncomeRequest incomeRequest) {
-    this.description = incomeRequest.getDescription();
-    this.date = LocalDate.parse(incomeRequest.getDate());
-    this.value = incomeRequest.getValue();
-  }
 }

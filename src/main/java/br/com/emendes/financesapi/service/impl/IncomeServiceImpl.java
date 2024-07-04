@@ -3,6 +3,7 @@ package br.com.emendes.financesapi.service.impl;
 import br.com.emendes.financesapi.dto.request.IncomeRequest;
 import br.com.emendes.financesapi.dto.response.IncomeResponse;
 import br.com.emendes.financesapi.exception.EntityNotFoundException;
+import br.com.emendes.financesapi.mapper.IncomeMapper;
 import br.com.emendes.financesapi.model.entity.Income;
 import br.com.emendes.financesapi.model.entity.User;
 import br.com.emendes.financesapi.repository.IncomeRepository;
@@ -26,16 +27,18 @@ public class IncomeServiceImpl implements IncomeService {
 
   private final IncomeRepository incomeRepository;
   private final CurrentAuthenticationComponent currentAuthenticationComponent;
+  private final IncomeMapper incomeMapper;
 
   @Override
   public IncomeResponse create(IncomeRequest incomeRequest) {
     log.info("attempt to create new income.");
     User currentUser = currentAuthenticationComponent.getCurrentUser();
 
-    Income income = incomeRequest.convert(currentUser.getId());
-    incomeRepository.save(income);
+    Income income = incomeMapper.toIncome(incomeRequest);
+    income.setUser(currentUser);
 
-    return new IncomeResponse(income);
+    incomeRepository.save(income);
+    return incomeMapper.toIncomeResponse(income);
   }
 
   @Override
@@ -43,12 +46,12 @@ public class IncomeServiceImpl implements IncomeService {
     User currentUser = currentAuthenticationComponent.getCurrentUser();
     log.info("attempt to read incomes for user with id: {}.", currentUser.getId());
 
-    Page<Income> incomes = incomeRepository.findAllByUser(currentUser, pageable);
-    if (incomes.getTotalElements() == 0) {
+    Page<Income> incomePage = incomeRepository.findAllByUser(currentUser, pageable);
+    if (incomePage.getTotalElements() == 0) {
       throw new EntityNotFoundException("The user has no incomes");
     }
 
-    return IncomeResponse.convert(incomes);
+    return incomePage.map(incomeMapper::toIncomeResponse);
   }
 
   @Override
@@ -56,29 +59,29 @@ public class IncomeServiceImpl implements IncomeService {
     log.info("attempt to read income by description");
 
     User currentUser = currentAuthenticationComponent.getCurrentUser();
-    Page<Income> incomes = incomeRepository.findByDescriptionAndUser(description, currentUser, pageable);
-    if (incomes.getTotalElements() == 0) {
+    Page<Income> incomePage = incomeRepository.findByDescriptionAndUser(description, currentUser, pageable);
+    if (incomePage.getTotalElements() == 0) {
       throw new EntityNotFoundException("The user has no incomes with a description similar to " + description);
     }
-    return IncomeResponse.convert(incomes);
+    return incomePage.map(incomeMapper::toIncomeResponse);
   }
 
   @Override
   public IncomeResponse readByIdAndUser(Long incomeId) {
     log.info("attempt to read income by id.");
-    return new IncomeResponse(findByIdAndUser(incomeId));
+    return incomeMapper.toIncomeResponse(findByIdAndUser(incomeId));
   }
 
   @Override
   public Page<IncomeResponse> readByYearAndMonthAndUser(int year, int month, Pageable pageable) {
     log.info("attempt to read income by year and month.");
     User currentUser = currentAuthenticationComponent.getCurrentUser();
-    Page<Income> incomes = incomeRepository.findByYearAndMonthAndUser(year, month, currentUser, pageable);
+    Page<Income> incomePage = incomeRepository.findByYearAndMonthAndUser(year, month, currentUser, pageable);
 
-    if (incomes.getTotalElements() == 0) {
+    if (incomePage.getTotalElements() == 0) {
       throw new EntityNotFoundException(String.format("Has no incomes for year %d and month %s", year, Month.of(month)));
     }
-    return IncomeResponse.convert(incomes);
+    return incomePage.map(incomeMapper::toIncomeResponse);
   }
 
   @Override
@@ -87,8 +90,8 @@ public class IncomeServiceImpl implements IncomeService {
     log.info("attempt to update income with id: {}", id);
     Income incomeToBeUpdated = findByIdAndUser(id);
 
-    incomeToBeUpdated.setParams(incomeRequest);
-    return new IncomeResponse(incomeToBeUpdated);
+    incomeMapper.merge(incomeToBeUpdated, incomeRequest);
+    return incomeMapper.toIncomeResponse(incomeToBeUpdated);
   }
 
   @Override
