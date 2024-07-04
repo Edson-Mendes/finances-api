@@ -4,7 +4,7 @@ import br.com.emendes.financesapi.dto.request.IncomeRequest;
 import br.com.emendes.financesapi.dto.response.IncomeResponse;
 import br.com.emendes.financesapi.exception.EntityNotFoundException;
 import br.com.emendes.financesapi.exception.UserIsNotAuthenticatedException;
-import br.com.emendes.financesapi.model.entity.Income;
+import br.com.emendes.financesapi.mapper.IncomeMapper;
 import br.com.emendes.financesapi.repository.IncomeRepository;
 import br.com.emendes.financesapi.service.impl.IncomeServiceImpl;
 import br.com.emendes.financesapi.util.component.CurrentAuthenticationComponent;
@@ -47,6 +47,8 @@ class IncomeServiceImplTest {
   private IncomeRepository incomeRepositoryMock;
   @Mock
   private CurrentAuthenticationComponent currentAuthenticationComponentMock;
+  @Mock
+  private IncomeMapper incomeMapperMock;
 
   @Nested
   @DisplayName("Tests for create method")
@@ -56,8 +58,9 @@ class IncomeServiceImplTest {
     @DisplayName("create must returns IncomeResponse when create successfully")
     void create_MustReturnsIncomeResponse_WhenCreateSuccessfully() {
       when(currentAuthenticationComponentMock.getCurrentUser()).thenReturn(user());
-      when(incomeRepositoryMock.save(any(Income.class)))
-          .thenReturn(income());
+      when(incomeMapperMock.toIncome(any())).thenReturn(incomeToBeSaved());
+      when(incomeRepositoryMock.save(any())).thenReturn(income());
+      when(incomeMapperMock.toIncomeResponse(any())).thenReturn(incomeResponse());
 
       IncomeRequest incomeRequest = IncomeRequest.builder()
           .description("Salário")
@@ -102,6 +105,7 @@ class IncomeServiceImplTest {
       when(currentAuthenticationComponentMock.getCurrentUser()).thenReturn(user());
       when(incomeRepositoryMock.findAllByUser(any(), any()))
           .thenReturn(new PageImpl<>(incomeList()));
+      when(incomeMapperMock.toIncomeResponse(any())).thenReturn(incomeResponse());
 
       Page<IncomeResponse> actualIncomeResponsePage = incomeServiceImpl.readAllByUser(PAGEABLE);
       List<IncomeResponse> actualContent = actualIncomeResponsePage.getContent();
@@ -160,6 +164,7 @@ class IncomeServiceImplTest {
       when(currentAuthenticationComponentMock.getCurrentUser()).thenReturn(user());
       when(incomeRepositoryMock.findByDescriptionAndUser(eq("Salário"), any(), any()))
           .thenReturn(new PageImpl<>(incomeList(), PAGEABLE, 1));
+      when(incomeMapperMock.toIncomeResponse(any())).thenReturn(incomeResponse());
 
       Page<IncomeResponse> actualIncomeResponsePage = incomeServiceImpl
           .readByDescriptionAndUser("Salário", PAGEABLE);
@@ -220,6 +225,7 @@ class IncomeServiceImplTest {
       when(currentAuthenticationComponentMock.getCurrentUser()).thenReturn(user());
       when(incomeRepositoryMock.findByIdAndUser(eq(100_000L), any()))
           .thenReturn(incomeOptional());
+      when(incomeMapperMock.toIncomeResponse(any())).thenReturn(incomeResponse());
 
       IncomeResponse actualIncomeResponse = incomeServiceImpl.readByIdAndUser(100_000L);
 
@@ -263,6 +269,7 @@ class IncomeServiceImplTest {
       when(currentAuthenticationComponentMock.getCurrentUser()).thenReturn(user());
       when(incomeRepositoryMock.findByYearAndMonthAndUser(eq(2023), eq(2), any(), eq(PAGEABLE)))
           .thenReturn(new PageImpl<>(incomeList(), PAGEABLE, 1));
+      when(incomeMapperMock.toIncomeResponse(any())).thenReturn(incomeResponse());
 
       Page<IncomeResponse> actualIncomeResponsePage = incomeServiceImpl
           .readByYearAndMonthAndUser(2023, 2, PAGEABLE);
@@ -323,6 +330,7 @@ class IncomeServiceImplTest {
       when(currentAuthenticationComponentMock.getCurrentUser()).thenReturn(user());
       when(incomeRepositoryMock.findByIdAndUser(eq(100_000L), any()))
           .thenReturn(incomeOptional());
+      when(incomeMapperMock.toIncomeResponse(any())).thenReturn(updatedIncomeResponse());
 
       IncomeRequest incomeRequest = IncomeRequest.builder()
           .description("Salário updated")

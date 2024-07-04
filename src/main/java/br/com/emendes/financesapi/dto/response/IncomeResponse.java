@@ -1,9 +1,7 @@
 package br.com.emendes.financesapi.dto.response;
 
-import br.com.emendes.financesapi.model.entity.Income;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
-import org.springframework.data.domain.Page;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -27,16 +25,5 @@ public class IncomeResponse {
 
   @Schema(example = "3500.00")
   private BigDecimal value;
-
-  public IncomeResponse(Income income) {
-    this.id = income.getId();
-    this.description = income.getDescription();
-    this.date = income.getDate();
-    this.value = income.getValue();
-  }
-
-  public static Page<IncomeResponse> convert(Page<Income> incomes) {
-    return incomes.map(IncomeResponse::new);
-  }
 
 }
