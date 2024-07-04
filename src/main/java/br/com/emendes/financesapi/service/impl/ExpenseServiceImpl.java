@@ -4,6 +4,7 @@ import br.com.emendes.financesapi.dto.request.ExpenseRequest;
 import br.com.emendes.financesapi.dto.response.ExpenseResponse;
 import br.com.emendes.financesapi.dto.response.ValueByCategoryResponse;
 import br.com.emendes.financesapi.exception.EntityNotFoundException;
+import br.com.emendes.financesapi.mapper.ExpenseMapper;
 import br.com.emendes.financesapi.model.entity.Expense;
 import br.com.emendes.financesapi.model.entity.User;
 import br.com.emendes.financesapi.repository.ExpenseRepository;
@@ -27,16 +28,18 @@ public class ExpenseServiceImpl implements ExpenseService {
 
   private final ExpenseRepository expenseRepository;
   private final CurrentAuthenticationComponent currentAuthenticationComponent;
+  private final ExpenseMapper expenseMapper;
 
   @Override
   public ExpenseResponse create(ExpenseRequest expenseRequest) {
     log.info("attempt to create new expense.");
     User currentUser = currentAuthenticationComponent.getCurrentUser();
 
-    Expense expense = expenseRequest.convert(currentUser.getId());
+    Expense expense = expenseMapper.toExpense(expenseRequest);
+    expense.setUser(currentUser);
     expenseRepository.save(expense);
 
-    return new ExpenseResponse(expense);
+    return expenseMapper.toExpenseResponse(expense);
   }
 
   @Override
@@ -44,12 +47,12 @@ public class ExpenseServiceImpl implements ExpenseService {
     User currentUser = currentAuthenticationComponent.getCurrentUser();
     log.info("attempt to read expenses for user with id: {}.", currentUser.getId());
 
-    Page<Expense> expenses = expenseRepository.findAllByUser(currentUser, pageable);
-    if (expenses.getTotalElements() == 0) {
+    Page<Expense> expensePage = expenseRepository.findAllByUser(currentUser, pageable);
+    if (expensePage.getTotalElements() == 0) {
       throw new EntityNotFoundException("The user has no expenses");
     }
 
-    return ExpenseResponse.convert(expenses);
+    return expensePage.map(expenseMapper::toExpenseResponse);
   }
 
   @Override
@@ -57,46 +60,46 @@ public class ExpenseServiceImpl implements ExpenseService {
     log.info("attempt to read expense by description");
 
     User currentUser = currentAuthenticationComponent.getCurrentUser();
-    Page<Expense> expenses = expenseRepository.findByDescriptionAndUser(description, currentUser, pageable);
-    if (expenses.getTotalElements() == 0) {
+    Page<Expense> expensePage = expenseRepository.findByDescriptionAndUser(description, currentUser, pageable);
+    if (expensePage.getTotalElements() == 0) {
       throw new EntityNotFoundException("The user has no expenses with a description similar to " + description);
     }
-    return ExpenseResponse.convert(expenses);
+    return expensePage.map(expenseMapper::toExpenseResponse);
   }
 
   @Override
-  public ExpenseResponse readByIdAndUser(Long id) {
+  public ExpenseResponse readByIdAndUser(Long expenseId) {
     log.info("attempt to read expense by id.");
-    return new ExpenseResponse(findByIdAndUser(id));
+    return expenseMapper.toExpenseResponse(findByIdAndUser(expenseId));
   }
 
   @Override
   public Page<ExpenseResponse> readByYearAndMonthAndUser(int year, int month, Pageable pageable) {
     log.info("attempt to read expense by year and month.");
     User currentUser = currentAuthenticationComponent.getCurrentUser();
-    Page<Expense> expenses = expenseRepository.findByYearAndMonthAndUser(year, month, currentUser, pageable);
+    Page<Expense> expensePage = expenseRepository.findByYearAndMonthAndUser(year, month, currentUser, pageable);
 
-    if (expenses.getTotalElements() == 0) {
+    if (expensePage.getTotalElements() == 0) {
       throw new EntityNotFoundException(String.format("Has no expenses for year %d and month %s", year, Month.of(month)));
     }
-    return ExpenseResponse.convert(expenses);
+    return expensePage.map(expenseMapper::toExpenseResponse);
   }
 
   @Override
   @Transactional
-  public ExpenseResponse update(Long id, ExpenseRequest expenseRequest) {
-    log.info("attempt to update expense with id: {}", id);
-    Expense expenseToBeUpdated = findByIdAndUser(id);
+  public ExpenseResponse update(Long expenseId, ExpenseRequest expenseRequest) {
+    log.info("attempt to update expense with id: {}", expenseId);
+    Expense expenseToBeUpdated = findByIdAndUser(expenseId);
 
-    expenseToBeUpdated.setParams(expenseRequest);
-    return new ExpenseResponse(expenseToBeUpdated);
+    expenseMapper.merge(expenseToBeUpdated, expenseRequest);
+    return expenseMapper.toExpenseResponse(expenseToBeUpdated);
   }
 
   @Override
-  public void deleteById(Long id) {
-    log.info("attempt to delete expense with id: {}", id);
+  public void deleteById(Long expenseId) {
+    log.info("attempt to delete expense with id: {}", expenseId);
 
-    expenseRepository.delete(findByIdAndUser(id));
+    expenseRepository.delete(findByIdAndUser(expenseId));
   }
 
   @Override

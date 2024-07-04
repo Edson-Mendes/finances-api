@@ -1,6 +1,5 @@
 package br.com.emendes.financesapi.model.entity;
 
-import br.com.emendes.financesapi.dto.request.ExpenseRequest;
 import br.com.emendes.financesapi.model.Category;
 import jakarta.persistence.*;
 import lombok.*;
@@ -36,24 +35,5 @@ public class Expense {
   @ManyToOne(fetch = FetchType.LAZY)
   @OnDelete(action = OnDeleteAction.CASCADE)
   private User user;
-
-  //FIXME: Substituir pelo Builder
-  public Expense(String description, BigDecimal value, LocalDate date, Category category, User user) {
-    this.description = description;
-    this.date = date;
-    this.value = value;
-    this.category = category;
-    this.user = user;
-  }
-
-  // TODO: Criar um Mapper com um método merge.
-  public void setParams(ExpenseRequest expenseRequest) {
-    this.description = expenseRequest.getDescription();
-    this.date = LocalDate.parse(expenseRequest.getDate());
-    this.value = expenseRequest.getValue();
-    if (expenseRequest.getCategory() != null) {
-      this.category = Category.valueOf(expenseRequest.getCategory());
-    }
-  }
 
 }

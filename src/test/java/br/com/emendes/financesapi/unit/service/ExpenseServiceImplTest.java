@@ -5,6 +5,7 @@ import br.com.emendes.financesapi.dto.response.ExpenseResponse;
 import br.com.emendes.financesapi.dto.response.ValueByCategoryResponse;
 import br.com.emendes.financesapi.exception.EntityNotFoundException;
 import br.com.emendes.financesapi.exception.UserIsNotAuthenticatedException;
+import br.com.emendes.financesapi.mapper.ExpenseMapper;
 import br.com.emendes.financesapi.model.Category;
 import br.com.emendes.financesapi.model.entity.Expense;
 import br.com.emendes.financesapi.repository.ExpenseRepository;
@@ -14,7 +15,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.data.domain.Page;
@@ -34,6 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
@@ -50,6 +51,8 @@ class ExpenseServiceImplTest {
   private ExpenseRepository expenseRepositoryMock;
   @Mock
   private CurrentAuthenticationComponent currentAuthenticationComponentMock;
+  @Mock
+  private ExpenseMapper expenseMapperMock;
 
   @Nested
   @DisplayName("Tests for create method")
@@ -59,7 +62,9 @@ class ExpenseServiceImplTest {
     @DisplayName("create must returns ExpenseResponse when create successfully")
     void create_MustReturnsExpenseResponse_WhenCreateSuccessfully() {
       when(currentAuthenticationComponentMock.getCurrentUser()).thenReturn(user());
+      when(expenseMapperMock.toExpense(any())).thenReturn(expense());
       when(expenseRepositoryMock.save(any(Expense.class))).thenReturn(expense());
+      when(expenseMapperMock.toExpenseResponse(any())).thenReturn(expenseResponse());
 
       ExpenseRequest expenseRequest = ExpenseRequest.builder()
           .description("Aluguel xpto")
@@ -106,6 +111,7 @@ class ExpenseServiceImplTest {
       when(currentAuthenticationComponentMock.getCurrentUser()).thenReturn(user());
       when(expenseRepositoryMock.findAllByUser(any(), any()))
           .thenReturn(new PageImpl<>(expenseList()));
+      when(expenseMapperMock.toExpenseResponse(any())).thenReturn(expenseResponse());
 
       Page<ExpenseResponse> actualExpenseResponsePage = expenseServiceImpl.readAllByUser(PAGEABLE);
       List<ExpenseResponse> actualContent = actualExpenseResponsePage.getContent();
@@ -164,6 +170,7 @@ class ExpenseServiceImplTest {
       when(currentAuthenticationComponentMock.getCurrentUser()).thenReturn(user());
       when(expenseRepositoryMock.findByDescriptionAndUser(eq("Aluguel"), any(), any()))
           .thenReturn(new PageImpl<>(expenseList(), PAGEABLE, 1));
+      when(expenseMapperMock.toExpenseResponse(any())).thenReturn(expenseResponse());
 
       Page<ExpenseResponse> actualExpenseResponsePage = expenseServiceImpl
           .readByDescriptionAndUser("Aluguel", PAGEABLE);
@@ -222,8 +229,8 @@ class ExpenseServiceImplTest {
     @DisplayName("readByIdAndUser must returns expenseResponse when read by id and user successfully")
     void readByIdAndUser_MustReturnsExpenseResponse_WhenReadByIdAndUserSuccessfully() {
       when(currentAuthenticationComponentMock.getCurrentUser()).thenReturn(user());
-      when(expenseRepositoryMock.findByIdAndUser(eq(100_000L), any()))
-          .thenReturn(expenseOptional());
+      when(expenseRepositoryMock.findByIdAndUser(eq(100_000L), any())).thenReturn(expenseOptional());
+      when(expenseMapperMock.toExpenseResponse(any())).thenReturn(expenseResponse());
 
       ExpenseResponse actualExpenseResponse = expenseServiceImpl.readByIdAndUser(100_000L);
 
@@ -267,6 +274,7 @@ class ExpenseServiceImplTest {
       when(currentAuthenticationComponentMock.getCurrentUser()).thenReturn(user());
       when(expenseRepositoryMock.findByYearAndMonthAndUser(eq(2023), eq(2), any(), eq(PAGEABLE)))
           .thenReturn(new PageImpl<>(expenseList(), PAGEABLE, 1));
+      when(expenseMapperMock.toExpenseResponse(any())).thenReturn(expenseResponse());
 
       Page<ExpenseResponse> actualExpenseResponsePage = expenseServiceImpl
           .readByYearAndMonthAndUser(2023, 2, PAGEABLE);
@@ -327,16 +335,18 @@ class ExpenseServiceImplTest {
       when(currentAuthenticationComponentMock.getCurrentUser()).thenReturn(user());
       when(expenseRepositoryMock.findByIdAndUser(eq(100_000L), any()))
           .thenReturn(expenseOptional());
+      when(expenseMapperMock.toExpenseResponse(any())).thenReturn(updatedExpenseResponse());
 
       ExpenseRequest expenseRequest = ExpenseRequest.builder()
           .description("Aluguel xpto updated")
           .value(new BigDecimal("1750.00"))
-          .date("2023-02-05")
+          .date("2023-02-08")
           .category("MORADIA")
           .build();
 
       ExpenseResponse actualExpenseResponse = expenseServiceImpl.update(100_000L, expenseRequest);
 
+      verify(expenseMapperMock).merge(any(), any());
       assertThat(actualExpenseResponse).isNotNull();
       assertThat(actualExpenseResponse.getId()).isEqualTo(100_000L);
       assertThat(actualExpenseResponse.getDescription()).isEqualTo("Aluguel xpto updated");
@@ -395,7 +405,7 @@ class ExpenseServiceImplTest {
 
       expenseServiceImpl.deleteById(100_000L);
 
-      BDDMockito.verify(expenseRepositoryMock).delete(any());
+      verify(expenseRepositoryMock).delete(any());
     }
 
     @Test

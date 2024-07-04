@@ -54,7 +54,7 @@ public interface IncomeService {
   IncomeResponse readByIdAndUser(Long incomeId);
 
   /**
-   * Busca paginada de income por ano (year), mês (month) e usário logado.
+   * Busca paginada de income por ano (year), mês (month) e usuário logado.
    *
    * @param year     ano da income.
    * @param month    mês da income.

@@ -1,5 +1,6 @@
 package br.com.emendes.financesapi.util.faker;
 
+import br.com.emendes.financesapi.dto.response.ExpenseResponse;
 import br.com.emendes.financesapi.dto.response.ValueByCategoryResponse;
 import br.com.emendes.financesapi.model.Category;
 import br.com.emendes.financesapi.model.entity.Expense;
@@ -20,6 +21,9 @@ public class ExpenseFaker {
   public static final String EXPENSE_DESCRIPTION = "Aluguel xpto";
   public static final BigDecimal EXPENSE_VALUE = new BigDecimal("1500.00");
   public static final LocalDate EXPENSE_DATE = LocalDate.parse("2023-02-05");
+  public static final String UPDATED_EXPENSE_DESCRIPTION = "Aluguel xpto updated";
+  public static final BigDecimal UPDATED_EXPENSE_VALUE = new BigDecimal("1750.00");
+  public static final LocalDate UPDATED_EXPENSE_DATE = LocalDate.parse("2023-02-08");
 
   /**
    * Retorna uma {@link Expense} com todos os campos.
@@ -50,6 +54,19 @@ public class ExpenseFaker {
   }
 
   /**
+   * Retorna um {@link ExpenseResponse} com todos os campos.
+   */
+  public static ExpenseResponse expenseResponse() {
+    return ExpenseResponse.builder()
+        .id(EXPENSE_ID)
+        .description(EXPENSE_DESCRIPTION)
+        .category(Category.MORADIA)
+        .value(EXPENSE_VALUE)
+        .date(EXPENSE_DATE)
+        .build();
+  }
+
+  /**
    * Retorna um {@link ValueByCategoryResponse} para um dado value e category.
    *
    * @param category categoria relacionada com o objeto.
@@ -60,6 +77,18 @@ public class ExpenseFaker {
     return ValueByCategoryResponse.builder()
         .category(category)
         .value(new BigDecimal(value))
+        .build();
+  }
+
+  /**
+   * Retorna um {@link ExpenseResponse} com os campos atualizados.
+   */
+  public static ExpenseResponse updatedExpenseResponse() {
+    return ExpenseResponse.builder()
+        .id(EXPENSE_ID)
+        .description(UPDATED_EXPENSE_DESCRIPTION)
+        .value(UPDATED_EXPENSE_VALUE)
+        .date(UPDATED_EXPENSE_DATE)
         .build();
   }
 
