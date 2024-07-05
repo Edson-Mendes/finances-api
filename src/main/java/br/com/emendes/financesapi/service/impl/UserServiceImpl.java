@@ -7,6 +7,7 @@ import br.com.emendes.financesapi.exception.DataConflictException;
 import br.com.emendes.financesapi.exception.EntityNotFoundException;
 import br.com.emendes.financesapi.exception.PasswordsDoNotMatchException;
 import br.com.emendes.financesapi.exception.WrongPasswordException;
+import br.com.emendes.financesapi.mapper.UserMapper;
 import br.com.emendes.financesapi.model.entity.User;
 import br.com.emendes.financesapi.repository.UserRepository;
 import br.com.emendes.financesapi.service.UserService;
@@ -20,6 +21,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import static br.com.emendes.financesapi.util.constant.RoleConstant.USER_ROLE;
+
 /**
  * Implementação de {@link UserService}.
  */
@@ -31,6 +34,7 @@ public class UserServiceImpl implements UserService {
   private final UserRepository userRepository;
   private final PasswordEncoder passwordEncoder;
   private final CurrentAuthenticationComponent currentAuthenticationComponent;
+  private final UserMapper userMapper;
 
   @Override
   public UserResponse createAccount(SignupRequest signupRequest) {
@@ -39,9 +43,11 @@ public class UserServiceImpl implements UserService {
       throw new PasswordsDoNotMatchException("Password and confirm does not match");
     }
     try {
-      User user = signupRequest.toUser();
+      User user = userMapper.toUser(signupRequest);
       user.setPassword(passwordEncoder.encode(signupRequest.getPassword()));
-      return new UserResponse(userRepository.save(user));
+      user.addRole(USER_ROLE);
+      user = userRepository.save(user);
+      return userMapper.toUserResponse(user);
     } catch (DataIntegrityViolationException e) {
       throw new DataConflictException("Email is already in use");
     }
@@ -50,8 +56,8 @@ public class UserServiceImpl implements UserService {
   @Override
   public Page<UserResponse> read(Pageable pageable) {
     log.info("attempt to read users");
-    Page<User> users = userRepository.findAll(pageable);
-    return UserResponse.convert(users);
+    Page<User> userPage = userRepository.findAll(pageable);
+    return userPage.map(userMapper::toUserResponse);
   }
 
   @Override

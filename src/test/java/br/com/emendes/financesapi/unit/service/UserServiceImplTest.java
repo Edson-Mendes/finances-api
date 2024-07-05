@@ -4,6 +4,7 @@ import br.com.emendes.financesapi.dto.request.ChangePasswordRequest;
 import br.com.emendes.financesapi.dto.request.SignupRequest;
 import br.com.emendes.financesapi.dto.response.UserResponse;
 import br.com.emendes.financesapi.exception.*;
+import br.com.emendes.financesapi.mapper.UserMapper;
 import br.com.emendes.financesapi.model.entity.User;
 import br.com.emendes.financesapi.repository.UserRepository;
 import br.com.emendes.financesapi.service.impl.UserServiceImpl;
@@ -46,6 +47,8 @@ class UserServiceImplTest {
   private PasswordEncoder passwordEncoderMock;
   @Mock
   private CurrentAuthenticationComponent currentAuthenticationComponentMock;
+  @Mock
+  private UserMapper userMapper;
 
   @Nested
   @DisplayName("Tests for createAccount method")
@@ -61,6 +64,8 @@ class UserServiceImplTest {
     @DisplayName("createAccount must return UserResponse when create successfully")
     void createAccount_MustReturnUserResponse_WhenCreateSuccessfully() {
       when(userRepositoryMock.save(any(User.class))).thenReturn(user());
+      when(userMapper.toUser(any())).thenReturn(nonSavedUser());
+      when(userMapper.toUserResponse(any())).thenReturn(userResponse());
 
       SignupRequest signupRequest = SignupRequest.builder()
           .name("John Doe")
@@ -81,6 +86,7 @@ class UserServiceImplTest {
     void createAccount_MustThrowsDataConflictException_WhenEmailAlreadyUsed() {
       when(userRepositoryMock.save(any()))
           .thenThrow(new DataIntegrityViolationException("Email inserido já está em uso!"));
+      when(userMapper.toUser(any())).thenReturn(nonSavedUser());
 
       SignupRequest signupRequest = SignupRequest.builder()
           .name("John Doe")
@@ -120,6 +126,7 @@ class UserServiceImplTest {
     void read_ReturnsPageUserResponse_WhenReadSuccessfully() {
       when(userRepositoryMock.findAll(USER_PAGEABLE))
           .thenReturn(new PageImpl<>(userList()));
+      when(userMapper.toUserResponse(any())).thenReturn(userResponse());
 
       Page<UserResponse> actualUserResponsePage = userServiceImpl.read(USER_PAGEABLE);
 
