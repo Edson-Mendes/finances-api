@@ -1,6 +1,5 @@
 package br.com.emendes.financesapi.dto.request;
 
-import br.com.emendes.financesapi.model.entity.User;
 import br.com.emendes.financesapi.validation.annotation.NoWhiteSpace;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -30,14 +29,5 @@ public class SignupRequest {
 
   @NotBlank(message = "confirm must not be null or blank")
   private String confirm;
-
-  public User toUser() {
-    return new User(name, email, password);
-  }
-
-  @Deprecated(forRemoval = true)
-  public boolean passwordMatch() {
-    return this.password.equals(this.confirm);
-  }
 
 }
