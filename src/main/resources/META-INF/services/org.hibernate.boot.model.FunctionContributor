@@ -1,1 +1,1 @@
-br.com.emendes.financesapi.config.psql.function.LowerUnaccentPsqlFunction
+br.com.emendes.financesapi.config.psql.function.SQLFunctionContributor
